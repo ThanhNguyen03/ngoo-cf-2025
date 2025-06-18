@@ -2,7 +2,7 @@ import { type FC, type PropsWithChildren } from 'react'
 
 import type { TModalProps } from '@/types'
 
-import { XIcon } from '@phosphor-icons/react'
+import { XIcon } from '@phosphor-icons/react/dist/ssr'
 import { cn } from '@/utils'
 
 export const Modal: FC<PropsWithChildren & TModalProps> = ({
