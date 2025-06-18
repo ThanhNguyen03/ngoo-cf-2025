@@ -1,0 +1,38 @@
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@import 'tailwindcss';
+@config '../../tailwind.config.ts';
+
+@theme {
+  --font-raleway: 'Raleway', sans-serif;
+}
+
+body {
+  @apply font-raleway lining-nums;
+}
+
+@utility scrollbar-none {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+}
+@utility font-small-caps {
+  font-variant: all-small-caps;
+}
+
+@utility underline-active {
+  @apply before:bg-orange-500 relative shadow-[0px_-8px_4px_-4px_#F2D4B3_inset] before:absolute before:-bottom-0.5 before:h-0.5 before:w-full before:scale-x-100 before:transition-transform before:duration-300 before:ease-in-out;
+}
+@utility underline-hover {
+  @apply relative before:absolute before:-bottom-0.5 before:h-0.5 before:w-full before:scale-x-0 before:transition-transform before:duration-300 before:ease-in-out hover:before:scale-x-100 hover:before:bg-neutral-900;
+}
+@utility scrollbar-auto {
+  -ms-overflow-style: auto; /* IE and Edge */
+  scrollbar-width: auto; /* Firefox */
+
+  &::-webkit-scrollbar {
+    display: initial; /* Chrome, Safari, Opera */
+  }
+}
