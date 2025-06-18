@@ -27,6 +27,19 @@ export default async function RootLayout({
 
   return (
     <html lang='en' className='scroll-smooth'>
+      <head>
+        <link
+          rel='icon'
+          href='/favicon.svg'
+          media='(prefers-color-scheme: light)'
+        />
+        <link
+          rel='icon'
+          href='/favicon-dark.svg'
+          media='(prefers-color-scheme: dark)'
+        />
+      </head>
+
       <body className='font-raleway scroll-smooth lining-nums antialiased bg-white'>
         <WalletConnectProvider initialState={initialState}>
           <Header />
