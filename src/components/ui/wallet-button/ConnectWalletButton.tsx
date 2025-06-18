@@ -49,12 +49,12 @@ export const ConnectWalletButton = ({
       ) : (
         <button
           className={cn(
-            'rounded-2 flex h-10 cursor-pointer items-center justify-center gap-2 bg-blue-500 px-4 py-2 font-semibold text-white shadow',
+            'rounded-2 flex cursor-pointer items-center text-14! leading-[160%] justify-center gap-1 bg-secondary-500 px-2 py-1 font-semibold text-white shadow',
             connectWalletButtonClassName
           )}
           onClick={() => setIsConnectWalletModalOpen(true)}
         >
-          <WalletIcon />
+          <WalletIcon size={18} />
           Connect Wallet
         </button>
       )}

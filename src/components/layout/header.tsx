@@ -1,28 +1,45 @@
 'use client'
+
 import { LIST_HEADER_NAVIGATION } from '@/constants'
 import { cn } from '@/utils'
-import { ListIcon, XIcon } from '@phosphor-icons/react/dist/ssr'
+import {
+  CoffeeBeanIcon,
+  CowIcon,
+  ListIcon,
+  XIcon,
+} from '@phosphor-icons/react/dist/ssr'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
+import { ConnectWalletButton } from '../ui/wallet-button'
+import { useAccount } from 'wagmi'
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
   const pathname = usePathname()
-
-  console.log('first', pathname)
+  const { isConnected, address } = useAccount()
 
   return (
-    <header className='sticky top-0 z-50 border-b border-white/[2%] bg-white px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
+    <header className='sticky top-0 z-50 border-b border-white/[2%] bg-beige-300 px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
       <div className='mx-auto flex h-12 w-full max-w-[960px] items-center justify-between'>
         {/* left */}
-        <Link
-          href='/'
-          className='flex items-center justify-center gap-1.5 py-2'
-        >
+        <Link href='/' className='flex items-center justify-center gap-2 py-2'>
           {/* logo */}
-          <div className='rounded-0.5 size-5 bg-neutral-900' />
-          <h1 className='text-18 font-bold text-neutral-900'>NgOo</h1>
+          <div className='rounded-1 p-0.75 bg-white'>
+            <CowIcon size={24} weight='fill' className='text-primary-500' />
+          </div>
+          <h1 className='text-18 font-bold leading-5 flex flex-col items-start text-red-500'>
+            <span className='flex items-center'>
+              Ng
+              <CoffeeBeanIcon
+                size={18}
+                className='text-secondary-400'
+                weight='fill'
+              />
+              o
+            </span>
+            <span className='text-dark-600'>Coffee</span>
+          </h1>
         </Link>
 
         {/* center content */}
@@ -34,16 +51,14 @@ const Header = () => {
               href={link.href}
               title={link.name}
               className={cn(
-                'flex h-full items-center justify-center gap-2 px-3 opacity-70 hover:opacity-100',
+                'flex h-full items-center justify-center gap-2 px-3',
                 pathname === link.href
-                  ? 'underline-active opacity-100'
-                  : 'underline-hover'
+                  ? 'underline-active text-dark-600'
+                  : 'underline-hover text-dark-600/70 hover:text-dark-600'
               )}
             >
               <div className='shrink-0'>{link.icon}</div>
-              <p className='text-14! font-semibold text-neutral-900'>
-                {link.name}
-              </p>
+              <p className='text-14 font-semibold'>{link.name}</p>
             </Link>
           ))}
         </div>
@@ -51,11 +66,7 @@ const Header = () => {
         {/* right */}
         <div className='flex h-full items-center justify-center gap-2 py-2'>
           {/* demo connect wallet button */}
-          {/* <WalletConnect
-            connectWalletButtonClassName='bg-primary-500 px-2 py-1.25 h-fit text-[14px] leading-[160%] text-white font-normal border border-neutral-900/10'
-            accountButtonClassName='text-black text-[14px] leading-[160%] h-fit'
-            switchChainButtonClassName='text-[14px] leading-[160%] hidden'
-          /> */}
+          <ConnectWalletButton isConnected={isConnected} address={address} />
 
           {/* menu button */}
           {
