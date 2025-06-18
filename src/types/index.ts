@@ -7,3 +7,10 @@ export type TModalProps = {
   className?: string
   overlayClassName?: string
 }
+
+export type TNavigationItem = {
+  name: string
+  icon?: string | React.ReactNode
+  href: string
+  openInNewTab?: boolean
+}
