@@ -1,7 +1,7 @@
 import { cookieStorage, createConfig, createStorage, http } from 'wagmi'
 import { mainnet, monadTestnet } from 'wagmi/chains'
 
-export const getWagmiConfig = () =>
+export const wagmiConfig =
   createConfig({
     chains: [mainnet, monadTestnet],
     ssr: true,

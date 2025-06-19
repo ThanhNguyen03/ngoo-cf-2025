@@ -31,7 +31,7 @@ export const ConnectWalletButton = ({
       {isConnected ? (
         <button
           className={cn(
-            'rounded-2 flex h-10 cursor-pointer items-center justify-center gap-2 border border-white/10 bg-white/10 px-4 py-2 font-semibold text-white shadow',
+            'rounded-2 flex cursor-pointer text-14! leading-[160%] items-center justify-center gap-2 border border-beige-50 bg-linear-to-br to-primary-500/70 from-secondary-500/70 backdrop-blur-2xl px-2 py-1 font-semibold text-white shadow',
             accountButtonclassName
           )}
           onClick={() => setIsAccountModalOpen(true)}
@@ -44,12 +44,12 @@ export const ConnectWalletButton = ({
                 balance.symbol
               ).toPrecision()}
           </p>
-          <Image alt='default-avt' src={defaultAvatar} className='size-4' />
+          <Image alt='default-avt' src={defaultAvatar} className='size-4.5' />
         </button>
       ) : (
         <button
           className={cn(
-            'rounded-2 flex cursor-pointer items-center text-14! leading-[160%] justify-center gap-1 bg-secondary-500 px-2 py-1 font-semibold text-white shadow',
+            'rounded-2 flex cursor-pointer items-center text-14! leading-[160%] justify-center gap-1 bg-linear-to-br from-secondary-300 to-red-500 px-2 py-1 font-semibold text-white shadow',
             connectWalletButtonClassName
           )}
           onClick={() => setIsConnectWalletModalOpen(true)}
