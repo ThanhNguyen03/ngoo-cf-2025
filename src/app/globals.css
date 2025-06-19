@@ -24,11 +24,11 @@ body {
 }
 
 @utility underline-active {
-  @apply before:bg-primary-500 relative shadow-[0px_-8px_4px_-4px_hsla(31,75%,70%,0.7)_inset] before:absolute before:-bottom-0.25 before:h-0.5 before:w-full before:scale-x-100 before:transition-transform before:duration-300 before:ease-in-out;
+  @apply before:bg-secondary-500 relative shadow-[0px_-8px_4px_-4px_#fb9d6a80_inset] before:absolute before:-bottom-0.25 before:h-0.5 before:w-full before:scale-x-100 before:transition-transform before:duration-300 before:ease-in-out;
 }
 
 @utility underline-hover {
-  @apply relative before:absolute before:-bottom-0.25 before:h-0.5 before:w-full before:scale-x-0 before:transition-transform before:duration-300 before:ease-in-out hover:before:scale-x-100 hover:before:bg-shade-500;
+  @apply relative before:absolute before:-bottom-0.25 before:h-0.5 before:w-full before:scale-x-0 before:transition-transform before:duration-300 before:ease-in-out hover:before:scale-x-100 hover:before:bg-primary-500;
 }
 
 @utility scrollbar-auto {
@@ -38,4 +38,33 @@ body {
   &::-webkit-scrollbar {
     display: initial; /* Chrome, Safari, Opera */
   }
+}
+
+@utility button-animation {
+  @apply hover:before:bg-beige-50 hover:before:duration-1000 hover:before:opacity-20 hover:before:scale-x-100 relative;
+  @apply before:absolute before:inset-0 before:bg-[inherit] before:rounded-[inherit] before:scale-x-0 before:transform relative;
+  @apply hover:bg-beige-300 hover:text-dark-600 transition-colors duration-500;
+}
+
+@keyframes homepage-zoom-in {
+  0% {
+    transform: scale(1);
+    opacity: 100%;
+    translate: 0px;
+  }
+  90% {
+    transform: scale(3);
+    opacity: 100%;
+    translate: 70% 0px;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0%;
+    translate: 70% 0px;
+  }
+}
+
+.homepage-animation {
+  animation: homepage-zoom-in 7s ease-in-out forwards;
+  animation-delay: 3s;
 }
