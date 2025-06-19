@@ -26,7 +26,7 @@ const Header = () => {
         <Link href='/' className='flex items-center justify-center gap-2 py-2'>
           {/* logo */}
           <div className='rounded-1 p-0.75 bg-white'>
-            <CowIcon size={24} weight='fill' className='text-primary-500' />
+            <CowIcon size={24} weight='fill' className='text-primary-600' />
           </div>
           <h1 className='text-18 font-bold leading-5 flex flex-col items-start text-red-500'>
             <span className='flex items-center'>

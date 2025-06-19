@@ -12,7 +12,6 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL || DEV_APP_URL),
   title: 'NgOo Coffee',
   description: '',
-  icons: '/favicon.svg',
 }
 
 export default async function RootLayout({

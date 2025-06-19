@@ -30,6 +30,8 @@ export const ConnectWalletModal: FC<TModalProps> = ({ isOpen, onClose }) => {
                 alt='connetor-icon'
                 src={connector.icon}
                 className='size-10'
+                width={40}
+                height={40}
               />
             )}
             <span className='font-semibold'>{connector.name}</span>
