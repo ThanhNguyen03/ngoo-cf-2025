@@ -1,12 +1,13 @@
 import { DEV_APP_URL } from '@/constants'
 import type { Metadata } from 'next'
-import Toaster from '@/components/ui/Toaster'
 import './globals.css'
 import Header from '@/components/layout/header'
 import { cookieToInitialState } from 'wagmi'
 import getConfig from 'next/config'
 import { headers } from 'next/headers'
 import { WalletConnectProvider } from '@/providers/wallet-connect-provider'
+import Footer from '@/components/layout/footer'
+import Toaster from '@/components/ui/Toaster'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL || DEV_APP_URL),
@@ -44,6 +45,7 @@ export default async function RootLayout({
           <Header />
           {children}
           <Toaster />
+          <Footer />
         </WalletConnectProvider>
         {/* <Footer /> */}
       </body>
