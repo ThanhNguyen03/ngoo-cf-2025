@@ -3,10 +3,10 @@
 import { useEffect, useState } from 'react'
 import { ArrowRightIcon, CowIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
-import Button from '../ui/Button'
 import { animatedCoffeeShop, ngooCfText } from '@/images'
 import { cn } from '@/utils'
 import { LOCALSTORAGE_KEY, ONE_MONTH_MS } from '@/constants'
+import Button from '../ui/Button'
 
 const ANIMATION_DURATION = 9700 // 9.7s
 const CONTENT_DELAY = 7000 // 7s
@@ -20,27 +20,18 @@ const Hero = () => {
     const lastVisit = localStorage.getItem(LOCALSTORAGE_KEY)
     const isFirstVisit = !lastVisit || now - Number(lastVisit) > ONE_MONTH_MS
 
-    if (isFirstVisit) {
-      localStorage.setItem(LOCALSTORAGE_KEY, now.toString())
+    const animationTimeOut = setTimeout(
+      () => setAnimationEnded(true),
+      isFirstVisit ? ANIMATION_DURATION : ANIMATION_DURATION / 10
+    )
+    const renderContentTimeOut = setTimeout(
+      () => setRenderContent(true),
+      isFirstVisit ? CONTENT_DELAY : CONTENT_DELAY / 10
+    )
 
-      const timeout1 = setTimeout(
-        () => setAnimationEnded(true),
-        ANIMATION_DURATION
-      )
-      const timeout2 = setTimeout(() => setRenderContent(true), CONTENT_DELAY)
-
-      return () => {
-        clearTimeout(timeout1)
-        clearTimeout(timeout2)
-      }
-    } else {
-      const timeout1 = setTimeout(() => setAnimationEnded(true), 700)
-      const timeout2 = setTimeout(() => setRenderContent(true), 300)
-
-      return () => {
-        clearTimeout(timeout1)
-        clearTimeout(timeout2)
-      }
+    return () => {
+      clearTimeout(animationTimeOut)
+      clearTimeout(renderContentTimeOut)
     }
   }, [])
 
@@ -74,6 +65,7 @@ const Hero = () => {
           )}
           width={1920}
           height={1080}
+          unoptimized
         />
       </div>
 

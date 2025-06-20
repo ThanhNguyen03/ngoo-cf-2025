@@ -2,17 +2,13 @@
 
 import { LIST_HEADER_NAVIGATION } from '@/constants'
 import { cn } from '@/utils'
-import {
-  CoffeeBeanIcon,
-  CowIcon,
-  ListIcon,
-  XIcon,
-} from '@phosphor-icons/react/dist/ssr'
+import { ListIcon, XIcon } from '@phosphor-icons/react/dist/ssr'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { ConnectWalletButton } from '../ui/wallet-button'
 import { useAccount } from 'wagmi'
+import NgOoLogo from '../ui/NgOoLogo'
+import { ConnectWalletButton } from '../ui'
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
@@ -23,24 +19,7 @@ const Header = () => {
     <header className='sticky top-0 z-50 border-b border-white/[2%] bg-beige-300 px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
       <div className='mx-auto flex h-12 w-full max-w-[960px] items-center justify-between'>
         {/* left */}
-        <Link href='/' className='flex items-center justify-center gap-2 py-2'>
-          {/* logo */}
-          <div className='rounded-1 p-0.75 bg-white'>
-            <CowIcon size={24} weight='fill' className='text-primary-600' />
-          </div>
-          <h1 className='text-18 font-bold leading-5 flex flex-col items-start text-red-500'>
-            <span className='flex items-center'>
-              Ng
-              <CoffeeBeanIcon
-                size={18}
-                className='text-secondary-400'
-                weight='fill'
-              />
-              o
-            </span>
-            <span className='text-dark-600'>Coffee</span>
-          </h1>
-        </Link>
+        <NgOoLogo isDark />
 
         {/* center content */}
         <div className='hidden h-full items-center justify-center md:flex lg:gap-4'>
