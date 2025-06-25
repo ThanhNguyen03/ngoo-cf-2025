@@ -1,12 +1,13 @@
 import { cn } from '@/utils'
 import React, { FC, PropsWithChildren } from 'react'
 
-type TButtonProps = PropsWithChildren & {
-  icon?: React.ReactNode
-  className?: string
-  iconRight?: boolean
-  disableAnimation?: boolean
-}
+type TButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
+  PropsWithChildren & {
+    icon?: React.ReactNode
+    className?: string
+    iconRight?: boolean
+    disableAnimation?: boolean
+  }
 
 const Button: FC<TButtonProps> = ({
   icon,

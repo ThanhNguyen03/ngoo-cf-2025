@@ -45,22 +45,22 @@ export const LIST_HEADER_NAVIGATION: TNavigationItem[] = [
 export const LIST_SOCIAL_BUTTON: TNavigationItem[] = [
   {
     name: 'Facebook',
-    icon: <FacebookLogoIcon size={24} weight='fill' fill='#0866fe' />,
+    icon: <FacebookLogoIcon size={24} fill='#0866fe' />,
     href: 'https://x.com/OrochiNetwork',
   },
   {
     name: 'Discord',
-    icon: <DiscordLogoIcon size={24} weight='fill' fill='#707bf7' />,
+    icon: <DiscordLogoIcon size={24} fill='#707bf7' />,
     href: 'https://discord.com/invite/sTU4TUh8H3',
   },
   {
     name: 'Github',
-    icon: <GithubLogoIcon size={24} weight='fill' fill='#51515d' />,
+    icon: <GithubLogoIcon size={24} fill='#51515d' />,
     href: 'https://x.com/OrochiNetwork',
   },
   {
     name: 'Telegram',
-    icon: <TelegramLogoIcon size={24} weight='fill' fill='#3eb6f3' />,
+    icon: <TelegramLogoIcon size={24} fill='#3eb6f3' />,
     href: 'https://discord.com/invite/sTU4TUh8H3',
   },
 ]
