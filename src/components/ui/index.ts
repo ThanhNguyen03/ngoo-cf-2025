@@ -1,2 +1,6 @@
 export * from './modal'
 export * from './Toaster'
+export * from './NgOoLogo'
+export * from './Tooltip'
+export * from './Button'
+export * from './wallet-button'

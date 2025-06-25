@@ -7,9 +7,9 @@ import { CopyIcon } from '@phosphor-icons/react'
 
 import { Modal } from './Modal'
 import Image from 'next/image'
-import { Tooltip } from '../Tooltip'
 import { defaultAvatar } from '@/images'
 import { DisconnectWalletButton } from '../wallet-button/DisconnectWalletButton'
+import { Tooltip } from '../Tooltip'
 
 export const AccountModal: FC<TModalProps> = ({ isOpen, onClose }) => {
   const { isConnected, address } = useAccount()

@@ -1,3 +1,4 @@
+import BestSeller from '@/components/section/best-seller'
 import Hero from '@/components/section/hero'
 import { InfiniteCarousel } from '@/components/ui/InfiniteCarousel'
 import { notifyBg } from '@/images'
@@ -32,6 +33,11 @@ export default function Home() {
           </p>
         </div>
       </InfiniteCarousel>
+      <div className='px-2 pt-6 pb-10 md:px-6 md:pb-20 md:pt-10 lg:pt-20 lg:px-10 lg:pb-30 bg-white'>
+        <div className='max-w-[1024px] w-full mx-auto'>
+          <BestSeller />
+        </div>
+      </div>
       <div className='text-gray-500 max-w-2xl mx-auto mt-4 flex flex-col gap-4'>
         <p>
           NgOo EST. 2023, Còn bạn? <br />
