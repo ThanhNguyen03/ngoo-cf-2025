@@ -1,9 +1,37 @@
 import Hero from '@/components/section/hero'
+import { InfiniteCarousel } from '@/components/ui/InfiniteCarousel'
+import { notifyBg } from '@/images'
+import { SealPercentIcon } from '@phosphor-icons/react/dist/ssr'
+import Image from 'next/image'
 
 export default function Home() {
   return (
     <>
       <Hero />
+      <InfiniteCarousel
+        className='w-full bg-linear-to-t from-beige-600 to-primary-500/70'
+        length={5}
+        animation='rightToLeft'
+        background={
+          <Image
+            alt='notify-bg'
+            src={notifyBg}
+            width={2560}
+            height={1440}
+            className='absolute inset-0 z-0 object-cover object-[85%_50%] size-full'
+          />
+        }
+      >
+        <div className='flex items-center justify-center gap-2 mx-4 w-[320px] text-beige-300 py-6'>
+          <SealPercentIcon size={24} weight='fill' />
+          <p className='text-14 select-none'>
+            Use{' '}
+            <span className='text-yellow-300 font-bold'>Payment by Token </span>
+            to get{' '}
+            <span className='text-green-500 font-bold'>sale off 20%</span>
+          </p>
+        </div>
+      </InfiniteCarousel>
       <div className='text-gray-500 max-w-2xl mx-auto mt-4 flex flex-col gap-4'>
         <p>
           NgOo EST. 2023, Còn bạn? <br />
