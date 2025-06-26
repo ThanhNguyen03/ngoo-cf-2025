@@ -71,7 +71,7 @@ const Hero = () => {
 
       {/* Main Content */}
       {renderContent && (
-        <div className='mx-auto w-full max-w-[960px] flex gap-10 grow z-10 h-[65vh] items-center relative overflow-hidden'>
+        <div className='mx-auto w-full max-w-[960px] flex gap-10 grow z-10 h-[69svh] items-center relative overflow-hidden'>
           <div
             className={cn(
               'flex flex-col gap-2 md:gap-6 items-start z-10 duration-1000 w-full',
@@ -109,7 +109,7 @@ const Hero = () => {
 
           <div className='relative w-full min-h-60'>
             <Image
-              alt='main-island'
+              alt='main-herobanner'
               src={ngooCfText}
               width={3287}
               height={1641}

@@ -2,6 +2,10 @@
 @import 'tailwindcss';
 @config '../../tailwind.config.ts';
 
+:root {
+  --scroll-speed: 60s;
+}
+
 @theme {
   --font-raleway: 'Raleway', sans-serif;
 }
@@ -46,6 +50,7 @@ body {
   @apply hover:bg-beige-300 hover:text-dark-600 transition-colors duration-500;
 }
 
+/*================ANIMATION==================*/
 @keyframes homepage-zoom-in {
   0% {
     transform: scale(1);
@@ -67,4 +72,49 @@ body {
 .homepage-animation {
   animation: homepage-zoom-in 7s ease-in-out forwards;
   animation-delay: 3s;
+}
+
+.animate-return-horizontal-scroll {
+  animation: var(--scroll-speed) return-horizontal-scroll linear infinite;
+}
+
+@keyframes return-horizontal-scroll {
+  0% {
+    transform: translateX(0%);
+  }
+  50% {
+    transform: translateX(-50%);
+  }
+  100% {
+    transform: translateX(0%);
+  }
+}
+
+.-animate-return-horizontal-scroll {
+  animation: var(--scroll-speed) -return-horizontal-scroll linear infinite;
+}
+
+@keyframes -return-horizontal-scroll {
+  0% {
+    transform: translateX(-50%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes -horizontal-scroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.-animate-infinite-horizontal-scroll {
+  animation: var(--scroll-speed) -horizontal-scroll linear infinite;
 }
