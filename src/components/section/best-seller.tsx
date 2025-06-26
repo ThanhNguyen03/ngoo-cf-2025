@@ -24,10 +24,10 @@ const BestSeller = () => {
       <h2 className='text-28 md:text-25 lg:text-44 font-semibold text-secondary-400 text-center'>
         Best Seller
       </h2>
-      <Slider>
-        {MOCKED_ITEMS_DATA.map((item) => (
+      <Slider numsItemsPerSlice={3}>
+        {MOCKED_ITEMS_DATA.map((item, i) => (
           <ItemCard
-            key={item.title}
+            key={`${item.title}-${i}`}
             image={item.image}
             title={item.title}
             price={item.price}
