@@ -15,9 +15,11 @@ const Button: FC<TButtonProps> = ({
   className,
   iconRight,
   disableAnimation,
+  ...props
 }) => {
   return (
     <button
+      {...props}
       className={cn(
         'flex gap-2 items-center justify-center px-3 py-1.5 rounded-2 disabled:opacity-50 disabled:bg-shade-500 font-semibold text-16! text-white cursor-pointer',
         className,
