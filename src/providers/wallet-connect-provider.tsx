@@ -1,6 +1,6 @@
 'use client'
 
-import { wagmiConfig } from '@/lib/wagmi-config'
+import { getWagmiConfig } from '@/lib/wagmi-config'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { type PropsWithChildren, useState } from 'react'
 import { type State, WagmiProvider } from 'wagmi'
@@ -16,7 +16,7 @@ export const WalletConnectProvider = ({
   const [queryClient] = useState(() => new QueryClient())
 
   return (
-    <WagmiProvider config={wagmiConfig} initialState={initialState}>
+    <WagmiProvider config={getWagmiConfig()} initialState={initialState}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </WagmiProvider>
   )
