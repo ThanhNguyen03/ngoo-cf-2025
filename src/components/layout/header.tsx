@@ -16,7 +16,7 @@ const Header = () => {
   const { isConnected, address } = useAccount()
 
   return (
-    <header className='sticky top-0 z-50 border-b border-white/[2%] bg-beige-300 px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
+    <header className='sticky top-0 z-50 border-b border-white/[2%] bg-beige-100 px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
       <div className='mx-auto flex h-12 w-full max-w-[960px] items-center justify-between'>
         {/* left */}
         <NgOoLogo isDark />

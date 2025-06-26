@@ -16,7 +16,7 @@ const ItemCard: FC<TItemCardProps> = ({ image, title, price, salePrice }) => {
         src={image}
         width={240}
         height={240}
-        className='object-cover size-60'
+        className='object-cover size-60 rounded-t-2'
       />
 
       <div className='p-2 md:p-4 flex flex-col gap-2 md:gap-3 items-start'>
