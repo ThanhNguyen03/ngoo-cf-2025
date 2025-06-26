@@ -20,11 +20,12 @@ const MOCKED_ITEMS_DATA: TItemCardProps[] = [
 
 const BestSeller = () => {
   return (
-    <section className='flex flex-col gap-2 md:gap-6 lg:gap-10'>
+    <section className='flex flex-col gap-2 md:gap-6 lg:gap-10 relative'>
       <h2 className='text-28 md:text-25 lg:text-44 font-semibold text-secondary-400 text-center'>
         Best Seller
       </h2>
-      <Slider numsItemsPerSlice={3}>
+
+      <Slider numsItemsPerSlice={3} isDot>
         {MOCKED_ITEMS_DATA.map((item, i) => (
           <ItemCard
             key={`${item.title}-${i}`}
