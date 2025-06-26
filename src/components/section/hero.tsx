@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import { ArrowRightIcon, CowIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
 import { animatedCoffeeShop, ngooCfText } from '@/images'
@@ -8,11 +8,15 @@ import { cn } from '@/utils'
 import { LOCALSTORAGE_KEY, ONE_MONTH_MS } from '@/constants'
 import Button from '../ui/Button'
 
+type THeroBannerProps = {
+  animationEnded: boolean
+  setAnimationEnded: Dispatch<SetStateAction<boolean>>
+}
+
 const ANIMATION_DURATION = 9700 // 9.7s
 const CONTENT_DELAY = 7000 // 7s
 
-const Hero = () => {
-  const [animationEnded, setAnimationEnded] = useState<boolean>(false)
+const Hero: FC<THeroBannerProps> = ({ animationEnded, setAnimationEnded }) => {
   const [renderContent, setRenderContent] = useState<boolean>(false)
 
   useEffect(() => {
@@ -33,6 +37,7 @@ const Hero = () => {
       clearTimeout(animationTimeOut)
       clearTimeout(renderContentTimeOut)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -46,7 +51,7 @@ const Hero = () => {
     <section
       className={cn(
         'px-2 pt-6 pb-10 md:px-6 md:pb-20 md:pt-10 lg:pt-20 lg:px-10 lg:pb-30 bg-dark-600',
-        animationEnded && 'relative overflow-hidden'
+        animationEnded ? 'relative overflow-hidden' : 'h-[100dvh]'
       )}
     >
       {/* Background image */}
@@ -71,7 +76,7 @@ const Hero = () => {
 
       {/* Main Content */}
       {renderContent && (
-        <div className='mx-auto w-full max-w-[960px] flex gap-10 grow z-10 h-[69svh] items-center relative overflow-hidden'>
+        <div className='mx-auto w-full max-w-[960px] h-[calc(100dvh-322px)] flex gap-10 grow z-10 items-center relative overflow-hidden'>
           <div
             className={cn(
               'flex flex-col gap-2 md:gap-6 items-start z-10 duration-1000 w-full',
