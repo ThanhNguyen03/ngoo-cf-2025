@@ -28,7 +28,7 @@ body {
 }
 
 @utility underline-active {
-  @apply before:bg-secondary-500 relative shadow-[0px_-8px_4px_-4px_#fb9d6a80_inset] before:absolute before:-bottom-0.25 before:h-0.5 before:w-full before:scale-x-100 before:transition-transform before:duration-300 before:ease-in-out;
+  @apply before:bg-secondary-500 relative shadow-[0px_-8px_4px_-4px_#fb9d6a90_inset] before:absolute before:-bottom-0.25 before:h-0.5 before:w-full before:scale-x-100 before:transition-transform before:duration-300 before:ease-in-out;
 }
 
 @utility underline-hover {
@@ -74,10 +74,6 @@ body {
   animation-delay: 3s;
 }
 
-.animate-return-horizontal-scroll {
-  animation: var(--scroll-speed) return-horizontal-scroll linear infinite;
-}
-
 @keyframes return-horizontal-scroll {
   0% {
     transform: translateX(0%);
@@ -90,8 +86,8 @@ body {
   }
 }
 
-.-animate-return-horizontal-scroll {
-  animation: var(--scroll-speed) -return-horizontal-scroll linear infinite;
+.animate-return-horizontal-scroll {
+  animation: var(--scroll-speed) return-horizontal-scroll linear infinite;
 }
 
 @keyframes -return-horizontal-scroll {
@@ -104,6 +100,10 @@ body {
   100% {
     transform: translateX(-50%);
   }
+}
+
+.-animate-return-horizontal-scroll {
+  animation: var(--scroll-speed) -return-horizontal-scroll linear infinite;
 }
 
 @keyframes -horizontal-scroll {
