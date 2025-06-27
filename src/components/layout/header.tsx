@@ -7,8 +7,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { useAccount } from 'wagmi'
-import NgOoLogo from '../ui/NgOoLogo'
 import { ConnectWalletButton } from '../ui'
+import NgOoLogo from '../ui/NgOoLogo'
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
@@ -16,7 +16,7 @@ const Header = () => {
   const { isConnected, address } = useAccount()
 
   return (
-    <header className='sticky top-0 z-50 border-b border-white/[2%] bg-beige-100 px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
+    <header className='bg-beige-100 sticky top-0 z-50 border-b border-white/[2%] px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
       <div className='mx-auto flex h-12 w-full max-w-[960px] items-center justify-between'>
         {/* left */}
         <NgOoLogo isDark />
@@ -33,7 +33,7 @@ const Header = () => {
                 'flex h-full items-center justify-center gap-2 px-3',
                 pathname === link.href
                   ? 'underline-active text-dark-600'
-                  : 'underline-hover text-dark-600/70 hover:text-dark-600'
+                  : 'underline-hover text-dark-600/70 hover:text-dark-600',
               )}
             >
               <div className='shrink-0'>{link.icon}</div>
@@ -55,7 +55,7 @@ const Header = () => {
                 'rounded-2 cursor-pointer p-1.5 md:hidden',
                 isDrawerOpen
                   ? 'border-primary-500 bg-primary-600 border-2 text-white'
-                  : 'border border-neutral-900/10 bg-white'
+                  : 'border border-neutral-900/10 bg-white',
               )}
             >
               {isDrawerOpen ? <XIcon /> : <ListIcon />}

@@ -1,7 +1,7 @@
 import { cn } from '@/utils'
 import { CoffeeBeanIcon, CowIcon } from '@phosphor-icons/react/dist/ssr'
 import Link from 'next/link'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 type TNgOoLogoProps = {
   isDark?: boolean
@@ -13,13 +13,13 @@ const NgOoLogo: FC<TNgOoLogoProps> = ({ isDark }) => {
       {/* logo */}
       <div
         className={cn(
-          'rounded-1 p-0.75 border border-dark-600/10 shadow',
-          isDark ? 'bg-white' : 'bg-beige-100'
+          'rounded-1 border-dark-600/10 border p-0.75 shadow',
+          isDark ? 'bg-white' : 'bg-beige-100',
         )}
       >
         <CowIcon size={24} weight='fill' className='text-primary-600' />
       </div>
-      <h1 className='text-18 font-bold leading-5 flex flex-col items-start text-red-500'>
+      <h1 className='text-18 flex flex-col items-start leading-5 font-bold text-red-500'>
         <span className='flex items-center'>
           Ng
           <CoffeeBeanIcon

@@ -1,6 +1,5 @@
 import { LIST_FOOTER_NAVIGATION, LIST_SOCIAL_BUTTON } from '@/constants'
 import Link from 'next/link'
-import React from 'react'
 import NgOoLogo from '../ui/NgOoLogo'
 
 const Footer = () => {

@@ -1,4 +1,13 @@
 'use client'
+import { useContainerWidth } from '@/hooks'
+import { TDirection } from '@/types'
+import { cn } from '@/utils'
+import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CaretLeftIcon,
+  CaretRightIcon,
+} from '@phosphor-icons/react/dist/ssr'
 import {
   Children,
   FC,
@@ -7,16 +16,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import { cn } from '@/utils'
 import Button from './Button'
-import {
-  ArrowLeftIcon,
-  ArrowRightIcon,
-  CaretLeftIcon,
-  CaretRightIcon,
-} from '@phosphor-icons/react/dist/ssr'
-import { useContainerWidth } from '@/hooks'
-import { TDirection } from '@/types'
 
 const NEXT_SLIDE_DURATION = 7000
 const ANIMATION_DURATION = 600
@@ -54,8 +54,8 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
   const itemGap = isInfinity
     ? 8
     : (containerWidth / (numsItemsPerSlice + 1) - itemWidth) / 2 < itemWidth
-    ? (containerWidth / (numsItemsPerSlice + 1) - itemWidth) / 2
-    : itemWidth
+      ? (containerWidth / (numsItemsPerSlice + 1) - itemWidth) / 2
+      : itemWidth
   const numOfDot = isDot
     ? Math.max(1, Math.ceil(items.length / step) - numsItemsPerSlice + 1)
     : undefined
@@ -79,7 +79,7 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
     list.classList.add(
       `translateX(${
         -((activeIndex + 0.5) * itemWidth) - itemGap * 2 * (activeIndex + 0.5)
-      }px)`
+      }px)`,
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
@@ -110,18 +110,18 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
   return (
     <div
       ref={containerRef}
-      className={cn('relative overflow-hidden w-full', className)}
+      className={cn('relative w-full overflow-hidden', className)}
     >
-      <div className='absolute h-full w-1/3 left-0 bg-gradient-to-r from-white from-0% to-95% to-transparent z-10' />
-      <div className='absolute h-full w-1/3 right-0 bg-gradient-to-l from-white from-0% to-95% to-transparent z-10' />
+      <div className='absolute left-0 z-10 h-full w-1/3 bg-gradient-to-r from-white to-transparent to-99%' />
+      <div className='absolute right-0 z-10 h-full w-1/3 bg-gradient-to-l from-white to-transparent to-99%' />
       <div
-        className='w-full h-full flex items-center justify-center'
+        className='flex h-full w-full items-center justify-center'
         ref={infinityRef}
       >
         <ul
           className={cn(
             'flex flex-nowrap items-center',
-            isInfinity && 'justify-center'
+            isInfinity && 'justify-center',
           )}
           style={{
             transform: `translateX(${
@@ -138,7 +138,7 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
             <li
               ref={itemRef}
               key={`child-${i}`}
-              className='flex flex-shrink-0 w-fit'
+              className='flex w-fit flex-shrink-0'
               style={{
                 margin: `0px ${itemGap}px`,
               }}
@@ -150,20 +150,20 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
       </div>
       {!hiddenButton && !isDot && (
         <>
-          <div className='absolute top-1/2 left-0 flex gap-2 z-20 -translate-y-1/2'>
+          <div className='absolute top-1/2 left-0 z-20 flex -translate-y-1/2 gap-2'>
             <Button
               aria-label='slide'
               disableAnimation
-              className='hover:translate-x-1/4 duration-300 size-10 rounded-2'
+              className='rounded-2 size-10 duration-300 hover:translate-x-1/4'
               icon={<ArrowLeftIcon size={20} className='text-secondary-500' />}
               onClick={() => handleSlide('prev')}
             />
           </div>
-          <div className='absolute top-1/2 right-0 flex gap-2 z-20 -translate-y-1/2'>
+          <div className='absolute top-1/2 right-0 z-20 flex -translate-y-1/2 gap-2'>
             <Button
               aria-label='slide'
               disableAnimation
-              className='hover:translate-x-1/4 duration-300 size-10 rounded-2'
+              className='rounded-2 size-10 duration-300 hover:translate-x-1/4'
               icon={<ArrowRightIcon size={20} className='text-secondary-500' />}
               onClick={() => handleSlide('next')}
             />
@@ -171,7 +171,7 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
         </>
       )}
       {isDot && numOfDot && (
-        <div className='flex justify-center items-center gap-2 mt-4'>
+        <div className='mt-4 flex items-center justify-center gap-2'>
           <Button
             aria-label='slide'
             disableAnimation
@@ -189,8 +189,8 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
             <div
               key={idx}
               className={cn(
-                'size-2 rounded-full cursor-pointer',
-                idx === activeIndex + 1 ? 'bg-primary-500' : 'bg-gray-300'
+                'size-2 cursor-pointer rounded-full',
+                idx === activeIndex + 1 ? 'bg-primary-500' : 'bg-gray-300',
               )}
               onClick={() => setActiveIndex(idx - 1)}
             />

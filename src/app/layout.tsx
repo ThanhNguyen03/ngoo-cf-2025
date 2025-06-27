@@ -1,13 +1,13 @@
-import { DEV_APP_URL } from '@/constants'
-import type { Metadata } from 'next'
-import './globals.css'
+import Footer from '@/components/layout/footer'
 import Header from '@/components/layout/header'
-import { cookieToInitialState } from 'wagmi'
+import Toaster from '@/components/ui/Toaster'
+import { DEV_APP_URL } from '@/constants'
+import { WalletConnectProvider } from '@/providers/wallet-connect-provider'
+import type { Metadata } from 'next'
 import getConfig from 'next/config'
 import { headers } from 'next/headers'
-import { WalletConnectProvider } from '@/providers/wallet-connect-provider'
-import Footer from '@/components/layout/footer'
-import Toaster from '@/components/ui/Toaster'
+import { cookieToInitialState } from 'wagmi'
+import './globals.css'
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.APP_URL || DEV_APP_URL),
@@ -22,7 +22,7 @@ export default async function RootLayout({
 }>) {
   const initialState = cookieToInitialState(
     getConfig(),
-    (await headers()).get('cookie')
+    (await headers()).get('cookie'),
   )
 
   return (
@@ -40,7 +40,7 @@ export default async function RootLayout({
         />
       </head>
 
-      <body className='font-raleway scroll-smooth lining-nums antialiased bg-white'>
+      <body className='font-raleway scroll-smooth bg-white lining-nums antialiased'>
         <WalletConnectProvider initialState={initialState}>
           <Header />
           {children}

@@ -3,8 +3,8 @@ import { useAccount, useConnect } from 'wagmi'
 
 import type { TModalProps } from '@/types'
 
-import { Modal } from './Modal'
 import Image from 'next/image'
+import { Modal } from './Modal'
 
 export const ConnectWalletModal: FC<TModalProps> = ({ isOpen, onClose }) => {
   const { isConnected } = useAccount()

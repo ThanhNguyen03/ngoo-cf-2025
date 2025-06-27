@@ -2,8 +2,8 @@ import { type FC, type PropsWithChildren } from 'react'
 
 import type { TModalProps } from '@/types'
 
-import { XIcon } from '@phosphor-icons/react/dist/ssr'
 import { cn } from '@/utils'
+import { XIcon } from '@phosphor-icons/react/dist/ssr'
 
 export const Modal: FC<PropsWithChildren & TModalProps> = ({
   title,
@@ -20,14 +20,14 @@ export const Modal: FC<PropsWithChildren & TModalProps> = ({
       <div
         className={cn(
           'fixed inset-0 z-50 flex h-screen w-screen items-center justify-center bg-black/30 p-2 backdrop-blur-sm',
-          overlayClassName
+          overlayClassName,
         )}
         onClick={closeOnOutsideClick ? onClose : undefined}
       >
         <div
           className={cn(
             'rounded-2 flex max-h-full w-80 flex-col border border-white/10 bg-black/50 text-white shadow backdrop-blur-2xl',
-            className
+            className,
           )}
           onClick={(e) => e.stopPropagation()}
         >

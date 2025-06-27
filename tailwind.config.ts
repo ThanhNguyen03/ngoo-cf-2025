@@ -1,4 +1,5 @@
 import type { Config } from 'tailwindcss'
+import defaultTheme from 'tailwindcss/defaultTheme'
 
 const config: Config = {
   future: {
@@ -7,6 +8,10 @@ const config: Config = {
   content: ['./src/**/*.{js,ts,jsx,tsx,mdx}'],
   theme: {
     extend: {
+      fontFamily: {
+        raleway: ['Raleway', ...defaultTheme.fontFamily.sans],
+        lobster: ['Lobster', ...defaultTheme.fontFamily.sans],
+      },
       screens: {
         xxs: '320px',
         xs: '375px',

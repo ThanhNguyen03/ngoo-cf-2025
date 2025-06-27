@@ -1,7 +1,7 @@
 import { useCallback, useLayoutEffect, useState } from 'react'
 
 export function useContainerWidth<T extends HTMLElement = HTMLElement>(
-  ref: React.RefObject<T | null>
+  ref: React.RefObject<T | null>,
 ): number {
   const [width, setWidth] = useState<number>(0)
 

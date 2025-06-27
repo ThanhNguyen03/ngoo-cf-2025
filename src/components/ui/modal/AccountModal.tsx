@@ -5,11 +5,11 @@ import type { TModalProps } from '@/types'
 import { formatBalance, truncateAddress } from '@/utils'
 import { CopyIcon } from '@phosphor-icons/react'
 
-import { Modal } from './Modal'
-import Image from 'next/image'
 import { defaultAvatar } from '@/images'
-import { DisconnectWalletButton } from '../wallet-button/DisconnectWalletButton'
+import Image from 'next/image'
 import { Tooltip } from '../Tooltip'
+import { DisconnectWalletButton } from '../wallet-button/DisconnectWalletButton'
+import { Modal } from './Modal'
 
 export const AccountModal: FC<TModalProps> = ({ isOpen, onClose }) => {
   const { isConnected, address } = useAccount()
@@ -17,10 +17,10 @@ export const AccountModal: FC<TModalProps> = ({ isOpen, onClose }) => {
   const formattedBalance = formatBalance(
     balance?.value || BigInt(0),
     balance?.decimals || 0,
-    balance?.symbol || ''
+    balance?.symbol || '',
   )
   const [tooltipContent, setTooltipContent] = useState<'Copy' | 'Copied!'>(
-    'Copy'
+    'Copy',
   )
 
   const copyAddressToClipboard = async () => {

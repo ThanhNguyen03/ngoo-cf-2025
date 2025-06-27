@@ -21,10 +21,10 @@ const Button: FC<TButtonProps> = ({
     <button
       {...props}
       className={cn(
-        'flex gap-2 items-center justify-center px-3 py-1.5 rounded-2 disabled:opacity-50 disabled:bg-shade-500 font-semibold text-16! text-white cursor-pointer',
+        'rounded-2 disabled:bg-shade-500 text-16! flex cursor-pointer items-center justify-center gap-2 px-3 py-1.5 font-semibold text-white disabled:opacity-50',
         className,
         iconRight && 'flex-row-reverse',
-        !disableAnimation && 'button-animation'
+        !disableAnimation && 'button-animation',
       )}
     >
       {children}

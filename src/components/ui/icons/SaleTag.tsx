@@ -1,5 +1,5 @@
 import { TIconProps } from '@/types'
-import React, { FC } from 'react'
+import { FC } from 'react'
 
 const SaleTagIcon: FC<TIconProps> = ({
   fill = '#E63946',

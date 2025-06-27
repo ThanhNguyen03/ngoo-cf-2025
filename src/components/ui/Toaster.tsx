@@ -31,7 +31,7 @@ const Toaster: FC = () => {
     switch (type) {
       case 'success':
         return (
-          <div className='bg-green-500 rounded-lg p-2'>
+          <div className='rounded-lg bg-green-500 p-2'>
             {isLoading ? (
               <SpinnerGapIcon
                 className='animate-spin text-white'
@@ -45,7 +45,7 @@ const Toaster: FC = () => {
         )
       case 'error':
         return (
-          <div className='bg-pink-500 rounded-lg p-2'>
+          <div className='rounded-lg bg-pink-500 p-2'>
             {isLoading ? (
               <SpinnerGapIcon
                 className='animate-spin text-white'
@@ -59,7 +59,7 @@ const Toaster: FC = () => {
         )
       case 'info':
         return (
-          <div className='bg-blue-500 rounded-lg p-2'>
+          <div className='rounded-lg bg-blue-500 p-2'>
             {isLoading ? (
               <SpinnerGapIcon
                 className='animate-spin text-white'
@@ -73,7 +73,7 @@ const Toaster: FC = () => {
         )
       case 'warning':
         return (
-          <div className='bg-orange-500 rounded-lg p-2'>
+          <div className='rounded-lg bg-orange-500 p-2'>
             {isLoading ? (
               <SpinnerGapIcon
                 className='animate-spin text-white'
@@ -97,7 +97,7 @@ const Toaster: FC = () => {
       toastClassName={(context) =>
         cn(
           'text-16 relative !mx-2 my-2 flex max-w-xl min-w-[95%] cursor-pointer items-center gap-4 overflow-hidden rounded-lg border px-4 pt-2 pb-3 font-semibold shadow-lg md:min-w-md',
-          toastClassName[context?.type || 'default']
+          toastClassName[context?.type || 'default'],
         )
       }
       icon={ToastIcons}

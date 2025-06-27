@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Lobster&display=swap');
 @import 'tailwindcss';
 @config '../../tailwind.config.ts';
 
@@ -32,7 +32,7 @@ body {
 }
 
 @utility underline-hover {
-  @apply relative before:absolute before:-bottom-0.25 before:h-0.5 before:w-full before:scale-x-0 before:transition-transform before:duration-300 before:ease-in-out hover:before:scale-x-100 hover:before:bg-primary-500;
+  @apply hover:before:bg-primary-500 relative before:absolute before:-bottom-0.25 before:h-0.5 before:w-full before:scale-x-0 before:transition-transform before:duration-300 before:ease-in-out hover:before:scale-x-100;
 }
 
 @utility scrollbar-auto {
@@ -45,10 +45,32 @@ body {
 }
 
 @utility button-animation {
-  @apply hover:before:bg-beige-50 hover:before:duration-1000 hover:before:opacity-20 hover:before:scale-x-100 relative;
-  @apply before:absolute before:inset-0 before:bg-[inherit] before:rounded-[inherit] before:scale-x-0 before:transform relative;
+  @apply hover:before:bg-beige-50 relative hover:before:scale-x-100 hover:before:opacity-20 hover:before:duration-1000;
+  @apply relative before:absolute before:inset-0 before:scale-x-0 before:transform before:rounded-[inherit] before:bg-[inherit];
   @apply hover:bg-beige-300 hover:text-dark-600 transition-colors duration-500;
 }
+
+.summer-bg {
+  @apply relative size-full bg-[url(/images/summer-beach.webp)] object-cover;
+}
+
+.summer-bg:before {
+  content: '';
+  @apply absolute size-full bg-white bg-[url(/images/paint.jpg)] bg-no-repeat object-cover object-center mix-blend-screen;
+}
+
+/* .summner-bg:before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  min-height: 100%;
+  background-image: url('/images/paint.png');
+  background-size: cover;
+  background-position: center;
+  mix-blend-mode: screen;
+} */
 
 /*================ANIMATION==================*/
 @keyframes homepage-zoom-in {
