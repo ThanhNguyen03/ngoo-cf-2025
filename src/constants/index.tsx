@@ -1,13 +1,13 @@
 import { TNavigationItem } from '@/types'
 import {
-  SquaresFourIcon,
   ChatsCircleIcon,
-  VaultIcon,
-  HouseIcon,
   DiscordLogoIcon,
-  GithubLogoIcon,
-  TelegramLogoIcon,
   FacebookLogoIcon,
+  GithubLogoIcon,
+  HouseIcon,
+  SquaresFourIcon,
+  TelegramLogoIcon,
+  VaultIcon,
 } from '@phosphor-icons/react/dist/ssr'
 
 export const DEV_APP_URL = 'http://localhost:3000'

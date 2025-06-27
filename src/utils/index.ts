@@ -1,6 +1,6 @@
 import { twMerge } from 'tailwind-merge'
-import { ClassValue, clsx } from './clsx'
 import { formatUnits } from 'viem'
+import { ClassValue, clsx } from './clsx'
 
 export function cn(...args: ClassValue[]) {
   return twMerge(clsx(args))
@@ -9,7 +9,7 @@ export function cn(...args: ClassValue[]) {
 export const truncateAddress = (
   address?: string,
   start: number = 4,
-  end: number = 4
+  end: number = 4,
 ): string => {
   if (typeof address !== 'string' || address.length <= start + end) {
     return address ?? ''
@@ -21,7 +21,7 @@ export const truncateAddress = (
 export const formatBalance = (
   value: bigint,
   decimals: number,
-  symbol: string
+  symbol: string,
 ) => {
   const formattedValue = formatUnits(value, decimals)
 

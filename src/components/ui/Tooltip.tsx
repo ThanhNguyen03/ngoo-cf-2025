@@ -49,7 +49,7 @@ export const Tooltip = ({
         <div
           className={cn(
             'absolute z-10 rounded bg-black/70 px-2 py-1 text-sm whitespace-nowrap text-white',
-            positionClass
+            positionClass,
           )}
         >
           {content}

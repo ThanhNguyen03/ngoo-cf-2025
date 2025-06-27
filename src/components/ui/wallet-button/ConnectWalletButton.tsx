@@ -2,11 +2,11 @@ import { useState } from 'react'
 import type { Address } from 'viem'
 import { useBalance } from 'wagmi'
 
+import { defaultAvatar } from '@/images'
 import { cn, formatBalance } from '@/utils'
 import { WalletIcon } from '@phosphor-icons/react'
 import Image from 'next/image'
 import { AccountModal, ConnectWalletModal } from '../modal'
-import { defaultAvatar } from '@/images'
 
 type TConnectWalletButtonProps = {
   accountButtonclassName?: string
@@ -31,8 +31,8 @@ export const ConnectWalletButton = ({
       {isConnected ? (
         <button
           className={cn(
-            'rounded-2 flex cursor-pointer text-14! leading-[160%] items-center justify-center gap-2 border border-beige-50 bg-linear-to-br to-primary-500/70 from-secondary-500/70 backdrop-blur-2xl px-2 py-1 font-semibold text-white shadow',
-            accountButtonclassName
+            'rounded-2 text-14! border-beige-50 to-primary-500/70 from-secondary-500/70 flex cursor-pointer items-center justify-center gap-2 border bg-linear-to-br px-2 py-1 leading-[160%] font-semibold text-white shadow backdrop-blur-2xl',
+            accountButtonclassName,
           )}
           onClick={() => setIsAccountModalOpen(true)}
         >
@@ -41,7 +41,7 @@ export const ConnectWalletButton = ({
               formatBalance(
                 balance.value,
                 balance.decimals,
-                balance.symbol
+                balance.symbol,
               ).toPrecision()}
           </p>
           <Image alt='default-avt' src={defaultAvatar} className='size-4.5' />
@@ -49,8 +49,8 @@ export const ConnectWalletButton = ({
       ) : (
         <button
           className={cn(
-            'rounded-2 flex cursor-pointer items-center text-14! leading-[160%] justify-center gap-1 bg-linear-to-br from-secondary-300 to-red-500 px-2 py-1 font-semibold text-white shadow',
-            connectWalletButtonClassName
+            'rounded-2 text-14! from-secondary-300 flex cursor-pointer items-center justify-center gap-1 bg-linear-to-br to-red-500 px-2 py-1 leading-[160%] font-semibold text-white shadow',
+            connectWalletButtonClassName,
           )}
           onClick={() => setIsConnectWalletModalOpen(true)}
         >

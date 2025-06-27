@@ -1,11 +1,11 @@
 'use client'
 
-import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
-import { ArrowRightIcon, CowIcon } from '@phosphor-icons/react/dist/ssr'
-import Image from 'next/image'
+import { LOCALSTORAGE_KEY, ONE_MONTH_MS } from '@/constants'
 import { animatedCoffeeShop, ngooCfText } from '@/images'
 import { cn } from '@/utils'
-import { LOCALSTORAGE_KEY, ONE_MONTH_MS } from '@/constants'
+import { ArrowRightIcon, CowIcon } from '@phosphor-icons/react/dist/ssr'
+import Image from 'next/image'
+import { Dispatch, FC, SetStateAction, useEffect, useState } from 'react'
 import Button from '../ui/Button'
 
 type THeroBannerProps = {
@@ -26,11 +26,11 @@ const Hero: FC<THeroBannerProps> = ({ animationEnded, setAnimationEnded }) => {
 
     const animationTimeOut = setTimeout(
       () => setAnimationEnded(true),
-      isFirstVisit ? ANIMATION_DURATION : ANIMATION_DURATION / 10
+      isFirstVisit ? ANIMATION_DURATION : ANIMATION_DURATION / 10,
     )
     const renderContentTimeOut = setTimeout(
       () => setRenderContent(true),
-      isFirstVisit ? CONTENT_DELAY : CONTENT_DELAY / 10
+      isFirstVisit ? CONTENT_DELAY : CONTENT_DELAY / 10,
     )
 
     return () => {
@@ -50,23 +50,23 @@ const Hero: FC<THeroBannerProps> = ({ animationEnded, setAnimationEnded }) => {
   return (
     <section
       className={cn(
-        'px-2 pt-6 pb-10 md:px-6 md:pb-20 md:pt-10 lg:pt-20 lg:px-10 lg:pb-30 bg-dark-600',
-        animationEnded ? 'relative overflow-hidden' : 'h-[100dvh]'
+        'bg-dark-600 px-2 pt-6 pb-10 md:px-6 md:pt-10 md:pb-20 lg:px-10 lg:pt-20 lg:pb-30',
+        animationEnded ? 'relative overflow-hidden' : 'h-[100dvh]',
       )}
     >
       {/* Background image */}
       <div
         className={cn(
-          'fixed inset-0 overflow-hidden z-20',
-          animationEnded && 'absolute size-full z-0'
+          'fixed inset-0 z-20 overflow-hidden',
+          animationEnded && 'absolute z-0 size-full',
         )}
       >
         <Image
           alt='banner'
           src={animatedCoffeeShop}
           className={cn(
-            'object-fill size-full duration-300',
-            !animationEnded ? 'homepage-animation' : 'opacity-20'
+            'size-full object-fill duration-300',
+            !animationEnded ? 'homepage-animation' : 'opacity-20',
           )}
           width={1920}
           height={1080}
@@ -76,21 +76,21 @@ const Hero: FC<THeroBannerProps> = ({ animationEnded, setAnimationEnded }) => {
 
       {/* Main Content */}
       {renderContent && (
-        <div className='mx-auto w-full max-w-[960px] h-[calc(100dvh-322px)] flex gap-10 grow z-10 items-center relative overflow-hidden'>
+        <div className='relative z-10 mx-auto flex h-[calc(100dvh-322px)] w-full max-w-[960px] grow items-center gap-10 overflow-hidden'>
           <div
             className={cn(
-              'flex flex-col gap-2 md:gap-6 items-start z-10 duration-1000 w-full',
+              'z-10 flex w-full flex-col items-start gap-2 duration-1000 md:gap-6',
               animationEnded
-                ? 'opacity-100 translate-x-0'
-                : 'opacity-0 -translate-x-full'
+                ? 'translate-x-0 opacity-100'
+                : '-translate-x-full opacity-0',
             )}
           >
-            <h1 className='text-28! md:text-35! lg:text-44! font-bold text-beige-300'>
+            <h1 className='text-28! md:text-35! lg:text-44! text-beige-300 font-bold'>
               Everything <br /> is better with
               <br />
-              <span className='flex items-center text-secondary-500 w-fit'>
+              <span className='text-secondary-500 flex w-fit items-center'>
                 Ng
-                <CowIcon className='size-10 text-secondary-400' weight='fill' />
+                <CowIcon className='text-secondary-400 size-10' weight='fill' />
                 o&nbsp;<span className='text-beige-300'>Coffee</span>
               </span>
             </h1>
@@ -98,8 +98,8 @@ const Hero: FC<THeroBannerProps> = ({ animationEnded, setAnimationEnded }) => {
               NgOo Coffee is the missing piece that makes everyday complete, a
               simple yet delicious joy in life
             </p>
-            <div className='bg-linear-to-r from-beige-100 to-transparent h-0.25 w-full' />
-            <div className='flex gap-2 md:gap-4 text-lg w-fit items-center justify-center'>
+            <div className='from-beige-100 h-0.25 w-full bg-linear-to-r to-transparent' />
+            <div className='flex w-fit items-center justify-center gap-2 text-lg md:gap-4'>
               <Button
                 className='bg-secondary-500'
                 icon={<ArrowRightIcon size={16} />}
@@ -112,7 +112,7 @@ const Hero: FC<THeroBannerProps> = ({ animationEnded, setAnimationEnded }) => {
             </div>
           </div>
 
-          <div className='relative w-full min-h-60'>
+          <div className='relative min-h-60 w-full'>
             <Image
               alt='main-herobanner'
               src={ngooCfText}
