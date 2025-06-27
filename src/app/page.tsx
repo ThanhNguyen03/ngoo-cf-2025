@@ -2,6 +2,7 @@
 
 import BestSeller from '@/components/section/best-seller'
 import Hero from '@/components/section/hero'
+import NewCollection from '@/components/section/new-collection'
 import { InfiniteCarousel } from '@/components/ui/InfiniteCarousel'
 import { notifyBg } from '@/images'
 import { SealPercentIcon } from '@phosphor-icons/react/dist/ssr'
@@ -20,7 +21,7 @@ export default function Home() {
       {animationEnded && (
         <>
           <InfiniteCarousel
-            className='w-full bg-linear-to-t from-beige-600 to-primary-500/70'
+            className='from-beige-600 to-primary-500/70 w-full bg-linear-to-t'
             length={7}
             animation='rightToLeft'
             background={
@@ -29,28 +30,25 @@ export default function Home() {
                 src={notifyBg}
                 width={2560}
                 height={1440}
-                className='absolute inset-0 z-0 object-cover object-[85%_50%] size-full'
+                className='absolute inset-0 z-0 size-full object-cover object-[85%_50%]'
               />
             }
           >
-            <div className='flex items-center justify-center gap-2 mx-4 w-[320px] text-beige-300 py-6'>
+            <div className='text-beige-300 mx-4 flex w-[320px] items-center justify-center gap-2 py-6'>
               <SealPercentIcon size={24} weight='fill' />
               <p className='text-14 select-none'>
                 Use{' '}
-                <span className='text-yellow-300 font-bold'>
+                <span className='font-bold text-yellow-300'>
                   Payment by Token{' '}
                 </span>
                 to get{' '}
-                <span className='text-green-500 font-bold'>sale off 20%</span>
+                <span className='font-bold text-green-500'>sale off 20%</span>
               </p>
             </div>
           </InfiniteCarousel>
-          <div className='px-2 pt-6 pb-10 md:px-6 md:pb-20 md:pt-10 lg:pt-20 lg:px-10 lg:pb-30 bg-white'>
-            <div className='max-w-[1024px] w-full mx-auto'>
-              <BestSeller />
-            </div>
-          </div>
-          <div className='text-gray-500 max-w-2xl mx-auto mt-4 flex flex-col gap-4'>
+          <BestSeller />
+          <NewCollection />
+          <div className='mx-auto mt-4 flex max-w-2xl flex-col gap-4 text-gray-500'>
             <p>
               NgOo EST. 2023, Còn bạn? <br />
               Started when we was 20! <br />
