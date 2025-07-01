@@ -13,6 +13,7 @@ import {
   FC,
   PropsWithChildren,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react'
@@ -28,6 +29,7 @@ export type TSliderProps = {
   step?: number
   isInfinity?: boolean
   isDot?: boolean
+  onPause?: boolean
 }
 
 export const Slider: FC<PropsWithChildren & TSliderProps> = ({
@@ -38,10 +40,11 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
   step = 1,
   isInfinity,
   isDot,
+  onPause,
 }) => {
   const items = Children.toArray(children)
 
-  const [activeIndex, setActiveIndex] = useState<number>(-1)
+  const [activeIndex, setActiveIndex] = useState<number>(-2)
   const [transition, setTransition] = useState(true)
 
   const itemRef = useRef<HTMLLIElement>(null)
@@ -51,14 +54,21 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
   const itemWidth = useContainerWidth(itemRef)
   const containerWidth = useContainerWidth(containerRef)
 
-  const itemGap = isInfinity
-    ? 8
-    : (containerWidth / (numsItemsPerSlice + 1) - itemWidth) / 2 < itemWidth
-      ? (containerWidth / (numsItemsPerSlice + 1) - itemWidth) / 2
-      : itemWidth
+  const itemGap = useMemo(() => {
+    return isInfinity
+      ? 8
+      : (containerWidth / (numsItemsPerSlice + 1) - itemWidth) / 2 < itemWidth
+        ? (containerWidth / (numsItemsPerSlice + 1) - itemWidth) / 2
+        : itemWidth
+  }, [containerWidth, itemWidth, numsItemsPerSlice, isInfinity])
+
   const numOfDot = isDot
-    ? Math.max(1, Math.ceil(items.length / step) - numsItemsPerSlice + 1)
+    ? Math.max(1, Math.ceil(items.length / step) - numsItemsPerSlice + 2)
     : undefined
+
+  const translateX = useMemo(() => {
+    return -(activeIndex + 0.5) * itemWidth - itemGap * 2 * activeIndex
+  }, [activeIndex, itemWidth, itemGap])
 
   useEffect(() => {
     if (!isInfinity) {
@@ -76,15 +86,14 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
 
     const clonedList = list.cloneNode(true) as HTMLUListElement
     list.append(...Array.from(clonedList.children))
-    list.classList.add(
-      `translateX(${
-        -((activeIndex + 0.5) * itemWidth) - itemGap * 2 * (activeIndex + 0.5)
-      }px)`,
-    )
+    list.classList.add(`translateX(${translateX}px)`)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
+    if (onPause) {
+      return
+    }
     const interval = setInterval(() => {
       handleSlide('next')
     }, NEXT_SLIDE_DURATION)
@@ -98,9 +107,8 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
 
     setTransition(true)
     if (dir === 'next' && activeIndex === lastItemIndex && !isInfinity) {
-      console.log('-1')
-      setActiveIndex(-1)
-    } else if (dir === 'prev' && activeIndex === -1 && !isInfinity) {
+      setActiveIndex(-2)
+    } else if (dir === 'prev' && activeIndex === -2 && !isInfinity) {
       setActiveIndex(lastItemIndex)
     } else {
       setActiveIndex((prev) => (dir === 'prev' ? prev - step : prev + step))
@@ -124,10 +132,7 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
             isInfinity && 'justify-center',
           )}
           style={{
-            transform: `translateX(${
-              -((activeIndex + 0.5) * itemWidth) -
-              itemGap * 2 * (activeIndex + 0.5)
-            }px)`,
+            transform: `translateX(${translateX}px)`,
             transition: transition
               ? `transform ${ANIMATION_DURATION}ms cubic-bezier(0.22, 0.61, 0.36, 1)`
               : 'none',
@@ -179,7 +184,7 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
             icon={
               <CaretLeftIcon
                 size={14}
-                className='text-primary-500'
+                className='text-secondary-500'
                 weight='fill'
               />
             }
@@ -190,7 +195,7 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
               key={idx}
               className={cn(
                 'size-2 cursor-pointer rounded-full',
-                idx === activeIndex + 1 ? 'bg-primary-500' : 'bg-gray-300',
+                idx === activeIndex + 2 ? 'bg-secondary-500' : 'bg-gray-300',
               )}
               onClick={() => setActiveIndex(idx - 1)}
             />
@@ -202,7 +207,7 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
             icon={
               <CaretRightIcon
                 size={14}
-                className='text-primary-500'
+                className='text-secondary-500'
                 weight='fill'
               />
             }

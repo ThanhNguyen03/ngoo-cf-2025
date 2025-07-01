@@ -34,15 +34,17 @@ export default function Home() {
               />
             }
           >
-            <div className='text-beige-300 mx-4 flex w-[320px] items-center justify-center gap-2 py-6'>
+            <div className='text-beige-300 mx-4 flex w-[340px] items-center justify-center gap-2 py-6'>
               <SealPercentIcon size={24} weight='fill' />
               <p className='text-14 select-none'>
                 Use{' '}
-                <span className='font-bold text-yellow-300'>
+                <span className='font-bold text-blue-600/70'>
                   Payment by Token{' '}
                 </span>
                 to get{' '}
-                <span className='font-bold text-green-500'>sale off 20%</span>
+                <span className='font-bold text-green-600/70'>
+                  sale off 20%
+                </span>
               </p>
             </div>
           </InfiniteCarousel>
