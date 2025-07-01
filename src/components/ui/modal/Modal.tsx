@@ -26,14 +26,14 @@ export const Modal: FC<PropsWithChildren & TModalProps> = ({
       >
         <div
           className={cn(
-            'rounded-2 flex max-h-full w-80 flex-col border border-white/10 bg-black/50 text-white shadow backdrop-blur-2xl',
+            'rounded-2 flex max-h-full w-80 flex-col border border-dark-600/10 bg-white/70 text-dark-600 shadow backdrop-blur-2xl',
             className,
           )}
           onClick={(e) => e.stopPropagation()}
         >
           <div className='p-2'>
-            <div className='flex w-full justify-between gap-4 border-b border-white/10 p-2'>
-              <h2 className='text-18 font-semibold text-white'>{title}</h2>
+            <div className='flex w-full justify-between gap-4 border-b border-dark-600/10 p-2'>
+              <h2 className='text-18 font-semibold text-dark-600'>{title}</h2>
               {closable && (
                 <XIcon className='cursor-pointer' onClick={onClose} />
               )}
