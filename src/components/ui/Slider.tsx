@@ -44,7 +44,7 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
 }) => {
   const items = Children.toArray(children)
 
-  const [activeIndex, setActiveIndex] = useState<number>(-2)
+  const [activeIndex, setActiveIndex] = useState<number>(-1)
   const [transition, setTransition] = useState(true)
 
   const itemRef = useRef<HTMLLIElement>(null)
@@ -63,11 +63,11 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
   }, [containerWidth, itemWidth, numsItemsPerSlice, isInfinity])
 
   const numOfDot = isDot
-    ? Math.max(1, Math.ceil(items.length / step) - numsItemsPerSlice + 2)
+    ? Math.max(1, Math.ceil(items.length / step) - numsItemsPerSlice + 1)
     : undefined
 
   const translateX = useMemo(() => {
-    return -(activeIndex + 0.5) * itemWidth - itemGap * 2 * activeIndex
+    return -(activeIndex + 0.5) * itemWidth - itemGap * 2 * (activeIndex + 0.5)
   }, [activeIndex, itemWidth, itemGap])
 
   useEffect(() => {
@@ -107,8 +107,8 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
 
     setTransition(true)
     if (dir === 'next' && activeIndex === lastItemIndex && !isInfinity) {
-      setActiveIndex(-2)
-    } else if (dir === 'prev' && activeIndex === -2 && !isInfinity) {
+      setActiveIndex(-1)
+    } else if (dir === 'prev' && activeIndex === -1 && !isInfinity) {
       setActiveIndex(lastItemIndex)
     } else {
       setActiveIndex((prev) => (dir === 'prev' ? prev - step : prev + step))
@@ -122,10 +122,7 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
     >
       <div className='absolute left-0 z-10 h-full w-1/3 bg-gradient-to-r from-white to-transparent to-99%' />
       <div className='absolute right-0 z-10 h-full w-1/3 bg-gradient-to-l from-white to-transparent to-99%' />
-      <div
-        className='flex h-full w-full items-center justify-center'
-        ref={infinityRef}
-      >
+      <div className='flex h-full w-full items-center' ref={infinityRef}>
         <ul
           className={cn(
             'flex flex-nowrap items-center',
@@ -195,7 +192,7 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
               key={idx}
               className={cn(
                 'size-2 cursor-pointer rounded-full',
-                idx === activeIndex + 2 ? 'bg-secondary-500' : 'bg-gray-300',
+                idx === activeIndex + 1 ? 'bg-secondary-500' : 'bg-gray-300',
               )}
               onClick={() => setActiveIndex(idx - 1)}
             />

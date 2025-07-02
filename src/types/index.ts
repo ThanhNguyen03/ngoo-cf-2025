@@ -32,4 +32,5 @@ export type TItem = {
   title: string
   price: number
   amountDiscount?: number
+  description?: string
 }
