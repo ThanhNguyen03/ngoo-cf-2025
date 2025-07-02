@@ -13,7 +13,7 @@ export default function Home() {
   const [animationEnded, setAnimationEnded] = useState<boolean>(false)
 
   return (
-    <>
+    <main>
       <Hero
         animationEnded={animationEnded}
         setAnimationEnded={setAnimationEnded}
@@ -71,6 +71,6 @@ export default function Home() {
           </div>
         </>
       )}
-    </>
+    </main>
   )
 }
