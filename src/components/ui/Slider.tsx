@@ -100,7 +100,7 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
 
     return () => clearInterval(interval)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIndex])
+  }, [activeIndex, onPause])
 
   const handleSlide = (dir: TDirection) => {
     const lastItemIndex = items.length - 1 - numsItemsPerSlice
@@ -120,8 +120,8 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
       ref={containerRef}
       className={cn('relative w-full overflow-hidden', className)}
     >
-      <div className='absolute left-0 z-10 h-full w-1/3 bg-gradient-to-r from-white to-transparent to-99%' />
-      <div className='absolute right-0 z-10 h-full w-1/3 bg-gradient-to-l from-white to-transparent to-99%' />
+      <div className='absolute left-0 z-10 h-full w-1/4 bg-gradient-to-r from-white to-transparent to-99%' />
+      <div className='absolute right-0 z-10 h-full w-1/4 bg-gradient-to-l from-white to-transparent to-99%' />
       <div className='flex h-full w-full items-center' ref={infinityRef}>
         <ul
           className={cn(
