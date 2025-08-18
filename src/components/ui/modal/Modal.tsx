@@ -6,7 +6,6 @@ import { cn } from '@/utils'
 import { XIcon } from '@phosphor-icons/react/dist/ssr'
 
 export const Modal: FC<PropsWithChildren & TModalProps> = ({
-  title,
   children,
   isOpen,
   onClose,
@@ -26,19 +25,17 @@ export const Modal: FC<PropsWithChildren & TModalProps> = ({
       >
         <div
           className={cn(
-            'rounded-2 flex max-h-full w-80 flex-col border border-white/10 bg-black/50 text-white shadow backdrop-blur-2xl',
+            'rounded-2 flex max-h-full w-full max-w-80 flex-col border border-dark-600/10 bg-white/70 text-dark-600 shadow backdrop-blur-2xl',
             className,
           )}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className='p-2'>
-            <div className='flex w-full justify-between gap-4 border-b border-white/10 p-2'>
-              <h2 className='text-18 font-semibold text-white'>{title}</h2>
-              {closable && (
-                <XIcon className='cursor-pointer' onClick={onClose} />
-              )}
-            </div>
-          </div>
+          {closable && (
+            <XIcon
+              className='cursor-pointer absolute right-4 top-4 z-10'
+              onClick={onClose}
+            />
+          )}
           <div className='size-full overflow-auto'>{children}</div>
         </div>
       </div>

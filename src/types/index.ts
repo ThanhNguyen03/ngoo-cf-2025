@@ -22,13 +22,15 @@ export type TDirection = 'prev' | 'next'
 export type TIconProps = {
   fill?: string
   className?: string
-  size?: number
+  width?: number
+  height?: number
   text?: string
 }
 
-export type TItemCardProps = {
+export type TItem = {
   image: string | StaticImageData
   title: string
-  price: number | string
-  salePrice?: number | string
+  price: number
+  amountDiscount?: number
+  description?: string
 }
