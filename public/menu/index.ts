@@ -1,0 +1,6 @@
+export { default as cloudCube } from './cloud-cube.png'
+export { default as cloudDoubleCube } from './cloud-double-cube.png'
+export { default as cloudDoubleRectangle } from './cloud-double-rectangle.png'
+export { default as cloudFlat } from './cloud-flat.png'
+export { default as fenceCloud } from './fence-cloud.svg'
+export { default as fenceFaded } from './fence-faded.svg'

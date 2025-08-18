@@ -1,1 +1,5 @@
+export { default as cherryJuiceBottle } from './cherry-juice-bottle.png'
+export { default as kiwiJuiceBottole } from './kiwi-juice-bottle.png'
 export { default as liptonTea } from './lipton-tea.jpg'
+export { default as orangeJuiceBottle } from './orange-juice-bottle.png'
+export { default as strawberryJuiceBottle } from './strawberry-juice-bottle.png'

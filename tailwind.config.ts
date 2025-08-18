@@ -11,6 +11,7 @@ const config: Config = {
       fontFamily: {
         raleway: ['Raleway', ...defaultTheme.fontFamily.sans],
         lobster: ['Lobster', ...defaultTheme.fontFamily.sans],
+        shantell: ['Shantell Sans', ...defaultTheme.fontFamily.sans],
       },
       screens: {
         xxs: '320px',
