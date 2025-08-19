@@ -21,7 +21,7 @@ const Button: FC<TButtonProps> = ({
     <button
       {...props}
       className={cn(
-        'rounded-2 disabled:bg-shade-500 text-16! flex cursor-pointer items-center justify-center gap-2 px-3 py-1.5 font-semibold text-white disabled:opacity-50',
+        'rounded-2 text-16! flex cursor-pointer items-center justify-center gap-2 px-3 py-1.5 font-semibold text-white disabled:cursor-not-allowed disabled:opacity-30',
         className,
         iconRight && 'flex-row-reverse',
         !disableAnimation && 'button-animation',

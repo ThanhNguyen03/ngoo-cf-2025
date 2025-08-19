@@ -1,6 +1,6 @@
 'use client'
 
-import { animatedCoffeeShop, ngooCfText } from '@/images'
+import { coffeeShop, ngooCfText } from '@/images'
 import { cn } from '@/utils'
 import { ArrowRightIcon, CowIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
@@ -30,13 +30,13 @@ const Hero = () => {
   }, [animationEnded])
 
   return (
-    <section className='bg-dark-600 px-2 pt-6 pb-10 md:px-6 md:pt-10 md:pb-20 lg:px-10 lg:pt-20 lg:pb-30 relative overflow-hidden'>
+    <section className='bg-dark-600 relative overflow-hidden px-2 pt-6 pb-10 md:px-6 md:pt-10 md:pb-20 lg:px-10 lg:pt-20 lg:pb-30'>
       {/* Background image */}
       <div className='absolute z-0 size-full'>
         <Image
           alt='banner'
-          src={animatedCoffeeShop}
-          className='size-full object-fill duration-300 opacity-20'
+          src={coffeeShop}
+          className='size-full object-fill opacity-20 duration-300'
           width={1920}
           height={1080}
           unoptimized
@@ -47,7 +47,7 @@ const Hero = () => {
       <div className='relative z-10 mx-auto flex h-[calc(100dvh-322px)] w-full max-w-[960px] grow items-center gap-10 overflow-hidden'>
         <div
           className={cn(
-            'z-10 flex w-full flex-col items-start gap-2 duration-1000 md:gap-6 translate-x-0 opacity-100',
+            'z-10 flex w-full translate-x-0 flex-col items-start gap-2 opacity-100 duration-1000 md:gap-6',
             animationEnded
               ? 'translate-x-0 opacity-100'
               : '-translate-x-full opacity-0',

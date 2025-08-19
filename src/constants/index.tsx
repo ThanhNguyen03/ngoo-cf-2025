@@ -13,6 +13,7 @@ import {
 export const DEV_APP_URL = 'http://localhost:3000'
 export const LOCALSTORAGE_KEY = 'ngoo_coffee_visited'
 export const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000
+export const DEBOUNCE_DURATION = 500 // 500ms
 
 export const LIST_HEADER_NAVIGATION: TNavigationItem[] = [
   {
@@ -96,4 +97,3 @@ export const LIST_FOOTER_NAVIGATION: Array<
     ],
   },
 ]
-

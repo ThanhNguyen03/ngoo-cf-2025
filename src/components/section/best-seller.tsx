@@ -25,9 +25,20 @@ const MOCKED_ITEMS_DATA: TItem[] = [
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Olong Milk Tea',
     price: 12,
     description: 'The richest flavor with long-standing family recipe',
+    additionalOption: [
+      {
+        title: 'topping',
+        listOption: [
+          { name: 'Black Bubbles', extraPrice: 0.5 },
+          { name: 'White Bubbles', extraPrice: 0.5 },
+          { name: 'Olong Tea Bubbles', extraPrice: 0.7 },
+          { name: 'Flan Cake', extraPrice: 0.7 },
+        ],
+      },
+    ],
   },
   {
     image: liptonTea,
@@ -38,10 +49,18 @@ const MOCKED_ITEMS_DATA: TItem[] = [
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'XaiGon Coffee',
     price: 12,
     description: 'The richest flavor with long-standing family recipe',
     amountDiscount: 8,
+    additionalOption: [
+      {
+        title: 'extra',
+        listOption: [
+          { name: '+1 Coffee Shot', extraPrice: 0.5 },
+        ],
+      },
+    ],
   },
   {
     image: liptonTea,
