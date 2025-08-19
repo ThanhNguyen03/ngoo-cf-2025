@@ -12,33 +12,36 @@ export default function Home() {
   return (
     <>
       <Hero />
-      <InfiniteCarousel
-        className='from-beige-600 to-primary-500/70 w-full bg-linear-to-t'
-        length={7}
-        animation='rightToLeft'
-        background={
-          <Image
-            alt='notify-bg'
-            src={notifyBg}
-            width={2560}
-            height={1440}
-            className='absolute inset-0 z-0 size-full object-cover object-[85%_50%]'
-          />
-        }
-      >
-        <div className='text-beige-300 mx-4 flex w-[340px] items-center justify-center gap-2 py-6'>
-          <SealPercentIcon size={24} weight='fill' />
-          <p className='text-14 select-none'>
-            Use{' '}
-            <span className='font-bold text-blue-600/70'>
-              Payment by Token{' '}
-            </span>
-            to get{' '}
-            <span className='font-bold text-green-600/70'>sale off 20%</span>
-          </p>
-        </div>
-      </InfiniteCarousel>
-      <BestSeller />
+      <div className='from-beige-50 to-sky-blue-100 relative bg-linear-to-b via-white via-70%'>
+        <div className='bg-dark-600 h-10' />
+        <InfiniteCarousel
+          className='from-beige-300 to-beige-50 border-secondary-500/10 absolute -top-10 z-10 w-full -rotate-3 border-y bg-linear-to-b'
+          length={7}
+          animation='rightToLeft'
+          background={
+            <Image
+              alt='notify-bg'
+              src={notifyBg}
+              width={2560}
+              height={1440}
+              className='absolute inset-0 z-0 size-full object-cover object-[85%_50%]'
+            />
+          }
+        >
+          <div className='mx-4 flex w-[340px] items-center justify-center gap-2 py-6 text-neutral-900'>
+            <SealPercentIcon size={24} weight='fill' />
+            <p className='text-14 select-none'>
+              Use{' '}
+              <span className='font-bold text-blue-600/70'>
+                Payment by Token{' '}
+              </span>
+              to get{' '}
+              <span className='font-bold text-green-600/70'>sale off 20%</span>
+            </p>
+          </div>
+        </InfiniteCarousel>
+        <BestSeller />
+      </div>
       <NewCollection />
       <div className='mx-auto mt-4 flex max-w-2xl flex-col gap-4 text-gray-500'>
         <p>

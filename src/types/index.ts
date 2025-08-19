@@ -1,4 +1,5 @@
 import { StaticImageData } from 'next/image'
+import { SVGProps } from 'react'
 
 export type TModalProps = {
   title?: string
@@ -19,12 +20,10 @@ export type TNavigationItem = {
 
 export type TDirection = 'prev' | 'next'
 
-export type TIconProps = {
-  fill?: string
-  className?: string
+export type TIconProps = SVGProps<SVGSVGElement> & {
   width?: number
   height?: number
-  text?: string
+  size?: number
 }
 
 export type TItemOption = {

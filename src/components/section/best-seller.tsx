@@ -56,9 +56,7 @@ const MOCKED_ITEMS_DATA: TItem[] = [
     additionalOption: [
       {
         title: 'extra',
-        listOption: [
-          { name: '+1 Coffee Shot', extraPrice: 0.5 },
-        ],
+        listOption: [{ name: '+1 Coffee Shot', extraPrice: 0.5 }],
       },
     ],
   },
@@ -100,7 +98,7 @@ const BestSeller = () => {
   const [selectedItem, setSelectedItem] = useState<TItem | undefined>()
 
   return (
-    <section className='bg-beige-100/10 relative overflow-hidden'>
+    <section className='relative overflow-hidden'>
       <div className='absolute bottom-0 -left-2 z-20'>
         <Image
           alt='ice-cube'
@@ -119,13 +117,18 @@ const BestSeller = () => {
           className='size-70 object-cover'
         />
       </div>
-      <div className='z-0 px-2 pt-6 pb-10 md:px-6 md:pt-10 md:pb-20 lg:px-10 lg:pt-20 lg:pb-30'>
+      <div className='z-0 px-2 pt-6 pb-10 md:px-6 md:pb-20 lg:px-10 lg:pt-10 lg:pb-30 mb-20'>
         <div className='relative mx-auto flex w-full max-w-[1024px] flex-col gap-2 md:gap-6'>
           <h2 className='text-44 md:text-55 font-lobster mx-auto w-fit bg-[url(/images/title-background.jpg)] bg-clip-text text-center font-black text-transparent'>
             Best Seller
           </h2>
 
-          <Slider numsItemsPerSlice={3} isDot onPause={!!selectedItem}>
+          <Slider
+            numsItemsPerSlice={3}
+            isDot
+            onPause={!!selectedItem}
+            className='[--webkit-mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)] [mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)]'
+          >
             {MOCKED_ITEMS_DATA.map((item, i) => (
               <ItemCard
                 key={`${item.title}-${i}`}
