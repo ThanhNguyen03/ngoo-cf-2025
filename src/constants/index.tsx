@@ -96,3 +96,4 @@ export const LIST_FOOTER_NAVIGATION: Array<
     ],
   },
 ]
+
