@@ -1,5 +1,4 @@
 import { DEBOUNCE_DURATION } from '@/constants'
-import { useDebounce } from '@/hooks/use-debounce'
 import { TItem, TItemOption, TListItemOption, TModalProps } from '@/types'
 import { cn } from '@/utils'
 import {
@@ -151,12 +150,16 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
   onClose,
   data,
 }) => {
+  const [totalPrice, setTotalPrice] = useState<number>(0)
+  const [loading, setLoading] = useState<boolean>(false)
+
   const [itemAmount, setItemAmount] = useState<number>(1)
+  const [itemAmountInput, setItemAmountInput] = useState<string>(
+    String(itemAmount),
+  )
   const [selectedOptions, setSelectedOptions] = useState<
     Record<string, string | string[]>
   >({})
-
-  const debounceAmount = useDebounce(itemAmount, DEBOUNCE_DURATION)
 
   const isRequiredSelected = useMemo(() => {
     const requiredOptions = [
@@ -177,40 +180,52 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
     })
   }, [selectedOptions, data])
 
-  const totalPrice = useMemo(() => {
-    const basePrice = data.amountDiscount
-      ? data.price - (data.price * data.amountDiscount) / 100
-      : data.price
+  useEffect(() => {
+    setLoading(true)
+    const handler = setTimeout(() => {
+      const findOption = (name: string): TItemOption | undefined => {
+        const allOptions = [
+          ...LIST_DEFAULT_OPTION.flatMap((add) => add.listOption),
+          ...(data.additionalOption?.flatMap((add) => add.listOption) ?? []),
+        ]
+        return allOptions.find((opt) => opt.name === name)
+      }
 
-    const findOption = (name: string): TItemOption | undefined => {
-      const allOptions = [
-        ...LIST_DEFAULT_OPTION.flatMap((add) => add.listOption),
-        ...(data.additionalOption?.flatMap((add) => add.listOption) ?? []),
-      ]
-      return allOptions.find((opt) => opt.name === name)
-    }
-    let extraPrice = 0
-    Object.entries(selectedOptions).forEach(([, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((v) => {
-          const option = findOption(v)
-          if (option && option.extraPrice) {
+      const basePrice = data.amountDiscount
+        ? data.price - (data.price * data.amountDiscount) / 100
+        : data.price
+
+      let extraPrice = 0
+      Object.values(selectedOptions).forEach((value) => {
+        if (Array.isArray(value)) {
+          value.forEach((v) => {
+            const option = findOption(v)
+            if (option?.extraPrice) {
+              extraPrice += Number(option.extraPrice) || 0
+            }
+          })
+        } else {
+          const option = findOption(value)
+          if (option?.extraPrice) {
             extraPrice += Number(option.extraPrice) || 0
           }
-        })
-      } else {
-        const option = findOption(value)
-        if (option && option.extraPrice) {
-          extraPrice += Number(option.extraPrice) || 0
         }
-      }
-    })
-    return (basePrice + extraPrice) * debounceAmount
-  }, [debounceAmount, data, selectedOptions])
+      })
+
+      setTotalPrice((basePrice + extraPrice) * itemAmount)
+      setLoading(false)
+    }, DEBOUNCE_DURATION)
+
+    setItemAmountInput(String(itemAmount))
+    return () => clearTimeout(handler)
+  }, [itemAmount, data, selectedOptions])
 
   const onChangeAmount = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = Number(e.target.value) || 0
-    setItemAmount(value)
+    const value = e.target.value
+    if (/^\d*$/.test(value)) {
+      setItemAmountInput(value)
+      setItemAmount(Number(value) || 0)
+    }
   }
 
   const handleSubmit = () => {
@@ -233,7 +248,7 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
         <Button
           onClick={onClose}
           disableAnimation
-          className='bg-beige-50/50 fixed top-4 right-4 z-10 flex items-center justify-center gap-0 rounded-full p-1 backdrop-blur-2xl'
+          className='bg-beige-50/60 fixed top-4 right-4 z-10 flex items-center justify-center gap-0 rounded-full border border-neutral-900/10 p-1 backdrop-blur-2xl'
         >
           <XIcon size={16} className='text-dark-600' />
         </Button>
@@ -337,7 +352,7 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
           </div>
 
           {/* Amounts */}
-          <div className='flex w-full items-center justify-center gap-4 p-2 md:gap-6 md:p-4'>
+          <div className='mb-14 flex w-full items-center justify-center gap-4 p-2 md:gap-6 md:p-4'>
             <Button
               onClick={() => {
                 if (itemAmount > 0) {
@@ -355,7 +370,7 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
               className='rounded-2 flex size-8 items-center justify-center border border-neutral-900/10 text-center text-sm text-neutral-800 lining-nums focus-within:outline-none focus:ring-0 focus:ring-offset-0 disabled:pointer-events-none disabled:opacity-50'
               type='number'
               aria-label='Enter page'
-              value={itemAmount}
+              value={itemAmountInput}
               min={0}
               onChange={onChangeAmount}
             />
@@ -372,9 +387,9 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
           <Button
             disableAnimation
             onClick={handleSubmit}
-            disabled={!isRequiredSelected}
+            disabled={(!isRequiredSelected && itemAmount !== 0) || loading}
             className={cn(
-              'rounded-3 w-full px-4 py-2 text-white',
+              'rounded-3 w-full px-4 py-2 text-white duration-200',
               itemAmount === 0 ? 'bg-red-500' : 'bg-green-500',
             )}
           >
