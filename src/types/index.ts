@@ -27,10 +27,21 @@ export type TIconProps = {
   text?: string
 }
 
+export type TItemOption = {
+  name: string
+  extraPrice?: number | string
+}
+export type TListItemOption = {
+  title: string
+  listOption: TItemOption[]
+  isRequired?: boolean
+}
+
 export type TItem = {
   image: string | StaticImageData
   title: string
   price: number
   amountDiscount?: number
   description?: string
+  additionalOption?: TListItemOption[]
 }

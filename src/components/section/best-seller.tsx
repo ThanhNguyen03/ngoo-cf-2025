@@ -4,30 +4,104 @@ import { iceCube, leaf } from '@/images'
 import { liptonTea } from '@/products'
 import { TItem } from '@/types'
 import Image from 'next/image'
+import { useState } from 'react'
 import ItemCard from '../ui/ItemCard'
 import { Slider } from '../ui/Slider'
 import ItemDetailModal from '../ui/modal/ItemDetailModal'
-import { useState } from 'react'
 
 const MOCKED_ITEMS_DATA: TItem[] = [
-  { image: liptonTea, title: 'Lipton Xi Muoi', price: 12 },
-  { image: liptonTea, title: 'Lipton Xi Muoi', price: 12, amountDiscount: 10 },
-  { image: liptonTea, title: 'Lipton Xi Muoi', price: 12 },
-  { image: liptonTea, title: 'Lipton Xi Muoi', price: 12, amountDiscount: 10 },
-  { image: liptonTea, title: 'Lipton Xi Muoi', price: 12, amountDiscount: 8 },
-  { image: liptonTea, title: 'Lipton Xi Muoi', price: 12 },
-  { image: liptonTea, title: 'Lipton Xi Muoi', price: 12 },
-  { image: liptonTea, title: 'Lipton Xi Muoi', price: 12, amountDiscount: 5 },
-  { image: liptonTea, title: 'Lipton Xi Muoi', price: 12 },
-  { image: liptonTea, title: 'Lipton Xi Muoi', price: 12, amountDiscount: 9 },
+  {
+    image: liptonTea,
+    title: 'Lipton Xi Muoi',
+    price: 12,
+    description: 'The richest flavor with long-standing family recipe',
+  },
+  {
+    image: liptonTea,
+    title: 'Lipton Xi Muoi',
+    price: 12,
+    description: 'The richest flavor with long-standing family recipe',
+    amountDiscount: 10,
+  },
+  {
+    image: liptonTea,
+    title: 'Olong Milk Tea',
+    price: 12,
+    description: 'The richest flavor with long-standing family recipe',
+    additionalOption: [
+      {
+        title: 'topping',
+        listOption: [
+          { name: 'Black Bubbles', extraPrice: 0.5 },
+          { name: 'White Bubbles', extraPrice: 0.5 },
+          { name: 'Olong Tea Bubbles', extraPrice: 0.7 },
+          { name: 'Flan Cake', extraPrice: 0.7 },
+        ],
+      },
+    ],
+  },
+  {
+    image: liptonTea,
+    title: 'Lipton Xi Muoi',
+    price: 12,
+    description: 'The richest flavor with long-standing family recipe',
+    amountDiscount: 10,
+  },
+  {
+    image: liptonTea,
+    title: 'XaiGon Coffee',
+    price: 12,
+    description: 'The richest flavor with long-standing family recipe',
+    amountDiscount: 8,
+    additionalOption: [
+      {
+        title: 'extra',
+        listOption: [
+          { name: '+1 Coffee Shot', extraPrice: 0.5 },
+        ],
+      },
+    ],
+  },
+  {
+    image: liptonTea,
+    title: 'Lipton Xi Muoi',
+    price: 12,
+    description: 'The richest flavor with long-standing family recipe',
+  },
+  {
+    image: liptonTea,
+    title: 'Lipton Xi Muoi',
+    price: 12,
+    description: 'The richest flavor with long-standing family recipe',
+  },
+  {
+    image: liptonTea,
+    title: 'Lipton Xi Muoi',
+    price: 12,
+    description: 'The richest flavor with long-standing family recipe',
+    amountDiscount: 5,
+  },
+  {
+    image: liptonTea,
+    title: 'Lipton Xi Muoi',
+    price: 12,
+    description: 'The richest flavor with long-standing family recipe',
+  },
+  {
+    image: liptonTea,
+    title: 'Lipton Xi Muoi',
+    price: 12,
+    description: 'The richest flavor with long-standing family recipe',
+    amountDiscount: 9,
+  },
 ]
 
 const BestSeller = () => {
   const [selectedItem, setSelectedItem] = useState<TItem | undefined>()
 
   return (
-    <section className='relative overflow-hidden bg-beige-100/10'>
-      <div className='absolute z-20 bottom-0 -left-2'>
+    <section className='bg-beige-100/10 relative overflow-hidden'>
+      <div className='absolute bottom-0 -left-2 z-20'>
         <Image
           alt='ice-cube'
           src={iceCube}
@@ -36,7 +110,7 @@ const BestSeller = () => {
           className='size-50 object-cover'
         />
       </div>
-      <div className='absolute z-20 top-0 -right-2'>
+      <div className='absolute top-0 -right-2 z-20'>
         <Image
           alt='leaf'
           src={leaf}
@@ -45,7 +119,7 @@ const BestSeller = () => {
           className='size-70 object-cover'
         />
       </div>
-      <div className='px-2 pt-6 pb-10 md:px-6 md:pt-10 md:pb-20 lg:px-10 lg:pt-20 lg:pb-30 z-0'>
+      <div className='z-0 px-2 pt-6 pb-10 md:px-6 md:pt-10 md:pb-20 lg:px-10 lg:pt-20 lg:pb-30'>
         <div className='relative mx-auto flex w-full max-w-[1024px] flex-col gap-2 md:gap-6'>
           <h2 className='text-44 md:text-55 font-lobster mx-auto w-fit bg-[url(/images/title-background.jpg)] bg-clip-text text-center font-black text-transparent'>
             Best Seller

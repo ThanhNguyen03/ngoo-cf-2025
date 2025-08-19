@@ -12,6 +12,7 @@ import {
   Children,
   FC,
   PropsWithChildren,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -38,18 +39,30 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
   hiddenButton,
   numsItemsPerSlice = 3,
   step = 1,
-  isInfinity,
+  isInfinity = false,
   isDot,
   onPause,
 }) => {
   const items = Children.toArray(children)
 
-  const [activeIndex, setActiveIndex] = useState<number>(-1)
-  const [transition, setTransition] = useState(true)
+  // clone items hai đầu nếu isInfinity
+  const initialItems = useMemo(() => {
+    return isInfinity
+      ? [
+          ...items.slice(-numsItemsPerSlice),
+          ...items,
+          ...items.slice(0, numsItemsPerSlice),
+        ]
+      : items
+  }, [items, numsItemsPerSlice, isInfinity])
+
+  const [activeIndex, setActiveIndex] = useState<number>(
+    isInfinity ? numsItemsPerSlice : -1,
+  )
+  const [transition, setTransition] = useState<boolean>(true)
 
   const itemRef = useRef<HTMLLIElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
-  const infinityRef = useRef<HTMLDivElement>(null)
 
   const itemWidth = useContainerWidth(itemRef)
   const containerWidth = useContainerWidth(containerRef)
@@ -70,59 +83,70 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
     return -(activeIndex + 0.5) * itemWidth - itemGap * 2 * (activeIndex + 0.5)
   }, [activeIndex, itemWidth, itemGap])
 
-  useEffect(() => {
-    if (!isInfinity) {
-      return
-    }
-    const infinity = infinityRef.current
-    if (!infinity) {
-      return
-    }
+  const handleSlide = useCallback(
+    (dir: TDirection) => {
+      setTransition(true)
 
-    const list = infinity.querySelector('ul')
-    if (!list) {
-      return
-    }
+      setActiveIndex((prev) => {
+        const lastItemIndex = items.length - numsItemsPerSlice - 1
+        let nextIndex = prev
 
-    const clonedList = list.cloneNode(true) as HTMLUListElement
-    list.append(...Array.from(clonedList.children))
-    list.classList.add(`translateX(${translateX}px)`)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+        if (!isInfinity) {
+          if (dir === 'next' && prev >= lastItemIndex) {
+            nextIndex = -1
+          } else if (dir === 'prev' && prev <= -1) {
+            nextIndex = lastItemIndex
+          } else {
+            nextIndex = dir === 'prev' ? prev - step : prev + step
+          }
+        } else {
+          nextIndex = dir === 'prev' ? prev - step : prev + step
+        }
 
+        return nextIndex
+      })
+    },
+    [isInfinity, items.length, numsItemsPerSlice, step],
+  )
+
+  // autoplay
   useEffect(() => {
     if (onPause) {
       return
     }
-    const interval = setInterval(() => {
-      handleSlide('next')
-    }, NEXT_SLIDE_DURATION)
-
+    const interval = setInterval(() => handleSlide('next'), NEXT_SLIDE_DURATION)
     return () => clearInterval(interval)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeIndex])
+  }, [onPause, handleSlide])
 
-  const handleSlide = (dir: TDirection) => {
-    const lastItemIndex = items.length - 1 - numsItemsPerSlice
-
-    setTransition(true)
-    if (dir === 'next' && activeIndex === lastItemIndex && !isInfinity) {
-      setActiveIndex(-1)
-    } else if (dir === 'prev' && activeIndex === -1 && !isInfinity) {
-      setActiveIndex(lastItemIndex)
-    } else {
-      setActiveIndex((prev) => (dir === 'prev' ? prev - step : prev + step))
+  useEffect(() => {
+    if (!isInfinity) {
+      return
     }
-  }
+    if (activeIndex < numsItemsPerSlice) {
+      // reset to end
+      setTimeout(() => {
+        setTransition(false)
+        setActiveIndex(items.length)
+      }, ANIMATION_DURATION)
+    } else if (activeIndex >= items.length + numsItemsPerSlice) {
+      // reset to start
+      setTimeout(() => {
+        setTransition(false)
+        setActiveIndex(activeIndex - items.length)
+      }, ANIMATION_DURATION)
+    } else {
+      setTransition(true)
+    }
+  }, [activeIndex, items.length, isInfinity, numsItemsPerSlice])
 
   return (
     <div
       ref={containerRef}
       className={cn('relative w-full overflow-hidden', className)}
     >
-      <div className='absolute left-0 z-10 h-full w-1/3 bg-gradient-to-r from-white to-transparent to-99%' />
-      <div className='absolute right-0 z-10 h-full w-1/3 bg-gradient-to-l from-white to-transparent to-99%' />
-      <div className='flex h-full w-full items-center' ref={infinityRef}>
+      <div className='absolute left-0 z-10 h-full w-1/4 bg-gradient-to-r from-white to-transparent to-99%' />
+      <div className='absolute right-0 z-10 h-full w-1/4 bg-gradient-to-l from-white to-transparent to-99%' />
+      <div className='flex h-full w-full items-center'>
         <ul
           className={cn(
             'flex flex-nowrap items-center',
@@ -136,9 +160,9 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
             willChange: 'transform',
           }}
         >
-          {items.map((child, i) => (
+          {initialItems.map((child, i) => (
             <li
-              ref={itemRef}
+              ref={i === 0 ? itemRef : null}
               key={`child-${i}`}
               className='flex w-fit flex-shrink-0'
               style={{
@@ -194,7 +218,7 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
                 'size-2 cursor-pointer rounded-full',
                 idx === activeIndex + 1 ? 'bg-secondary-500' : 'bg-gray-300',
               )}
-              onClick={() => setActiveIndex(idx - 1)}
+              onClick={() => setActiveIndex(idx)}
             />
           ))}
           <Button
