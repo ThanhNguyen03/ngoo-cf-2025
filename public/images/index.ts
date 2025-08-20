@@ -1,8 +1,6 @@
 export { default as coffeeShop } from './coffee-shop.png'
 export { default as defaultAvatar } from './default-avt.png'
 export { default as heroBanner } from './hero-banner.svg'
-export { default as iceCube } from './ice.png'
-export { default as leaf } from './leaf.png'
 export { default as ngooCfText } from './ngoo-cf-text.svg'
 export { default as notifyBg } from './notify-bg.svg'
 export { default as titleBackground } from './title-background.jpg'

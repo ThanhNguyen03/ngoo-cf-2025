@@ -10,7 +10,7 @@ import Image from 'next/image'
 
 export default function Home() {
   return (
-    <>
+    <main className='relative flex size-full flex-col overflow-hidden'>
       <Hero />
       <div className='from-beige-50 to-sky-blue-100 relative bg-linear-to-b via-white via-70%'>
         <div className='bg-dark-600 h-10' />
@@ -64,6 +64,6 @@ export default function Home() {
           aays!
         </p>
       </div>
-    </>
+    </main>
   )
 }
