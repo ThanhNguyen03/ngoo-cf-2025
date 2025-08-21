@@ -1,4 +1,4 @@
-import { TNavigationItem } from '@/types'
+import { ENewProduct, TNavigationItem } from '@/types'
 import {
   ChatsCircleIcon,
   DiscordLogoIcon,
@@ -97,3 +97,14 @@ export const LIST_FOOTER_NAVIGATION: Array<
     ],
   },
 ]
+
+export const NEW_PRODUCT_CLASSES: Record<ENewProduct, string> = {
+  [ENewProduct.Orange]:
+    'bg-[radial-gradient(ellipse_at_center,hsl(32,99%,52%)_0%,hsla(345,7%,10%,1)_80%)]',
+  [ENewProduct.Kiwi]:
+    'bg-[radial-gradient(ellipse_at_center,hsl(68,76%,41%)_0%,hsla(345,7%,10%,1)_80%)]',
+  [ENewProduct.Cherry]:
+    'bg-[radial-gradient(ellipse_at_center,hsl(335,75%,30%)_0%,hsla(345,7%,10%,1)_80%)]',
+  [ENewProduct.Strawberry]:
+    'bg-[radial-gradient(ellipse_at_center,hsl(0,96%,42%)_0%,hsla(345,7%,10%,1)_80%)]',
+}

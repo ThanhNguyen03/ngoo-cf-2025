@@ -12,7 +12,7 @@ export default function Home() {
   return (
     <main className='relative flex size-full flex-col overflow-hidden'>
       <Hero />
-      <div className='from-beige-50 to-sky-blue-100 relative bg-linear-to-b via-white via-70%'>
+      <div className='from-beige-100 relative bg-linear-to-b via-white via-70% to-white transition-colors duration-500'>
         <div className='bg-dark-600 h-10' />
         <InfiniteCarousel
           className='from-beige-300 to-beige-50 border-secondary-500/10 absolute -top-10 z-10 w-full -rotate-3 border-y bg-linear-to-b'

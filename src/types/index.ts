@@ -44,3 +44,10 @@ export type TItem = {
   description?: string
   additionalOption?: TListItemOption[]
 }
+
+export enum ENewProduct {
+  Cherry = 'cherry',
+  Kiwi = 'kiwi',
+  Orange = 'orange',
+  Strawberry = 'strawberry',
+}
