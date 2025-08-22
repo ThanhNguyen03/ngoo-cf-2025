@@ -45,6 +45,14 @@ export type TItem = {
   additionalOption?: TListItemOption[]
 }
 
+export type TNewCollection = {
+  title: ENewProduct
+  img: StaticImageData
+  tag: string
+  description: string
+  bgClassName?: string
+}
+
 export enum ENewProduct {
   Cherry = 'cherry',
   Kiwi = 'kiwi',

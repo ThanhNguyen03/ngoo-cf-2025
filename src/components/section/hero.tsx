@@ -7,7 +7,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import Button from '../ui/Button'
 
-const ANIMATION_DURATION = 700 // 9.7s
+const ANIMATION_DURATION = 700 // 700ms
 
 const Hero = () => {
   const [animationEnded, setAnimationEnded] = useState<boolean>(false)

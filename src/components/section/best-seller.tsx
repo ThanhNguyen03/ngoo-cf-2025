@@ -3,7 +3,8 @@
 import { useParallaxLayer } from '@/hooks/use-parallax-layer'
 import { liptonTea } from '@/products'
 import { TItem } from '@/types'
-import { useRef, useState } from 'react'
+import { cn } from '@/utils'
+import { FC, useState } from 'react'
 import { FenceCloud } from '../icons'
 import ItemCard from '../ui/ItemCard'
 import { Slider } from '../ui/Slider'
@@ -97,28 +98,32 @@ const MOCKED_ITEMS_DATA: TItem[] = [
 const ProductPosition = () => {
   return (
     <>
-      <div id='cherry' className='absolute -top-135 right-20 z-50' />
-      <div id='kiwi' className='absolute -top-10 -left-30 z-50' />
-      <div id='orange' className='absolute -top-30 right-100 z-50' />
-      <div id='strawberry' className='absolute -top-150 left-0 z-50' />
+      <div id='cherry' className='absolute -top-95 right-110 z-50' />
+      <div id='kiwi' className='absolute top-20 -left-120 z-50' />
+      <div id='orange' className='absolute top-40 left-80 z-50' />
+      <div id='strawberry' className='absolute -top-75 left-0 z-50' />
     </>
   )
 }
-const BestSeller = () => {
-  const containerRef = useRef<HTMLDivElement | null>(null)
-  const cloudFenceRef = useParallaxLayer<SVGSVGElement>(containerRef, {
+type TBestSellerProps = {
+  isInview: boolean
+  ref: React.RefObject<HTMLDivElement | null>
+}
+
+const BestSeller: FC<TBestSellerProps> = ({ isInview, ref }) => {
+  const cloudFenceRef = useParallaxLayer<SVGSVGElement>(ref, {
     translateRatio: -3,
   })
-  const [selectedItem, setSelectedItem] = useState<TItem | undefined>()
+  const [selectedItem, setSelectedItem] = useState<TItem>()
 
   return (
     <section
       id='best-seller'
-      className='relative overflow-hidden'
-      ref={containerRef}
+      className='relative z-0 overflow-hidden'
+      ref={ref}
     >
       <ProductPosition />
-      <div className='z-0 mb-20 px-2 pt-6 pb-10 md:px-6 md:pb-20 lg:px-10 lg:pt-10 lg:pb-30'>
+      <div className='z-30 mb-20 px-2 pt-6 pb-10 md:px-6 md:pb-20 lg:px-10 lg:pt-10 lg:pb-30'>
         <div className='relative mx-auto flex w-full max-w-[1024px] flex-col gap-2 md:gap-6'>
           <h2 className='text-44 md:text-55 font-lobster mx-auto w-fit bg-[url(/images/title-background.jpg)] bg-clip-text text-center font-black text-transparent'>
             Best Seller
@@ -128,7 +133,7 @@ const BestSeller = () => {
             numsItemsPerSlice={3}
             isDot
             onPause={!!selectedItem}
-            className='[--webkit-mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)] [mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)]'
+            className='z-10 [--webkit-mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)] [mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)]'
           >
             {MOCKED_ITEMS_DATA.map((item, i) => (
               <ItemCard
@@ -140,6 +145,18 @@ const BestSeller = () => {
           </Slider>
         </div>
       </div>
+      <div className='absolute bottom-0 -left-2 z-0 flex h-fit w-[101dvw] items-center justify-center'>
+        {/* fence */}
+        <FenceCloud
+          ref={cloudFenceRef}
+          width={1440}
+          height={196}
+          className={cn(
+            '4k:-bottom-5 absolute -bottom-20 z-0 h-[360px] w-full min-w-[1440px] object-center select-none md:-bottom-16.5',
+            isInview ? `text-dark-600` : 'text-sky-blue-100',
+          )}
+        />
+      </div>
       {selectedItem && (
         <ItemDetailModal
           isOpen={!!selectedItem}
@@ -147,15 +164,6 @@ const BestSeller = () => {
           data={selectedItem}
         />
       )}
-      <div className='absolute bottom-0 -left-2 flex h-fit w-[101dvw] items-center justify-center'>
-        {/* fence */}
-        <FenceCloud
-          ref={cloudFenceRef}
-          width={1440}
-          height={196}
-          className='4k:-bottom-5 text-sky-blue-100 absolute -bottom-20 z-20 h-[360px] w-full min-w-[1440px] object-center select-none md:-bottom-16.5'
-        />
-      </div>
     </section>
   )
 }
