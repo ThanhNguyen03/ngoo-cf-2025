@@ -1,10 +1,59 @@
 import { useEffect, useMemo, useRef } from 'react'
 
-type TParallaxConfig = { translateRatio?: number; scrollRatio?: number }
+type TParallaxConfig = {
+  /** Percentage ratio for element translation on mouse move (e.g. 10 → 10% effect strength). */
+  translateRatio?: number
+  /** Ratio for element translation based on scroll position (positive = down, negative = up). */
+  scrollRatio?: number
+}
 
 /**
- * If you return useRef, you will have to access `.current` manually and cannot assign refs to each element dynamically when rendering multiple components at once.
- * Callback ref allows you to assign refs directly to each element in JSX
+ * React hook to apply **parallax translation effects** (mouse-based and scroll-based)
+ * on one or multiple child layers inside a container.
+ *
+ * - Supports both **mousemove parallax** (using `translateRatio`) and
+ *   **scroll parallax** (using `scrollRatio`).
+ * - Automatically applies CSS variables (`--parallax-mouse-x`, `--parallax-mouse-y`, `--parallax-scroll-y`)
+ *   which are used in `transform: translate(...)`.
+ * - Works with both a **single element** or **multiple elements** (array of configs).
+ *
+ * @overload
+ * @param containerRef - React ref to the parallax container element.
+ * @param config - Single config object (`translateRatio` / `scrollRatio`).
+ * @returns A **single callback ref** to assign to one element.
+ *
+ * @overload
+ * @param containerRef - React ref to the parallax container element.
+ * @param config - Array of config objects.
+ * @returns An **array of callback refs**, each assigned to a different element.
+ *
+ * @example
+ * // Single element
+ * const containerRef = useRef<HTMLDivElement>(null)
+ * const layerRef = useParallaxLayer(containerRef, { translateRatio: 20, scrollRatio: 5 })
+ *
+ * return (
+ *   <div ref={containerRef} className="relative h-[400px] overflow-hidden">
+ *     <img ref={layerRef} src="/cloud.png" alt="Cloud" className="absolute" />
+ *   </div>
+ * )
+ *
+ * @example
+ * // Multiple layers
+ * const containerRef = useRef<HTMLDivElement>(null)
+ * const [bgRef, midRef, fgRef] = useParallaxLayer(containerRef, [
+ *   { translateRatio: 5, scrollRatio: 2 },   // background (moves slow)
+ *   { translateRatio: 15, scrollRatio: 5 },  // mid layer
+ *   { translateRatio: 30 },                  // foreground (moves fast, mouse only)
+ * ])
+ *
+ * return (
+ *   <div ref={containerRef} className="relative h-[400px] overflow-hidden">
+ *     <img ref={bgRef} src="/bg.png" className="absolute" />
+ *     <img ref={midRef} src="/mid.png" className="absolute" />
+ *     <img ref={fgRef} src="/fg.png" className="absolute" />
+ *   </div>
+ * )
  */
 export function useParallaxLayer<T extends HTMLElement | SVGElement>(
   containerRef: React.RefObject<HTMLElement | null>,
