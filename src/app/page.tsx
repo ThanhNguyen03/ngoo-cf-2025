@@ -1,6 +1,7 @@
 'use client'
 
 import BestSeller from '@/components/section/best-seller'
+import ContactForWork from '@/components/section/contact-for-work'
 import Hero from '@/components/section/hero'
 import NewCollection from '@/components/section/new-collection'
 import { InfiniteCarousel } from '@/components/ui/InfiniteCarousel'
@@ -73,6 +74,7 @@ export default function Home() {
         setSelectedProduct={setSelectedProduct}
         selectedProduct={selectedProduct}
       />
+      <ContactForWork isHover={!!selectedProduct} />
     </main>
   )
 }

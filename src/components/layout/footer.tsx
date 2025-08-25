@@ -5,7 +5,7 @@ import NgOoLogo from '../ui/NgOoLogo'
 const Footer = () => {
   return (
     <footer className='border-t border-neutral-900/10 bg-white px-2 md:p-10 lg:px-10 lg:py-0'>
-      <div className='relative mx-auto flex w-full max-w-[960px] flex-col items-center justify-center gap-14 pt-10'>
+      <div className='relative mx-auto flex w-full max-w-[1024px] flex-col items-center justify-center gap-14 pt-10'>
         {/* list */}
         <div className='flex w-full flex-col gap-10 pb-10 md:flex-row md:justify-between'>
           {/* left */}
@@ -14,9 +14,8 @@ const Footer = () => {
             <NgOoLogo />
             {/* description */}
             <p className='text-14! leading-[160%] text-neutral-900/70 md:text-left'>
-              Lorem ipsum dolor sit amet consectetur. Id tellus eu eget massa
-              ornare proin est. Varius libero dui pellentesque quis. A turpis
-              faucibus sit pellentesque amet.
+              The <b>NgOo Coffee</b> by{' '}
+              <span className='underline'>thanhf.ng_</span>
             </p>
             {/* social */}
             <div className='flex items-center gap-6'>
@@ -68,14 +67,14 @@ const Footer = () => {
           </p>
           <div className='flex items-center gap-3'>
             <Link
-              href='https://orochi.network/privacy-policy'
+              href='/'
               title='Privacy Policy'
               className='py-0.75 text-neutral-900 underline'
             >
               Privacy Policy
             </Link>
             <Link
-              href='https://orochi.network/term-of-service'
+              href='/'
               title='Term of Service'
               className='py-0.75 text-neutral-900 underline'
             >

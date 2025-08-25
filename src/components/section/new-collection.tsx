@@ -38,7 +38,7 @@ const collectionVariants = {
     scale: 2,
     opacity: 1,
     transition: {
-      duration: 2,
+      duration: 1,
       ease: cubicBezier(0.66, -0.3, 0.47, 1.3),
     },
   },
@@ -48,7 +48,7 @@ const collectionVariants = {
     rotate: pos.r,
     scale: pos.s,
     transition: {
-      duration: 2,
+      duration: 1.5,
       ease: cubicBezier(0.66, -0.3, 0.47, 1.3),
     },
   }),

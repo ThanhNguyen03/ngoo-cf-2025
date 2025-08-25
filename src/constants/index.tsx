@@ -1,10 +1,10 @@
 import { ENewProduct, TNavigationItem } from '@/types'
 import {
   ChatsCircleIcon,
-  DiscordLogoIcon,
   FacebookLogoIcon,
   GithubLogoIcon,
   HouseIcon,
+  LinkedinLogoIcon,
   SquaresFourIcon,
   TelegramLogoIcon,
   VaultIcon,
@@ -31,14 +31,14 @@ export const LIST_HEADER_NAVIGATION: TNavigationItem[] = [
   {
     name: 'Faucet',
     icon: <VaultIcon weight='fill' size={18} className='text-primary-600' />,
-    href: '#', // to faucet page ex: u2u, ftm, monad,...
+    href: '#', // TODO: faucet page ex: u2u, ftm, monad,...
   },
   {
     name: 'Contact',
     icon: (
       <ChatsCircleIcon weight='fill' size={18} className='text-primary-600' />
     ),
-    href: '#', // to porfolio page
+    href: 'https://thanhng-portfolio-2024.vercel.app/',
     openInNewTab: true,
   },
 ]
@@ -47,22 +47,22 @@ export const LIST_SOCIAL_BUTTON: TNavigationItem[] = [
   {
     name: 'Facebook',
     icon: <FacebookLogoIcon size={24} fill='#0866fe' />,
-    href: 'https://x.com/OrochiNetwork',
-  },
-  {
-    name: 'Discord',
-    icon: <DiscordLogoIcon size={24} fill='#707bf7' />,
-    href: 'https://discord.com/invite/sTU4TUh8H3',
+    href: 'https://www.facebook.com/thanhfnguyen.03',
   },
   {
     name: 'Github',
     icon: <GithubLogoIcon size={24} fill='#51515d' />,
-    href: 'https://x.com/OrochiNetwork',
+    href: 'https://github.com/ThanhNguyen03',
   },
   {
-    name: 'Telegram',
-    icon: <TelegramLogoIcon size={24} fill='#3eb6f3' />,
-    href: 'https://discord.com/invite/sTU4TUh8H3',
+    name: 'LinkedIn',
+    icon: <LinkedinLogoIcon size={24} fill='#0a62bd' />,
+    href: 'https://www.linkedin.com/in/thanhfnguyen03/',
+  },
+  {
+    name: 'Mail',
+    icon: <TelegramLogoIcon size={24} fill='#e94334' />,
+    href: 'mailto:thanhfng.dev@gmail.com',
   },
 ]
 
@@ -75,25 +75,17 @@ export const LIST_FOOTER_NAVIGATION: Array<
     title: 'Developers',
     children: [
       { href: '/', name: 'Homepage' },
-      { href: '#', name: 'Github' },
-      { href: '#', name: 'Cookbook' },
-      { href: '#', name: 'Get started' },
+      { href: 'https://thanhng-portfolio-2024.vercel.app/', name: 'Explore' },
+      { href: 'https://github.com/ThanhNguyen03', name: 'Github' },
     ],
   },
   {
-    title: 'Ecosystem',
+    title: 'Contact',
     children: [
-      { href: '#', name: 'Explore' },
-      { href: '#', name: 'Collaborate' },
-    ],
-  },
-  {
-    title: 'Resource',
-    children: [
-      { href: '#', name: 'Blog' },
-      { href: '#', name: 'npm package' },
-      { href: '#', name: 'MIPs' },
-      { href: '#', name: 'RamenPasta' },
+      { href: 'https://m.me/thanhfnguyen.03', name: 'Facebook' },
+      { href: 'https://ig.me/m/thanhf.ng_', name: 'Instagram' },
+      { href: 'https://www.linkedin.com/in/thanhfnguyen03/', name: 'LinkedIn' },
+      { href: 'https://t.me/thanhf.ng_', name: 'Telegram' },
     ],
   },
 ]
