@@ -44,10 +44,10 @@ const Hero = () => {
       </div>
 
       {/* Main Content */}
-      <div className='relative z-10 mx-auto flex h-[calc(100dvh-322px)] w-full max-w-[960px] grow items-center gap-10 overflow-hidden'>
+      <div className='relative z-10 mx-auto flex h-[calc(100dvh-322px)] w-full max-w-[1024px] grow items-center gap-10 overflow-hidden'>
         <div
           className={cn(
-            'z-10 flex w-full translate-x-0 flex-col items-start gap-2 opacity-100 duration-1000 md:gap-6',
+            'z-10 flex w-full translate-x-0 flex-col items-start gap-2 duration-1000 md:gap-6',
             animationEnded
               ? 'translate-x-0 opacity-100'
               : '-translate-x-full opacity-0',
@@ -86,7 +86,7 @@ const Hero = () => {
             src={ngooCfText}
             width={3287}
             height={1641}
-            className='size-full object-fill'
+            className='absolute size-full -top-10 left-17 min-h-70 object-fill'
             priority
           />
         </div>

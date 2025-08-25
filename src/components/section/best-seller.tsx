@@ -153,7 +153,7 @@ const BestSeller: FC<TBestSellerProps> = ({ isInview, ref }) => {
           height={196}
           className={cn(
             '4k:-bottom-5 absolute -bottom-20 z-0 h-[360px] w-full min-w-[1440px] object-center select-none md:-bottom-16.5',
-            isInview ? `text-dark-600` : 'text-sky-blue-100',
+            isInview ? 'text-dark-600' : 'text-sky-blue-100',
           )}
         />
       </div>
