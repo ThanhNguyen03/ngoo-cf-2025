@@ -1,6 +1,7 @@
 'use client'
 import { FC, RefObject, useEffect, useState } from 'react'
 
+import { LIST_NEW_PRODUCT } from '@/constants'
 import { useParallaxLayer } from '@/hooks/use-parallax-layer'
 import {
   cloudCube,
@@ -9,13 +10,12 @@ import {
   cloudFlat,
 } from '@/icons'
 import { collectionBanner } from '@/images'
-import { ENewProduct, TNewCollection } from '@/types'
+import { ENewProduct, TCollection } from '@/types'
 import { cn } from '@/utils'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr'
 import { cubicBezier, motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
-import { LIST_NEW_PRODUCT } from '@/constants'
 
 type TPosition = {
   id: ENewProduct
@@ -61,8 +61,8 @@ const collectionVariants = {
 }
 
 type TNewCollectionProps = {
-  setSelectedProduct: (item?: TNewCollection) => void
-  selectedProduct?: TNewCollection
+  setSelectedProduct: (item?: TCollection) => void
+  selectedProduct?: TCollection
   inCollectionView: boolean
   inSellerView: boolean
   ref: RefObject<HTMLDivElement | null>

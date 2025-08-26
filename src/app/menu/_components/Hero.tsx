@@ -30,11 +30,11 @@ const Hero = () => {
         <div className='z-20 flex items-center gap-2'>
           {LIST_NEW_PRODUCT.map((item) => (
             <button
-              onClick={() => setSelectedProduct(item.title)}
+              onClick={() => setSelectedProduct(item.title as ENewProduct)}
               key={item.title}
               className={cn(
                 'rounded-2 cursor-pointer border border-white/10 bg-white/10 p-2 shadow backdrop-blur-3xl',
-                NEW_PRODUCT_DATA[item.title].buttonClassName,
+                NEW_PRODUCT_DATA[item.title as ENewProduct].buttonClassName,
                 selectedProduct === item.title &&
                   'border-white/30 bg-linear-to-br from-white/50',
               )}
