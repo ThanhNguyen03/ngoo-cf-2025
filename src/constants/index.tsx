@@ -1,4 +1,15 @@
-import { ENewProduct, TNavigationItem } from '@/types'
+import {
+  cherryJuiceBottle,
+  kiwiJuiceBottole,
+  orangeJuiceBottle,
+  strawberryJuiceBottle,
+} from '@/products'
+import {
+  ENewProduct,
+  TCollection,
+  TNavigationItem,
+  TNewCollection,
+} from '@/types'
 import {
   ChatsCircleIcon,
   FacebookLogoIcon,
@@ -90,13 +101,68 @@ export const LIST_FOOTER_NAVIGATION: Array<
   },
 ]
 
-export const NEW_PRODUCT_CLASSES: Record<ENewProduct, string> = {
-  [ENewProduct.Cherry]:
-    'bg-[radial-gradient(ellipse_at_center,hsl(335,75%,30%)_0%,hsla(345,7%,10%,1)_80%)]',
-  [ENewProduct.Kiwi]:
-    'bg-[radial-gradient(ellipse_at_center,hsl(68,76%,41%)_0%,hsla(345,7%,10%,1)_80%)]',
-  [ENewProduct.Orange]:
-    'bg-[radial-gradient(ellipse_at_center,hsl(32,99%,52%)_0%,hsla(345,7%,10%,1)_80%)]',
-  [ENewProduct.Strawberry]:
-    'bg-[radial-gradient(ellipse_at_center,hsl(0,96%,42%)_0%,hsla(345,7%,10%,1)_80%)]',
+export const LIST_NEW_PRODUCT: TCollection[] = [
+  {
+    title: ENewProduct.Cherry,
+    img: cherryJuiceBottle,
+    bgClassName:
+      'bg-[radial-gradient(ellipse_at_center,hsl(335,75%,30%)_0%,hsla(345,7%,10%,1)_70%)]',
+  },
+  {
+    title: ENewProduct.Kiwi,
+    img: kiwiJuiceBottole,
+    bgClassName:
+      'bg-[radial-gradient(ellipse_at_center,hsl(68,76%,41%)_0%,hsla(345,7%,10%,1)_70%)]',
+  },
+  {
+    title: ENewProduct.Orange,
+    img: orangeJuiceBottle,
+    bgClassName:
+      'bg-[radial-gradient(ellipse_at_center,hsl(32,99%,52%)_0%,hsla(345,7%,10%,1)_70%)]',
+  },
+  {
+    title: ENewProduct.Strawberry,
+    img: strawberryJuiceBottle,
+    bgClassName:
+      'bg-[radial-gradient(ellipse_at_center,hsl(0,96%,42%)_0%,hsla(345,7%,10%,1)_70%)]',
+  },
+]
+
+export const NEW_PRODUCT_DATA: Record<ENewProduct, TNewCollection> = {
+  [ENewProduct.Cherry]: {
+    model: '/models/cherry.glb',
+    tag: 'Sweet, fresh, and a sip of happiness.',
+    bgClassName:
+      'bg-[radial-gradient(ellipse_at_center,hsl(335,75%,30%)_0%,hsla(345,7%,10%,1)_80%)]',
+    buttonClassName: 'hover:bg-linear-to-br from-cherry-500/50 to-white/10',
+    description:
+      'Our Cherry Juice shines with a vibrant ruby-red color and a naturally sweet-tart taste from fresh cherries. Packed with antioxidants, it not only refreshes but also supports glowing skin and heart health. A perfect balance of sweetness and lightness in every sip.',
+  },
+  [ENewProduct.Kiwi]: {
+    model: '/models/kiwi.glb',
+    tag: 'Tangy, refreshing, and naturally energizing.',
+    bgClassName:
+      'bg-[radial-gradient(ellipse_at_center,hsl(68,76%,41%)_0%,hsla(345,7%,10%,1)_80%)]',
+    buttonClassName: 'hover:bg-linear-to-br from-kiwi-500/50 to-white/10',
+    description:
+      'Kiwi Juice delivers a refreshing surprise with its tangy-sweet balance and distinctive fragrance of fresh kiwi. Rich in vitamin C and fiber, it boosts your energy while keeping you light, fresh, and healthy throughout the day.',
+  },
+  [ENewProduct.Orange]: {
+    model: '/models/orange.glb',
+    tag: 'One glass of orange, one brighter day.',
+    bgClassName:
+      'bg-[radial-gradient(ellipse_at_center,hsl(32,99%,52%)_0%,hsla(345,7%,10%,1)_80%)]',
+    buttonClassName: 'hover:bg-linear-to-br from-orange-500/50 to-white/10',
+    description:
+      'Nothing beats the freshness of pure Orange Juice. With its sweet, zesty flavor and vitamin C richness, it strengthens immunity, brightens your mood, and fuels your day with vitality. A timeless classic that never goes out of style.',
+  },
+  [ENewProduct.Strawberry]: {
+    model: '/models/strawberry.glb',
+    tag: 'Naturally sweet, love at first sip.',
+    bgClassName:
+      'bg-[radial-gradient(ellipse_at_center,hsl(0,96%,42%)_0%,hsla(345,7%,10%,1)_80%)]',
+    buttonClassName: 'hover:bg-linear-to-br from-strawberry-500/50 to-white/10',
+    description:
+      'Strawberry Juice bursts with the sweet, refreshing taste of ripe strawberries. Each sip delivers freshness and a natural energy boost. More than just a drink, it’s a delightful treat for your senses that you’ll fall in love with instantly.',
+  },
 }

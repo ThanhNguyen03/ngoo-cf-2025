@@ -1,6 +1,7 @@
 'use client'
 import { FC, RefObject, useEffect, useState } from 'react'
 
+import { LIST_NEW_PRODUCT } from '@/constants'
 import { useParallaxLayer } from '@/hooks/use-parallax-layer'
 import {
   cloudCube,
@@ -9,13 +10,7 @@ import {
   cloudFlat,
 } from '@/icons'
 import { collectionBanner } from '@/images'
-import {
-  cherryJuiceBottle,
-  kiwiJuiceBottole,
-  orangeJuiceBottle,
-  strawberryJuiceBottle,
-} from '@/products'
-import { ENewProduct, TNewCollection } from '@/types'
+import { ENewProduct, TCollection } from '@/types'
 import { cn } from '@/utils'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr'
 import { cubicBezier, motion } from 'framer-motion'
@@ -65,48 +60,9 @@ const collectionVariants = {
   },
 }
 
-const LIST_PRODUCT_IMG: TNewCollection[] = [
-  {
-    title: ENewProduct.Cherry,
-    img: cherryJuiceBottle,
-    tag: 'Sweet, fresh, and a sip of happiness.',
-    bgClassName:
-      'bg-[radial-gradient(ellipse_at_center,hsl(335,75%,30%)_0%,hsla(345,7%,10%,1)_70%)]',
-    description:
-      'Our Cherry Juice shines with a vibrant ruby-red color and a naturally sweet-tart taste from fresh cherries. Packed with antioxidants, it not only refreshes but also supports glowing skin and heart health. A perfect balance of sweetness and lightness in every sip.',
-  },
-  {
-    title: ENewProduct.Kiwi,
-    img: kiwiJuiceBottole,
-    tag: 'Tangy, refreshing, and naturally energizing.',
-    bgClassName:
-      'bg-[radial-gradient(ellipse_at_center,hsl(68,76%,41%)_0%,hsla(345,7%,10%,1)_70%)]',
-    description:
-      'Kiwi Juice delivers a refreshing surprise with its tangy-sweet balance and distinctive fragrance of fresh kiwi. Rich in vitamin C and fiber, it boosts your energy while keeping you light, fresh, and healthy throughout the day.',
-  },
-  {
-    title: ENewProduct.Orange,
-    img: orangeJuiceBottle,
-    tag: 'One glass of orange, one brighter day.',
-    bgClassName:
-      'bg-[radial-gradient(ellipse_at_center,hsl(32,99%,52%)_0%,hsla(345,7%,10%,1)_70%)]',
-    description:
-      'Nothing beats the freshness of pure Orange Juice. With its sweet, zesty flavor and vitamin C richness, it strengthens immunity, brightens your mood, and fuels your day with vitality. A timeless classic that never goes out of style.',
-  },
-  {
-    title: ENewProduct.Strawberry,
-    img: strawberryJuiceBottle,
-    tag: 'Naturally sweet, love at first sip.',
-    bgClassName:
-      'bg-[radial-gradient(ellipse_at_center,hsl(0,96%,42%)_0%,hsla(345,7%,10%,1)_70%)]',
-    description:
-      'Strawberry Juice bursts with the sweet, refreshing taste of ripe strawberries. Each sip delivers freshness and a natural energy boost. More than just a drink, it’s a delightful treat for your senses that you’ll fall in love with instantly.',
-  },
-]
-
 type TNewCollectionProps = {
-  setSelectedProduct: (item?: TNewCollection) => void
-  selectedProduct?: TNewCollection
+  setSelectedProduct: (item?: TCollection) => void
+  selectedProduct?: TCollection
   inCollectionView: boolean
   inSellerView: boolean
   ref: RefObject<HTMLDivElement | null>
@@ -140,7 +96,7 @@ const NewCollection: FC<TNewCollectionProps> = ({
       return
     }
 
-    setSelectedProduct(LIST_PRODUCT_IMG.find((p) => p.title === id))
+    setSelectedProduct(LIST_NEW_PRODUCT.find((p) => p.title === id))
   }
 
   useEffect(() => {
@@ -271,7 +227,7 @@ const NewCollection: FC<TNewCollectionProps> = ({
                     onClick={() => window.open('/menu', '_self')}
                   >
                     <Image
-                      src={LIST_PRODUCT_IMG[i].img}
+                      src={LIST_NEW_PRODUCT[i].img}
                       alt={pos.id}
                       width={1024}
                       height={1024}
@@ -307,7 +263,12 @@ const NewCollection: FC<TNewCollectionProps> = ({
           >
             <Link
               href='/menu'
-              className='text-16 flex items-center justify-center gap-2 rounded-[10px] bg-linear-to-b from-white to-blue-200 px-4 py-2 font-semibold text-neutral-900 duration-1000 hover:to-blue-300'
+              className={cn(
+                'text-16 flex items-center justify-center gap-2 rounded-[10px] px-4 py-2 font-semibold text-neutral-900 duration-700',
+                selectedProduct
+                  ? 'bg-[radial-gradient(ellipse_at_center,hsla(46,100%,61%)_0%,hsl(32,99%,60%)_80%)] text-white'
+                  : 'bg-linear-to-b from-white to-blue-200 hover:to-blue-300',
+              )}
             >
               More detail
               <ArrowRightIcon />
