@@ -98,10 +98,10 @@ const MOCKED_ITEMS_DATA: TItem[] = [
 const ProductPosition = () => {
   return (
     <>
-      <div id='cherry' className='absolute -top-95 right-110 z-50' />
-      <div id='kiwi' className='absolute top-20 -left-120 z-50' />
+      <div id='cherry' className='absolute -top-75 right-110 z-50' />
+      <div id='kiwi' className='absolute top-40 -left-120 z-50' />
       <div id='orange' className='absolute top-40 left-80 z-50' />
-      <div id='strawberry' className='absolute -top-75 left-0 z-50' />
+      <div id='strawberry' className='absolute -top-55 left-0 z-50' />
     </>
   )
 }
@@ -123,7 +123,7 @@ const BestSeller: FC<TBestSellerProps> = ({ isInview, ref }) => {
       ref={ref}
     >
       <ProductPosition />
-      <div className='z-30 mb-20 px-2 pt-6 pb-10 md:px-6 md:pb-20 lg:px-10 lg:pt-10 lg:pb-30'>
+      <div className='z-30 mb-20 px-2 py-10 md:py-20 lg:px-10 lg:pt-30 lg:pb-50'>
         <div className='relative mx-auto flex w-full max-w-[1024px] flex-col gap-2 md:gap-6'>
           <h2 className='text-44 md:text-55 font-lobster mx-auto w-fit bg-[url(/images/title-background.jpg)] bg-clip-text text-center font-black text-transparent'>
             Best Seller
