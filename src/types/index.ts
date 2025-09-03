@@ -51,14 +51,6 @@ export type TCollection = {
   bgClassName?: string
 }
 
-export type TNewCollection = {
-  model: string
-  tag: string
-  description: string
-  bgClassName?: string
-  buttonClassName?: string
-}
-
 export enum ENewProduct {
   Cherry = 'cherry',
   Kiwi = 'kiwi',
