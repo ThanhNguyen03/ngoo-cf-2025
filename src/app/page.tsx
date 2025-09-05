@@ -6,7 +6,7 @@ import Hero from '@/components/section/hero'
 import NewCollection from '@/components/section/new-collection'
 import { InfiniteCarousel } from '@/components/ui/InfiniteCarousel'
 import { notifyBg } from '@/images'
-import { TCollection } from '@/types'
+import { TCollectionData } from '@/types'
 import { SealPercentIcon } from '@phosphor-icons/react/dist/ssr'
 import { useInView } from 'framer-motion'
 import Image from 'next/image'
@@ -16,7 +16,7 @@ import Loading from './loading'
 export default function Home() {
   const collectionContainerRef = useRef<HTMLDivElement | null>(null)
   const sellerContainerRef = useRef<HTMLDivElement | null>(null)
-  const [selectedProduct, setSelectedProduct] = useState<TCollection>()
+  const [selectedProduct, setSelectedProduct] = useState<TCollectionData>()
   const [loading, setLoading] = useState<boolean>(false)
 
   const inSellerView = useInView(sellerContainerRef, {

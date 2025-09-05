@@ -1,8 +1,11 @@
 'use client'
 
-import { LIST_NEW_PRODUCT, NEW_PRODUCT_DATA } from '@/constants'
-import { ENewProduct } from '@/types'
+import Button from '@/components/ui/Button'
+import { LIST_NEW_PRODUCT, NEW_PRODUCT_DATA, SIZE_OPTION } from '@/constants'
+import useCartStore, { calculateItemPrice } from '@/store/cart-store'
+import { ENewProduct, TItem } from '@/types'
 import { cn } from '@/utils'
+import { MinusIcon, PlusIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import Bottle3D from './ui/Bottle3D'
@@ -10,12 +13,16 @@ import Bottle3D from './ui/Bottle3D'
 const ANIMATION_DURATION = 700 // ms
 
 const Hero = () => {
+  const { addToCart, removeFromCart, updateCartItem, listCartItem } =
+    useCartStore()
   const [selectedProduct, setSelectedProduct] = useState<ENewProduct>(
     ENewProduct.Cherry,
   )
   const [animation, setAnimation] = useState<boolean>(false)
+  const [totalPrice, setTotalPrice] = useState<number>(0)
+  const [itemAmount, setItemAmount] = useState<number>(1)
   const [selectedSize, setSelectedSize] = useState<string>(
-    NEW_PRODUCT_DATA[selectedProduct].sizeOption[0].name,
+    NEW_PRODUCT_DATA[selectedProduct].additionalOption?.[0].name || '',
   )
 
   const handleSelectItem = (id: ENewProduct) => {
@@ -28,10 +35,41 @@ const Hero = () => {
     return () => clearTimeout(timeout)
   }
 
+  const handleSubmit = () => {
+    if (itemAmount === 0) {
+      removeFromCart(NEW_PRODUCT_DATA[selectedProduct].title)
+      return
+    }
+    const newItem: TItem = {
+      ...NEW_PRODUCT_DATA[selectedProduct],
+      amount: itemAmount,
+      additionalOption: SIZE_OPTION.filter((opt) => opt.name === selectedSize),
+    }
+    const existed = listCartItem.some(
+      (i) => i.title === NEW_PRODUCT_DATA[selectedProduct].title,
+    )
+    if (existed) {
+      updateCartItem(newItem)
+    } else {
+      addToCart(newItem)
+    }
+  }
+
   useEffect(() => {
+    setAnimation(false)
     const timeout = setTimeout(() => setAnimation(true), ANIMATION_DURATION)
     return () => clearTimeout(timeout)
-  }, [])
+  }, [selectedSize])
+
+  useEffect(() => {
+    setTotalPrice(
+      calculateItemPrice(
+        NEW_PRODUCT_DATA[selectedProduct],
+        SIZE_OPTION.filter((opt) => opt.name === selectedSize),
+        itemAmount,
+      ),
+    )
+  }, [itemAmount, selectedProduct, selectedSize])
 
   return (
     <section
@@ -53,7 +91,7 @@ const Hero = () => {
             >
               {selectedProduct} Juice
             </h2>
-            <p className='text-14 leading-[160%] text-white italic lining-nums'>
+            <p className='text-14 leading-[160%] text-white'>
               {selectedSize === 'M' ? '350ml' : '500ml'}
             </p>
           </div>
@@ -110,7 +148,7 @@ const Hero = () => {
           />
 
           <p className='text-28 absolute -bottom-8 z-20 text-center font-bold text-white lining-nums'>
-            ${NEW_PRODUCT_DATA[selectedProduct].price.toFixed(2)}
+            ${totalPrice.toFixed(2)}
           </p>
         </div>
 
@@ -127,24 +165,65 @@ const Hero = () => {
             </h3>
 
             <div className='flex w-full items-center justify-end gap-2'>
-              {NEW_PRODUCT_DATA[selectedProduct].sizeOption.map((option) => (
-                <button
-                  key={option.name}
-                  onClick={() => setSelectedSize(option.name)}
-                  className={cn(
-                    'rounded-2 cursor-pointer border border-white/30 bg-linear-to-br from-white/50 to-white/10 p-1 font-semibold text-white shadow backdrop-blur-3xl duration-700',
-                    animation ? 'opacity-100' : 'opacity-0',
-                    option.name === selectedSize
-                      ? 'text-secondary-500 bg-beige-50 border-primary-500 font-bold'
-                      : 'hover:border-white/50 hover:from-white/70',
-                  )}
-                >
-                  <p className='text-14 size-5.5 leading-[160%]'>
-                    {option.name}
-                  </p>
-                </button>
-              ))}
+              {NEW_PRODUCT_DATA[selectedProduct].additionalOption?.map(
+                (option) => (
+                  <button
+                    key={option.name}
+                    onClick={() => setSelectedSize(option.name)}
+                    className={cn(
+                      'rounded-2 cursor-pointer border border-white/30 bg-linear-to-br from-white/50 to-white/10 p-1 font-semibold text-white shadow backdrop-blur-3xl duration-700',
+                      animation ? 'opacity-100' : 'opacity-0',
+                      option.name === selectedSize
+                        ? 'text-secondary-500 bg-beige-50 border-primary-500 font-bold'
+                        : 'hover:border-white/50 hover:from-white/70',
+                    )}
+                  >
+                    <p className='text-14 size-5.5 leading-[160%]'>
+                      {option.name}
+                    </p>
+                  </button>
+                ),
+              )}
             </div>
+          </div>
+          <div className='flex w-full items-center justify-between'>
+            <div className='flex items-center justify-center gap-2 md:gap-4'>
+              <Button
+                onClick={() => setItemAmount((prev) => Math.max(0, prev - 1))}
+                disabled={itemAmount < 1}
+                className='rounded-2 border border-white p-1.5'
+                disableAnimation
+                icon={
+                  <MinusIcon className='text-white' size={14} weight='bold' />
+                }
+              />
+              <p className='rounded-2 text-16 flex size-8 items-center justify-center text-center text-white lining-nums'>
+                {itemAmount}
+              </p>
+              <Button
+                onClick={() => setItemAmount((prev) => prev + 1)}
+                className='rounded-2 border border-white p-1.5'
+                disableAnimation
+                icon={
+                  <PlusIcon className='text-white' size={14} weight='bold' />
+                }
+              />
+            </div>
+            <Button
+              disableAnimation
+              onClick={handleSubmit}
+              disabled={
+                listCartItem.some(
+                  (i) => i.title !== NEW_PRODUCT_DATA[selectedProduct].title,
+                ) && itemAmount === 0
+              }
+              className={cn(
+                'rounded-3 text-secondary-500 w-fit px-4 py-2 text-nowrap duration-200',
+                itemAmount === 0 ? 'bg-red-500' : 'bg-beige-50',
+              )}
+            >
+              {itemAmount === 0 ? <>Delete Order</> : <>Add to cart</>}
+            </Button>
           </div>
         </div>
       </div>

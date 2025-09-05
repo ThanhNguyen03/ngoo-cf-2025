@@ -2,9 +2,10 @@
 
 import { useParallaxLayer } from '@/hooks/use-parallax-layer'
 import { liptonTea } from '@/products'
+import useCartStore from '@/store/cart-store'
 import { TItem } from '@/types'
 import { cn } from '@/utils'
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { FenceCloud } from '../icons'
 import ItemCard from '../ui/ItemCard'
 import { Slider } from '../ui/Slider'
@@ -13,85 +14,107 @@ import ItemDetailModal from '../ui/modal/ItemDetailModal'
 const MOCKED_ITEMS_DATA: TItem[] = [
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 1',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 2',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
-    amountDiscount: 10,
+    discountPercent: 10,
   },
   {
     image: liptonTea,
     title: 'Olong Milk Tea',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
     additionalOption: [
       {
-        title: 'topping',
-        listOption: [
-          { name: 'Black Bubbles', extraPrice: 0.5 },
-          { name: 'White Bubbles', extraPrice: 0.5 },
-          { name: 'Olong Tea Bubbles', extraPrice: 0.7 },
-          { name: 'Flan Cake', extraPrice: 0.7 },
-        ],
+        group: 'topping',
+        name: 'Black Bubbles',
+        extraPrice: 0.5,
+      },
+      {
+        group: 'topping',
+        name: 'White Bubbles',
+        extraPrice: 0.5,
+      },
+      {
+        group: 'topping',
+        name: 'Olong Tea Bubbles',
+        extraPrice: 0.7,
+      },
+      {
+        group: 'topping',
+        name: 'Flan Cake',
+        extraPrice: 0.7,
       },
     ],
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 3',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
-    amountDiscount: 10,
+    discountPercent: 10,
   },
   {
     image: liptonTea,
     title: 'XaiGon Coffee',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
-    amountDiscount: 8,
+    discountPercent: 8,
     additionalOption: [
       {
-        title: 'extra',
-        listOption: [{ name: '+1 Coffee Shot', extraPrice: 0.5 }],
+        group: 'extra',
+        name: '+1 Coffee Shot',
+        extraPrice: 0.5,
       },
     ],
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 4',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 5',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 6',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
-    amountDiscount: 5,
+    discountPercent: 5,
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 7',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 8',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
-    amountDiscount: 9,
+    discountPercent: 9,
   },
 ]
 
@@ -114,7 +137,16 @@ const BestSeller: FC<TBestSellerProps> = ({ isInview, ref }) => {
   const cloudFenceRef = useParallaxLayer<SVGSVGElement>(ref, {
     translateRatio: -3,
   })
+  const { listCartItem } = useCartStore()
   const [selectedItem, setSelectedItem] = useState<TItem>()
+
+  const displayedItems = useMemo(() => {
+    return MOCKED_ITEMS_DATA.map((mock) => {
+      const amount =
+        listCartItem.find((item) => item.title === mock.title)?.amount || 0
+      return { ...mock, amount } as TItem
+    })
+  }, [listCartItem])
 
   return (
     <section
@@ -135,7 +167,7 @@ const BestSeller: FC<TBestSellerProps> = ({ isInview, ref }) => {
             onPause={!!selectedItem}
             className='z-10 [--webkit-mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)] [mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)]'
           >
-            {MOCKED_ITEMS_DATA.map((item, i) => (
+            {displayedItems.map((item, i) => (
               <ItemCard
                 key={`${item.title}-${i}`}
                 data={item}

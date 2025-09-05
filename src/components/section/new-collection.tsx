@@ -10,7 +10,7 @@ import {
   cloudFlat,
 } from '@/icons'
 import { collectionBanner } from '@/images'
-import { ENewProduct, TCollection } from '@/types'
+import { ENewProduct, TCollectionData } from '@/types'
 import { cn } from '@/utils'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr'
 import { cubicBezier, motion } from 'framer-motion'
@@ -61,8 +61,8 @@ const collectionVariants = {
 }
 
 type TNewCollectionProps = {
-  setSelectedProduct: (item?: TCollection) => void
-  selectedProduct?: TCollection
+  setSelectedProduct: (item?: TCollectionData) => void
+  selectedProduct?: TCollectionData
   inCollectionView: boolean
   inSellerView: boolean
   ref: RefObject<HTMLDivElement | null>

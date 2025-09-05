@@ -1,5 +1,6 @@
-import { DEBOUNCE_DURATION } from '@/constants'
-import { TItem, TItemOption, TListItemOption, TModalProps } from '@/types'
+import { DEBOUNCE_DURATION, SIZE_OPTION } from '@/constants'
+import useCartStore, { calculateItemPrice } from '@/store/cart-store'
+import { TGroupOption, TItem, TItemOption, TModalProps } from '@/types'
 import { cn } from '@/utils'
 import {
   MinusIcon,
@@ -14,35 +15,43 @@ import Button from '../Button'
 import { Checkbox } from '../CheckBox'
 import { Modal } from './Modal'
 
-const LIST_DEFAULT_OPTION: TListItemOption[] = [
+const LIST_REQUIRED_OPTION_GROUP = ['size', 'sweet', 'ice']
+
+const LIST_DEFAULT_OPTION: TItemOption[] = [
+  ...SIZE_OPTION,
   {
-    title: 'size',
-    listOption: [{ name: 'M' }, { name: 'L', extraPrice: 2 }],
-    isRequired: true,
+    group: 'sweet',
+    name: 'Less Sweet',
   },
   {
-    title: 'sweet',
-    listOption: [
-      { name: 'Less Sweet' },
-      { name: 'Default Sweet' },
-      { name: 'More Sweet' },
-    ],
-    isRequired: true,
+    group: 'sweet',
+    name: 'Default Sweet',
   },
   {
-    title: 'ice',
-    listOption: [
-      { name: 'Less Ices' },
-      { name: 'Default Ices' },
-      { name: 'More Ices' },
-    ],
-    isRequired: true,
+    group: 'sweet',
+    name: 'More Sweet',
+  },
+  {
+    group: 'ice',
+    name: 'Less Ices',
+  },
+  {
+    group: 'ice',
+    name: 'Default Ices',
+  },
+  {
+    group: 'ice',
+    name: 'More Ices',
   },
 ]
 
-type TItemOptionProps = TListItemOption & {
+type TItemOptionProps = {
+  title: string
+  isRequired?: boolean
   className?: string
-  onChange?: (selected: string[] | string) => void
+  onChange: (selected: TItemOption[]) => void
+  selectedOptions: TItemOption[]
+  listOption: TItemOption[]
 }
 
 const ItemOption: FC<TItemOptionProps> = ({
@@ -51,28 +60,22 @@ const ItemOption: FC<TItemOptionProps> = ({
   className,
   isRequired,
   onChange,
+  selectedOptions,
 }) => {
-  const [radioOption, setRadioOption] = useState<string | string[]>(
-    isRequired ? '' : [],
-  )
+  const isSelected = (option: TItemOption) =>
+    selectedOptions.some(
+      (c) => c.group === option.group && c.name === option.name,
+    )
 
-  useEffect(() => {
-    onChange?.(radioOption)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [radioOption, isRequired])
-
-  const handleCheckboxChange = (value: string) => {
-    if (!isRequired) {
-      setRadioOption((prev) => {
-        if (Array.isArray(prev)) {
-          return prev.includes(value)
-            ? prev.filter((option) => option !== value)
-            : [...prev, value]
-        }
-        return [value]
-      })
+  const handleCheckboxChange = (option: TItemOption) => {
+    if (isRequired) {
+      onChange([option])
     } else {
-      setRadioOption(value)
+      onChange(
+        isSelected(option)
+          ? selectedOptions.filter((v) => v.name !== option.name)
+          : [...selectedOptions, option],
+      )
     }
   }
 
@@ -84,18 +87,14 @@ const ItemOption: FC<TItemOptionProps> = ({
       )}
     >
       <div className='flex items-center justify-between'>
-        <h3 className='font-small-caps text-18 font-semibold uppercase'>
-          {title}
-        </h3>
+        <h3 className='font-small-caps text-18 font-semibold'>{title}</h3>
         <p
           className={cn(
             'rounded-2 bg-shade-700/10 text-dark-600/70 !text-12 px-2 py-0.75',
-            (Array.isArray(radioOption)
-              ? radioOption.length > 0
-              : !!radioOption) && 'bg-green-100 text-green-600',
+            selectedOptions.length > 0 && 'bg-green-100 text-green-600',
           )}
         >
-          {(Array.isArray(radioOption) ? radioOption.length > 0 : !!radioOption)
+          {selectedOptions.length > 0
             ? 'Selected'
             : isRequired
               ? 'Select 1 option'
@@ -104,42 +103,41 @@ const ItemOption: FC<TItemOptionProps> = ({
       </div>
       {/* checkbox */}
       <div className='flex w-full flex-col items-start gap-1'>
-        {listOption.map((option) => (
-          <div
-            key={option.name}
-            className='flex w-full items-center justify-between'
-          >
-            <div className='flex items-center gap-2'>
-              <Checkbox
-                type={isRequired ? 'radio' : 'checkbox'}
-                checked={
-                  Array.isArray(radioOption)
-                    ? radioOption.includes(option.name)
-                    : radioOption === option.name
-                }
-                onChange={() => handleCheckboxChange(option.name)}
-                label={option.name}
-                className={cn(
-                  radioOption &&
-                    isRequired &&
-                    radioOption !== option.name &&
-                    'opacity-30',
-                )}
-                labelClassName={cn(
-                  radioOption &&
-                    isRequired &&
-                    radioOption !== option.name &&
-                    'opacity-30',
-                )}
-              />
+        {listOption.map((option) => {
+          const checked = isSelected(option)
+          return (
+            <div
+              key={option.name}
+              className='flex w-full items-center justify-between'
+            >
+              <div className='flex items-center gap-2'>
+                <Checkbox
+                  type={isRequired ? 'radio' : 'checkbox'}
+                  checked={checked}
+                  onChange={() => handleCheckboxChange(option)}
+                  label={option.name}
+                  className={cn(
+                    selectedOptions.length > 0 &&
+                      !checked &&
+                      isRequired &&
+                      'opacity-30',
+                  )}
+                  labelClassName={cn(
+                    selectedOptions.length > 0 &&
+                      !checked &&
+                      isRequired &&
+                      'opacity-30',
+                  )}
+                />
+              </div>
+              {option.extraPrice && (
+                <p className='rounded-2 bg-shade-700/10 text-dark-600/70 text-10 min-w-10 px-1 py-0.75 text-center'>
+                  +{option.extraPrice}$
+                </p>
+              )}
             </div>
-            {option.extraPrice && (
-              <p className='rounded-2 bg-shade-700/10 text-dark-600/70 text-10 min-w-10 px-1 py-0.75 text-center'>
-                +{option.extraPrice}$
-              </p>
-            )}
-          </div>
-        ))}
+          )
+        })}
       </div>
     </div>
   )
@@ -150,69 +148,58 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
   onClose,
   data,
 }) => {
+  const { addToCart, removeFromCart, updateCartItem, listCartItem } =
+    useCartStore()
+
   const [totalPrice, setTotalPrice] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(false)
 
-  const [itemAmount, setItemAmount] = useState<number>(1)
+  const [itemAmount, setItemAmount] = useState<number>(
+    data.amount > 0 ? data.amount : 1,
+  )
   const [itemAmountInput, setItemAmountInput] = useState<string>(
     String(itemAmount),
   )
-  const [selectedOptions, setSelectedOptions] = useState<
-    Record<string, string | string[]>
-  >({})
+  const [selectedOptions, setSelectedOptions] = useState<TItemOption[]>(
+    listCartItem.find((i) => i.title === data.title)?.additionalOption || [],
+  )
+
+  const listOptions = useMemo(() => {
+    const listAdditionOption = [
+      ...LIST_DEFAULT_OPTION,
+      ...(data.additionalOption || []),
+    ]
+    const grouped: Record<string, TGroupOption & { list: TItemOption[] }> = {}
+
+    for (const option of listAdditionOption) {
+      const isRequired = LIST_REQUIRED_OPTION_GROUP.includes(option.group)
+      if (!grouped[option.group]) {
+        grouped[option.group] = { group: option.group, isRequired, list: [] }
+      }
+      grouped[option.group].list.push({
+        group: option.group,
+        name: option.name,
+        extraPrice: option.extraPrice,
+      })
+    }
+
+    return Object.values(grouped)
+  }, [data.additionalOption])
 
   const isRequiredSelected = useMemo(() => {
-    const requiredOptions = [
-      ...LIST_DEFAULT_OPTION.filter((opt) => opt.isRequired).map(
-        (opt) => opt.title,
-      ),
-      ...(data.additionalOption
-        ?.filter((opt) => opt.isRequired)
-        .map((opt) => opt.title) || []),
-    ]
+    const requiredTypes = listOptions
+      .filter((group) => group.isRequired)
+      .map((group) => group.group)
 
-    return requiredOptions.every((key) => {
-      const value = selectedOptions[key]
-      if (Array.isArray(value)) {
-        return value.length > 0
-      }
-      return !!value
-    })
-  }, [selectedOptions, data])
+    return requiredTypes.every((type) =>
+      selectedOptions.some((o) => o.group === type),
+    )
+  }, [listOptions, selectedOptions])
 
   useEffect(() => {
     setLoading(true)
     const handler = setTimeout(() => {
-      const findOption = (name: string): TItemOption | undefined => {
-        const allOptions = [
-          ...LIST_DEFAULT_OPTION.flatMap((add) => add.listOption),
-          ...(data.additionalOption?.flatMap((add) => add.listOption) ?? []),
-        ]
-        return allOptions.find((opt) => opt.name === name)
-      }
-
-      const basePrice = data.amountDiscount
-        ? data.price - (data.price * data.amountDiscount) / 100
-        : data.price
-
-      let extraPrice = 0
-      Object.values(selectedOptions).forEach((value) => {
-        if (Array.isArray(value)) {
-          value.forEach((v) => {
-            const option = findOption(v)
-            if (option?.extraPrice) {
-              extraPrice += Number(option.extraPrice) || 0
-            }
-          })
-        } else {
-          const option = findOption(value)
-          if (option?.extraPrice) {
-            extraPrice += Number(option.extraPrice) || 0
-          }
-        }
-      })
-
-      setTotalPrice((basePrice + extraPrice) * itemAmount)
+      setTotalPrice(calculateItemPrice(data, selectedOptions, itemAmount))
       setLoading(false)
     }, DEBOUNCE_DURATION)
 
@@ -230,10 +217,22 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
 
   const handleSubmit = () => {
     if (itemAmount === 0) {
+      removeFromCart(data.title)
       onClose()
-    } else {
-      // TODO:
+      return
     }
+    const newItem: TItem = {
+      ...data,
+      amount: itemAmount,
+      additionalOption: selectedOptions,
+    }
+    const existed = listCartItem.some((i) => i.title === data.title)
+    if (existed) {
+      updateCartItem(newItem)
+    } else {
+      addToCart(newItem)
+    }
+    onClose()
   }
 
   return (
@@ -268,24 +267,24 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
                 <p
                   className={cn(
                     'text-16! text-dark-600/50 mt-1.25',
-                    !!data.amountDiscount &&
+                    !!data.discountPercent &&
                       'text-dark-600/50 text-12! line-through',
                   )}
                 >
                   {data.price}$
                 </p>
-                {data.amountDiscount && (
+                {data.discountPercent && (
                   <p className='text-18! text-dark-600/70 font-bold'>
-                    {data.price - (data.price * data.amountDiscount) / 100}$
+                    {data.price - (data.price * data.discountPercent) / 100}$
                   </p>
                 )}
               </div>
             </div>
-            {data.amountDiscount && (
+            {data.discountPercent && (
               <div className='flex items-start gap-1'>
                 <TagIcon size={14} className='text-secondary-500 rotate-90' />
                 <p className='text-12! text-dark-600/70'>
-                  Sale {data.amountDiscount}%
+                  Sale {data.discountPercent}%
                 </p>
               </div>
             )}
@@ -294,46 +293,31 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
             </p>
           </div>
 
-          {/* required option */}
+          {/* Optional */}
           <div className='border-dark-600/10 border-b px-2 md:px-4'>
-            {LIST_DEFAULT_OPTION.map((add, i) => (
+            {listOptions.map((add, i) => (
               <ItemOption
-                key={add.title}
-                isRequired={add.isRequired}
-                title={add.title}
-                listOption={add.listOption}
+                key={`${add.group}-${i}`}
+                isRequired={LIST_REQUIRED_OPTION_GROUP.includes(add.group)}
+                title={add.group}
+                listOption={add.list}
                 className={cn(
-                  i === LIST_DEFAULT_OPTION.length - 1 && 'border-0',
+                  data.additionalOption &&
+                    i === data.additionalOption.length - 1 &&
+                    'border-0',
                 )}
-                onChange={(v) =>
-                  setSelectedOptions((prev) => ({ ...prev, [add.title]: v }))
-                }
+                selectedOptions={selectedOptions.filter(
+                  (o) => o.group === add.group,
+                )}
+                onChange={(next) => {
+                  setSelectedOptions((prev) => [
+                    ...prev.filter((o) => o.group !== add.group),
+                    ...next,
+                  ])
+                }}
               />
             ))}
           </div>
-
-          {/* Optional */}
-          {data.additionalOption && data.additionalOption.length > 0 && (
-            <div className='border-dark-600/10 border-b px-2 md:px-4'>
-              {data.additionalOption.map((add, i) => (
-                <ItemOption
-                  key={add.title}
-                  isRequired={add.isRequired}
-                  title={add.title}
-                  listOption={add.listOption}
-                  className={cn(
-                    data.additionalOption &&
-                      data.additionalOption.length > 0 &&
-                      i === data.additionalOption.length - 1 &&
-                      'border-0',
-                  )}
-                  onChange={(v) =>
-                    setSelectedOptions((prev) => ({ ...prev, [add.title]: v }))
-                  }
-                />
-              ))}
-            </div>
-          )}
 
           {/* Noted */}
           <div className='flex w-full flex-col gap-2 p-2 pb-1 md:gap-4 md:p-4'>
@@ -354,11 +338,7 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
           {/* Amounts */}
           <div className='mb-14 flex w-full items-center justify-center gap-4 p-2 md:gap-6 md:p-4'>
             <Button
-              onClick={() => {
-                if (itemAmount > 0) {
-                  setItemAmount((prev) => prev - 1)
-                }
-              }}
+              onClick={() => setItemAmount((prev) => Math.max(0, prev - 1))}
               disabled={itemAmount < 1}
               className='rounded-full bg-green-500 p-1.5'
               disableAnimation

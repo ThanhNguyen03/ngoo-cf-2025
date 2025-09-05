@@ -4,7 +4,13 @@ import {
   orangeJuiceBottle,
   strawberryJuiceBottle,
 } from '@/products'
-import { ENewProduct, TCollection, TItemOption, TNavigationItem } from '@/types'
+import {
+  ENewProduct,
+  TCollectionData,
+  TItem,
+  TItemOption,
+  TNavigationItem,
+} from '@/types'
 import {
   ChatsCircleIcon,
   FacebookLogoIcon,
@@ -15,7 +21,6 @@ import {
   TelegramLogoIcon,
   VaultIcon,
 } from '@phosphor-icons/react/dist/ssr'
-import { StaticImageData } from 'next/image'
 
 export const DEV_APP_URL = 'http://localhost:3000'
 export const LOCALSTORAGE_KEY = 'ngoo_coffee_visited'
@@ -49,7 +54,6 @@ export const LIST_HEADER_NAVIGATION: TNavigationItem[] = [
     openInNewTab: true,
   },
 ]
-
 export const LIST_SOCIAL_BUTTON: TNavigationItem[] = [
   {
     name: 'Facebook',
@@ -72,7 +76,6 @@ export const LIST_SOCIAL_BUTTON: TNavigationItem[] = [
     href: 'mailto:thanhfng.dev@gmail.com',
   },
 ]
-
 export const LIST_FOOTER_NAVIGATION: Array<
   Record<'title', string> & {
     children: TNavigationItem[]
@@ -97,7 +100,7 @@ export const LIST_FOOTER_NAVIGATION: Array<
   },
 ]
 
-export const LIST_NEW_PRODUCT: TCollection[] = [
+export const LIST_NEW_PRODUCT: TCollectionData[] = [
   {
     title: ENewProduct.Cherry,
     img: cherryJuiceBottle,
@@ -124,25 +127,33 @@ export const LIST_NEW_PRODUCT: TCollection[] = [
   },
 ]
 
-type TCollectionData = {
-  img: string | StaticImageData
+type TNewItem = TItem & {
   model: string
   tag: string
-  description: string
-  price: number
-  sizeOption: TItemOption[]
   bgClassName?: string
   buttonClassName?: string
   titleClassName?: string
 }
-
-export const NEW_PRODUCT_DATA: Record<ENewProduct, TCollectionData> = {
+export const SIZE_OPTION: TItemOption[] = [
+  {
+    group: 'size',
+    name: 'M',
+  },
+  {
+    group: 'size',
+    name: 'L',
+    extraPrice: 2,
+  },
+]
+export const NEW_PRODUCT_DATA: Record<ENewProduct, TNewItem> = {
   [ENewProduct.Cherry]: {
-    img: cherryJuiceBottle,
+    title: 'Cherry Juice',
+    image: cherryJuiceBottle,
     model: '/models/cherry.glb',
     tag: 'Sweet, fresh, and a sip of happiness.',
     price: 5,
-    sizeOption: [{ name: 'M' }, { name: 'L', extraPrice: 2 }],
+    amount: 0,
+    additionalOption: SIZE_OPTION,
     bgClassName:
       'bg-[radial-gradient(ellipse_at_center,hsl(340,75%,30%)_0%,hsl(335,75%,42%)_40%,hsla(345,7%,10%)_80%)]',
     buttonClassName: 'hover:bg-linear-to-br from-cherry-500/70 to-white/10',
@@ -151,11 +162,13 @@ export const NEW_PRODUCT_DATA: Record<ENewProduct, TCollectionData> = {
       'Our Cherry Juice shines with a vibrant ruby-red color and a naturally sweet-tart taste from fresh cherries. Packed with antioxidants, it not only refreshes but also supports glowing skin and heart health. A perfect balance of sweetness and lightness in every sip.',
   },
   [ENewProduct.Kiwi]: {
-    img: kiwiJuiceBottole,
+    title: 'Kiwi Juice',
+    image: kiwiJuiceBottole,
     model: '/models/kiwi.glb',
     tag: 'Tangy, refreshing, and naturally energizing.',
     price: 5,
-    sizeOption: [{ name: 'M' }, { name: 'L', extraPrice: 2 }],
+    amount: 0,
+    additionalOption: SIZE_OPTION,
     bgClassName:
       'bg-[radial-gradient(ellipse_at_center,hsl(68,76%,30%)_0%,hsl(68,76%,42%)_40%,hsla(345,7%,10%)_80%)]',
     buttonClassName: 'hover:bg-linear-to-br from-kiwi-500/50 to-white/10',
@@ -164,11 +177,13 @@ export const NEW_PRODUCT_DATA: Record<ENewProduct, TCollectionData> = {
       'Kiwi Juice delivers a refreshing surprise with its tangy-sweet balance and distinctive fragrance of fresh kiwi. Rich in vitamin C and fiber, it boosts your energy while keeping you light, fresh, and healthy throughout the day.',
   },
   [ENewProduct.Orange]: {
-    img: orangeJuiceBottle,
+    title: 'Orange Juice',
+    image: orangeJuiceBottle,
     model: '/models/orange.glb',
     tag: 'One glass of orange, one brighter day.',
     price: 5,
-    sizeOption: [{ name: 'M' }, { name: 'L', extraPrice: 2 }],
+    amount: 0,
+    additionalOption: SIZE_OPTION,
     bgClassName:
       'bg-[radial-gradient(ellipse_at_center,hsl(32,99%,30%)_0%,hsl(32,99%,42%)_40%,hsla(345,7%,10%)_80%)]',
     buttonClassName: 'hover:bg-linear-to-br from-orange-500/50 to-white/10',
@@ -177,11 +192,13 @@ export const NEW_PRODUCT_DATA: Record<ENewProduct, TCollectionData> = {
       'Nothing beats the freshness of pure Orange Juice. With its sweet, zesty flavor and vitamin C richness, it strengthens immunity, brightens your mood, and fuels your day with vitality. A timeless classic that never goes out of style.',
   },
   [ENewProduct.Strawberry]: {
-    img: strawberryJuiceBottle,
+    title: 'Strawberry Juice',
+    image: strawberryJuiceBottle,
     model: '/models/strawberry.glb',
     tag: 'Naturally sweet, love at first sip.',
     price: 5,
-    sizeOption: [{ name: 'M' }, { name: 'L', extraPrice: 2 }],
+    amount: 0,
+    additionalOption: SIZE_OPTION,
     bgClassName:
       'bg-[radial-gradient(ellipse_at_center,hsl(0,96%,30%)_0%,hsl(0,96%,42%)_40%,hsla(345,7%,10%)_80%)]',
     buttonClassName: 'hover:bg-linear-to-br from-strawberry-500/50 to-white/10',
