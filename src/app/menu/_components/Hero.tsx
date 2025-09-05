@@ -1,11 +1,11 @@
 'use client'
 
+import AmountCounter from '@/components/ui/AmountCounter'
 import Button from '@/components/ui/Button'
 import { LIST_NEW_PRODUCT, NEW_PRODUCT_DATA, SIZE_OPTION } from '@/constants'
 import useCartStore, { calculateItemPrice } from '@/store/cart-store'
 import { ENewProduct, TItem } from '@/types'
 import { cn } from '@/utils'
-import { MinusIcon, PlusIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import Bottle3D from './ui/Bottle3D'
@@ -40,8 +40,14 @@ const Hero = () => {
       removeFromCart(NEW_PRODUCT_DATA[selectedProduct].title)
       return
     }
+    const data = {
+      image: NEW_PRODUCT_DATA[selectedProduct].image,
+      title: NEW_PRODUCT_DATA[selectedProduct].title,
+      price: NEW_PRODUCT_DATA[selectedProduct].price,
+      discountPercent: NEW_PRODUCT_DATA[selectedProduct].discountPercent,
+    }
     const newItem: TItem = {
-      ...NEW_PRODUCT_DATA[selectedProduct],
+      ...data,
       amount: itemAmount,
       additionalOption: SIZE_OPTION.filter((opt) => opt.name === selectedSize),
     }
@@ -187,39 +193,21 @@ const Hero = () => {
             </div>
           </div>
           <div className='flex w-full items-center justify-between'>
-            <div className='flex items-center justify-center gap-2 md:gap-4'>
-              <Button
-                onClick={() => setItemAmount((prev) => Math.max(0, prev - 1))}
-                disabled={itemAmount < 1}
-                className='rounded-2 border border-white p-1.5'
-                disableAnimation
-                icon={
-                  <MinusIcon className='text-white' size={14} weight='bold' />
-                }
-              />
-              <p className='rounded-2 text-16 flex size-8 items-center justify-center text-center text-white lining-nums'>
-                {itemAmount}
-              </p>
-              <Button
-                onClick={() => setItemAmount((prev) => prev + 1)}
-                className='rounded-2 border border-white p-1.5'
-                disableAnimation
-                icon={
-                  <PlusIcon className='text-white' size={14} weight='bold' />
-                }
-              />
-            </div>
+            <AmountCounter
+              onChange={setItemAmount}
+              buttonClassName='rounded-2! border border-white p-1.5 bg-transparent'
+            />
             <Button
               disableAnimation
               onClick={handleSubmit}
               disabled={
-                listCartItem.some(
-                  (i) => i.title !== NEW_PRODUCT_DATA[selectedProduct].title,
+                !listCartItem.some(
+                  (i) => i.title === NEW_PRODUCT_DATA[selectedProduct].title,
                 ) && itemAmount === 0
               }
               className={cn(
                 'rounded-3 text-secondary-500 w-fit px-4 py-2 text-nowrap duration-200',
-                itemAmount === 0 ? 'bg-red-500' : 'bg-beige-50',
+                itemAmount === 0 ? 'bg-red-500 text-white' : 'bg-beige-50',
               )}
             >
               {itemAmount === 0 ? <>Delete Order</> : <>Add to cart</>}

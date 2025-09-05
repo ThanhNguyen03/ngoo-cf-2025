@@ -2,15 +2,10 @@ import { DEBOUNCE_DURATION, SIZE_OPTION } from '@/constants'
 import useCartStore, { calculateItemPrice } from '@/store/cart-store'
 import { TGroupOption, TItem, TItemOption, TModalProps } from '@/types'
 import { cn } from '@/utils'
-import {
-  MinusIcon,
-  PlusIcon,
-  TagIcon,
-  TrashIcon,
-  XIcon,
-} from '@phosphor-icons/react/dist/ssr'
+import { TagIcon, TrashIcon, XIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
-import { ChangeEvent, FC, useEffect, useMemo, useState } from 'react'
+import { FC, useEffect, useMemo, useState } from 'react'
+import AmountCounter from '../AmountCounter'
 import Button from '../Button'
 import { Checkbox } from '../CheckBox'
 import { Modal } from './Modal'
@@ -157,9 +152,6 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
   const [itemAmount, setItemAmount] = useState<number>(
     data.amount > 0 ? data.amount : 1,
   )
-  const [itemAmountInput, setItemAmountInput] = useState<string>(
-    String(itemAmount),
-  )
   const [selectedOptions, setSelectedOptions] = useState<TItemOption[]>(
     listCartItem.find((i) => i.title === data.title)?.additionalOption || [],
   )
@@ -202,18 +194,8 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
       setTotalPrice(calculateItemPrice(data, selectedOptions, itemAmount))
       setLoading(false)
     }, DEBOUNCE_DURATION)
-
-    setItemAmountInput(String(itemAmount))
     return () => clearTimeout(handler)
   }, [itemAmount, data, selectedOptions])
-
-  const onChangeAmount = (e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    if (/^\d*$/.test(value)) {
-      setItemAmountInput(value)
-      setItemAmount(Number(value) || 0)
-    }
-  }
 
   const handleSubmit = () => {
     if (itemAmount === 0) {
@@ -336,31 +318,12 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
           </div>
 
           {/* Amounts */}
-          <div className='mb-14 flex w-full items-center justify-center gap-4 p-2 md:gap-6 md:p-4'>
-            <Button
-              onClick={() => setItemAmount((prev) => Math.max(0, prev - 1))}
-              disabled={itemAmount < 1}
-              className='rounded-full bg-green-500 p-1.5'
-              disableAnimation
-              icon={
-                <MinusIcon className='text-white' size={14} weight='bold' />
-              }
-            />
-            <input
-              className='rounded-2 flex size-8 items-center justify-center border border-neutral-900/10 text-center text-sm text-neutral-800 lining-nums focus-within:outline-none focus:ring-0 focus:ring-offset-0 disabled:pointer-events-none disabled:opacity-50'
-              type='number'
-              aria-label='Enter page'
-              value={itemAmountInput}
-              min={0}
-              onChange={onChangeAmount}
-            />
-            <Button
-              onClick={() => setItemAmount((prev) => prev + 1)}
-              className='rounded-full bg-green-500 p-1.5'
-              disableAnimation
-              icon={<PlusIcon className='text-white' size={14} weight='bold' />}
-            />
-          </div>
+          <AmountCounter
+            className='mb-14 flex w-full items-center justify-center gap-4 p-2 md:gap-6 md:p-4'
+            isInputAmount
+            onChange={setItemAmount}
+            amount={data.amount > 1 ? data.amount : 1}
+          />
         </div>
         {/* Submit button */}
         <div className='bg-beige-50 fixed bottom-0 flex w-full justify-center p-2 md:p-4'>
