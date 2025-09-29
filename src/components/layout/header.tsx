@@ -6,14 +6,12 @@ import { ListIcon, XIcon } from '@phosphor-icons/react/dist/ssr'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { useAccount } from 'wagmi'
 import { ConnectWalletButton } from '../ui'
 import NgOoLogo from '../ui/NgOoLogo'
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
   const pathname = usePathname()
-  const { isConnected, address } = useAccount()
 
   return (
     <header className='bg-beige-100 sticky top-0 z-[99] border-b border-white/[2%] px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
@@ -45,7 +43,7 @@ const Header = () => {
         {/* right */}
         <div className='flex h-full items-center justify-center gap-2 py-2'>
           {/* demo connect wallet button */}
-          <ConnectWalletButton isConnected={isConnected} address={address} />
+          <ConnectWalletButton />
 
           {/* menu button */}
           {

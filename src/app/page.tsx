@@ -6,7 +6,7 @@ import Hero from '@/components/section/hero'
 import NewCollection from '@/components/section/new-collection'
 import { InfiniteCarousel } from '@/components/ui/InfiniteCarousel'
 import { notifyBg } from '@/images'
-import { TCollection } from '@/types'
+import { TCollectionData } from '@/types'
 import { SealPercentIcon } from '@phosphor-icons/react/dist/ssr'
 import { useInView } from 'framer-motion'
 import Image from 'next/image'
@@ -16,7 +16,7 @@ import Loading from './loading'
 export default function Home() {
   const collectionContainerRef = useRef<HTMLDivElement | null>(null)
   const sellerContainerRef = useRef<HTMLDivElement | null>(null)
-  const [selectedProduct, setSelectedProduct] = useState<TCollection>()
+  const [selectedProduct, setSelectedProduct] = useState<TCollectionData>()
   const [loading, setLoading] = useState<boolean>(false)
 
   const inSellerView = useInView(sellerContainerRef, {
@@ -35,7 +35,7 @@ export default function Home() {
       {!loading && <Loading />}
       <Hero />
       <div className='from-beige-100 relative bg-linear-to-b via-white via-70% to-white transition-colors duration-500'>
-        <div className='bg-dark-600 h-10' />
+        <div className='from-dark-600 to-beige-300 h-10 bg-linear-to-r from-50% to-50%' />
         <InfiniteCarousel
           className='from-beige-300 to-beige-50 border-secondary-500/10 absolute -top-10 z-10 w-full -rotate-3 border-y bg-linear-to-b'
           length={7}

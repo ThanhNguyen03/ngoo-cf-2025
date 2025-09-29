@@ -28,35 +28,27 @@ export type TIconProps = SVGProps<SVGSVGElement> & {
 
 export type TItemOption = {
   name: string
-  extraPrice?: number | string
+  extraPrice?: number
+  group: string
 }
-export type TListItemOption = {
-  title: string
-  listOption: TItemOption[]
+export type TGroupOption = {
+  group: string
   isRequired?: boolean
 }
-
 export type TItem = {
   image: string | StaticImageData
   title: string
   price: number
-  amountDiscount?: number
+  amount: number
+  discountPercent?: number
   description?: string
-  additionalOption?: TListItemOption[]
+  additionalOption?: TItemOption[]
 }
 
-export type TCollection = {
+export type TCollectionData = {
   title: string
   img: string | StaticImageData
   bgClassName?: string
-}
-
-export type TNewCollection = {
-  model: string
-  tag: string
-  description: string
-  bgClassName?: string
-  buttonClassName?: string
 }
 
 export enum ENewProduct {

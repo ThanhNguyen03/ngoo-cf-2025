@@ -19,20 +19,22 @@ type TCursor = {
   y: number
 }
 
-type TBottleProps = {
+type TDraggableBottleProps = {
   url: string
-  autoRotate?: boolean
   speed?: number
   delta?: TCursor
+  isRotate?: boolean
 }
 
-const DraggableBottle = forwardRef<THREE.Group, TBottleProps>(
-  ({ url, autoRotate, speed = 0.1, delta }, ref) => {
+const DraggableBottle = forwardRef<THREE.Group, TDraggableBottleProps>(
+  ({ url, isRotate, speed = 0.1, delta }, ref) => {
     const { scene } = useGLTF(url)
     const cloned = useMemo(() => scene.clone(), [scene])
+
     const groupRef = useRef<THREE.Group>(null)
-    const rotationDone = useRef<boolean>(false)
     const velocity = useRef<TCursor>({ x: 0, y: 0 })
+    const animating = useRef<boolean>(false)
+    const targetRotation = useRef<number>(0)
 
     useEffect(() => {
       if (typeof ref === 'function') {
@@ -42,46 +44,60 @@ const DraggableBottle = forwardRef<THREE.Group, TBottleProps>(
       }
     }, [ref])
 
+    useEffect(() => {
+      if (isRotate && groupRef.current) {
+        animating.current = true
+        targetRotation.current = groupRef.current.rotation.y + Math.PI * 2
+      }
+    }, [isRotate])
+
     useFrame(() => {
-      if (!groupRef.current) {
+      const group = groupRef.current
+      if (!group) {
         return
       }
 
-      if (autoRotate && !rotationDone.current) {
-        groupRef.current.rotation.y += speed
-        if (groupRef.current.rotation.y >= Math.PI * 2) {
-          rotationDone.current = true
-          groupRef.current.rotation.y = 0
+      // Animate
+      if (animating.current) {
+        group.rotation.y += speed
+        if (group.rotation.y >= targetRotation.current) {
+          group.rotation.y = targetRotation.current % (Math.PI * 2)
+          animating.current = false
         }
       }
 
-      if (delta) {
+      // Add drag delta into velocity
+      if (delta && !animating.current) {
         velocity.current.x += delta.x
         velocity.current.y += delta.y
         delta.x = 0
         delta.y = 0
       }
 
-      groupRef.current.rotation.y += velocity.current.x
-      groupRef.current.rotation.x += velocity.current.y
+      // Apply velocity to rotation
+      if (!animating.current) {
+        group.rotation.y += velocity.current.x
+        group.rotation.x += velocity.current.y
+      }
 
-      // Limit rotate X
-      groupRef.current.rotation.x = Math.max(
+      // Clamp rotation X (up/down tilt)
+      group.rotation.x = Math.max(
         -Math.PI / 2,
-        Math.min(Math.PI / 2, groupRef.current.rotation.x),
+        Math.min(Math.PI / 2, group.rotation.x),
       )
 
+      // Apply damping (ease out)
       velocity.current.x *= 0.8
       velocity.current.y *= 0.4
     })
 
     return (
-      <group ref={groupRef}>
+      <group ref={groupRef} rotation={[0, -Math.PI / 2, 0]}>
         <primitive
           object={cloned}
           scale={2}
           position={[0, 0, 0]}
-          rotation={[0, -Math.PI / 2, 0]}
+          rotation={[0.4, 0, 0]}
         />
       </group>
     )
@@ -93,9 +109,10 @@ DraggableBottle.displayName = 'DraggableBottle'
 type TBottle3DProps = {
   glbUrl: string
   className?: string
+  isRotate?: boolean
 }
 
-const Bottle3D: FC<TBottle3DProps> = ({ glbUrl, className }) => {
+const Bottle3D: FC<TBottle3DProps> = ({ glbUrl, className, isRotate }) => {
   const bottleRef = useRef<THREE.Group>(null)
   const [isDragging, setIsDragging] = useState<boolean>(false)
   const [lastPos, setLastPos] = useState<TCursor>({ x: 0, y: 0 })
@@ -122,7 +139,7 @@ const Bottle3D: FC<TBottle3DProps> = ({ glbUrl, className }) => {
   }
 
   return (
-    <div className={cn('h-[500px] w-[200px]', className)}>
+    <div className={cn('size-[400px]', className)}>
       <Canvas
         camera={{ position: [0, 0, 3], fov: 45 }}
         shadows
@@ -135,12 +152,17 @@ const Bottle3D: FC<TBottle3DProps> = ({ glbUrl, className }) => {
         onPointerMove={handlePointerMove}
         onPointerLeave={handlePointerUp}
       >
-        <ambientLight intensity={0.5} />
-        <directionalLight position={[5, 5, 5]} intensity={1.2} castShadow />
+        <ambientLight intensity={1} />
+        <directionalLight
+          position={[5, 5, 5]}
+          intensity={3}
+          castShadow
+          color='white'
+        />
         <Suspense fallback={null}>
           <DraggableBottle
             url={glbUrl}
-            autoRotate={true}
+            isRotate={isRotate}
             ref={bottleRef}
             delta={deltaRef.current}
           />

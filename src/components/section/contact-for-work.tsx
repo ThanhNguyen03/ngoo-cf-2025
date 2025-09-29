@@ -11,7 +11,7 @@ const ContactForWork: FC<TContactForWorkProps> = ({ isHover }) => {
   return (
     <section
       className={cn(
-        'relative overflow-hidden px-2 py-6 md:px-6 md:py-10 lg:px-10 lg:py-20',
+        'relative overflow-hidden px-2 pt-10 pb-6 md:px-6 md:pt-20 md:pb-10 lg:px-10 lg:pt-40 lg:pb-20',
         isHover
           ? 'from-dark-600 bg-linear-to-b to-white to-20%'
           : 'bg-linear-to-b from-[#dfd7be] to-white to-20%',

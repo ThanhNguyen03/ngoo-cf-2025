@@ -2,9 +2,10 @@
 
 import { useParallaxLayer } from '@/hooks/use-parallax-layer'
 import { liptonTea } from '@/products'
+import useCartStore from '@/store/cart-store'
 import { TItem } from '@/types'
 import { cn } from '@/utils'
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 import { FenceCloud } from '../icons'
 import ItemCard from '../ui/ItemCard'
 import { Slider } from '../ui/Slider'
@@ -13,95 +14,117 @@ import ItemDetailModal from '../ui/modal/ItemDetailModal'
 const MOCKED_ITEMS_DATA: TItem[] = [
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 1',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 2',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
-    amountDiscount: 10,
+    discountPercent: 10,
   },
   {
     image: liptonTea,
     title: 'Olong Milk Tea',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
     additionalOption: [
       {
-        title: 'topping',
-        listOption: [
-          { name: 'Black Bubbles', extraPrice: 0.5 },
-          { name: 'White Bubbles', extraPrice: 0.5 },
-          { name: 'Olong Tea Bubbles', extraPrice: 0.7 },
-          { name: 'Flan Cake', extraPrice: 0.7 },
-        ],
+        group: 'topping',
+        name: 'Black Bubbles',
+        extraPrice: 0.5,
+      },
+      {
+        group: 'topping',
+        name: 'White Bubbles',
+        extraPrice: 0.5,
+      },
+      {
+        group: 'topping',
+        name: 'Olong Tea Bubbles',
+        extraPrice: 0.7,
+      },
+      {
+        group: 'topping',
+        name: 'Flan Cake',
+        extraPrice: 0.7,
       },
     ],
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 3',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
-    amountDiscount: 10,
+    discountPercent: 10,
   },
   {
     image: liptonTea,
     title: 'XaiGon Coffee',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
-    amountDiscount: 8,
+    discountPercent: 8,
     additionalOption: [
       {
-        title: 'extra',
-        listOption: [{ name: '+1 Coffee Shot', extraPrice: 0.5 }],
+        group: 'extra',
+        name: '+1 Coffee Shot',
+        extraPrice: 0.5,
       },
     ],
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 4',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 5',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 6',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
-    amountDiscount: 5,
+    discountPercent: 5,
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 7',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
   },
   {
     image: liptonTea,
-    title: 'Lipton Xi Muoi',
+    title: 'Lipton Xi Muoi 8',
     price: 12,
+    amount: 0,
     description: 'The richest flavor with long-standing family recipe',
-    amountDiscount: 9,
+    discountPercent: 9,
   },
 ]
 
 const ProductPosition = () => {
   return (
     <>
-      <div id='cherry' className='absolute -top-95 right-110 z-50' />
-      <div id='kiwi' className='absolute top-20 -left-120 z-50' />
+      <div id='cherry' className='absolute -top-75 right-110 z-50' />
+      <div id='kiwi' className='absolute top-40 -left-120 z-50' />
       <div id='orange' className='absolute top-40 left-80 z-50' />
-      <div id='strawberry' className='absolute -top-75 left-0 z-50' />
+      <div id='strawberry' className='absolute -top-55 left-0 z-50' />
     </>
   )
 }
@@ -114,7 +137,16 @@ const BestSeller: FC<TBestSellerProps> = ({ isInview, ref }) => {
   const cloudFenceRef = useParallaxLayer<SVGSVGElement>(ref, {
     translateRatio: -3,
   })
+  const { listCartItem } = useCartStore()
   const [selectedItem, setSelectedItem] = useState<TItem>()
+
+  const displayedItems = useMemo(() => {
+    return MOCKED_ITEMS_DATA.map((mock) => {
+      const amount =
+        listCartItem.find((item) => item.title === mock.title)?.amount || 0
+      return { ...mock, amount } as TItem
+    })
+  }, [listCartItem])
 
   return (
     <section
@@ -123,7 +155,7 @@ const BestSeller: FC<TBestSellerProps> = ({ isInview, ref }) => {
       ref={ref}
     >
       <ProductPosition />
-      <div className='z-30 mb-20 px-2 pt-6 pb-10 md:px-6 md:pb-20 lg:px-10 lg:pt-10 lg:pb-30'>
+      <div className='z-30 mb-20 px-2 py-10 md:py-20 lg:px-10 lg:pt-30 lg:pb-50'>
         <div className='relative mx-auto flex w-full max-w-[1024px] flex-col gap-2 md:gap-6'>
           <h2 className='text-44 md:text-55 font-lobster mx-auto w-fit bg-[url(/images/title-background.jpg)] bg-clip-text text-center font-black text-transparent'>
             Best Seller
@@ -135,7 +167,7 @@ const BestSeller: FC<TBestSellerProps> = ({ isInview, ref }) => {
             onPause={!!selectedItem}
             className='z-10 [--webkit-mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)] [mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)]'
           >
-            {MOCKED_ITEMS_DATA.map((item, i) => (
+            {displayedItems.map((item, i) => (
               <ItemCard
                 key={`${item.title}-${i}`}
                 data={item}

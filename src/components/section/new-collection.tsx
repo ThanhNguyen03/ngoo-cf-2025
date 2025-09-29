@@ -10,7 +10,7 @@ import {
   cloudFlat,
 } from '@/icons'
 import { collectionBanner } from '@/images'
-import { ENewProduct, TCollection } from '@/types'
+import { ENewProduct, TCollectionData } from '@/types'
 import { cn } from '@/utils'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr'
 import { cubicBezier, motion } from 'framer-motion'
@@ -61,8 +61,8 @@ const collectionVariants = {
 }
 
 type TNewCollectionProps = {
-  setSelectedProduct: (item?: TCollection) => void
-  selectedProduct?: TCollection
+  setSelectedProduct: (item?: TCollectionData) => void
+  selectedProduct?: TCollectionData
   inCollectionView: boolean
   inSellerView: boolean
   ref: RefObject<HTMLDivElement | null>
@@ -142,7 +142,7 @@ const NewCollection: FC<TNewCollectionProps> = ({
     >
       <div
         className={cn(
-          'flex size-full flex-col px-2 pt-10 pb-10 duration-1000 md:px-6 md:py-20 lg:px-10 lg:py-30',
+          'flex size-full flex-col px-2 py-10 duration-1000 md:px-6 md:py-20 lg:px-20 lg:py-40',
           inCollectionView && selectedProduct
             ? selectedProduct.bgClassName
             : 'from-sky-blue-100 bg-linear-to-b to-white/30 to-20%',
