@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss'
 import defaultTheme from 'tailwindcss/defaultTheme'
+import plugin from 'tailwindcss/plugin'
 
 const config: Config = {
   future: {
@@ -216,5 +217,80 @@ const config: Config = {
       },
     },
   },
+  plugins: [
+    plugin(function ({ addComponents, matchUtilities, theme, addUtilities }) {
+      const tailwindColors = theme('colors') as Record<string, unknown>
+
+      const flattenColors = (
+        obj: Record<string, unknown>,
+        prefix = '',
+      ): [string, string][] =>
+        Object.entries(obj).flatMap(([key, val]) =>
+          typeof val === 'string'
+            ? [[`${prefix}${key}`, val]]
+            : flattenColors(val as Record<string, unknown>, `${prefix}${key}-`),
+        )
+
+      const colorMap = Object.fromEntries(flattenColors(tailwindColors))
+
+      matchUtilities(
+        {
+          'shadow-btn': (value) => ({
+            '--tw-shadow-color': value,
+            boxShadow:
+              'inset 0px -4px 0px rgba(9,9,11,0.10), 0px 4px 12px 0px var(--tw-shadow-color)',
+          }),
+          'dark-shadow-btn': (value) => ({
+            '--tw-shadow-color': value,
+            boxShadow:
+              'inset 0px -4px 0px rgba(255,255,255,0.10), 0px 4px 12px 0px var(--tw-shadow-color)',
+          }),
+          'shadow-clicked-btn': (value) => ({
+            '--tw-shadow-color': value,
+            boxShadow:
+              'inset 0px 4px 0px rgba(9,9,11,0.30), 0px 4px 12px 0px var(--tw-shadow-color)',
+          }),
+          'dark-shadow-clicked-btn': (value) => ({
+            '--tw-shadow-color': value,
+            boxShadow:
+              'inset 0px 4px 0px rgba(255,255,255,0.30), 0px 4px 12px 0px var(--tw-shadow-color)',
+          }),
+        },
+        {
+          values: colorMap,
+          type: 'color',
+        },
+      )
+
+      matchUtilities(
+        {
+          'text-shadow': (value) => ({
+            textShadow: value,
+          }),
+        },
+        { values: theme('textShadow') },
+      )
+      addUtilities({
+        '.fade-to-bottom': {
+          '-webkit-mask': 'linear-gradient(to top, #0000, #000)',
+          mask: 'linear-gradient(to top, #0000, #000)',
+        },
+        '.fade-sides': {
+          '-webkit-mask':
+            'linear-gradient(to right, #0000, #000 20%, #000 80%, #0000)',
+          mask: 'linear-gradient(to right, #0000, #000 20%, #000 80%, #0000)',
+        },
+      })
+      addComponents({
+        '.hidden-scrollbar::-webkit-scrollbar': {
+          display: 'none',
+        },
+        '.hidden-scrollbar': {
+          scrollbarWidth: 'none',
+          MsOverflowStyle: 'none',
+        },
+      })
+    }),
+  ],
 }
 export default config

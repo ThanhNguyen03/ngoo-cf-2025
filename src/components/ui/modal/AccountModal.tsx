@@ -46,7 +46,7 @@ export const AccountModal: FC<TModalProps> = ({ isOpen, onClose }) => {
         <div className='flex flex-col justify-center gap-0.5'>
           <div className='text-18 flex items-center gap-2 font-semibold text-white'>
             <Tooltip content={address || ''}>
-              {truncateAddress(address)}
+              {truncateAddress(address || '')}
             </Tooltip>
             <Tooltip
               content={tooltipContent}

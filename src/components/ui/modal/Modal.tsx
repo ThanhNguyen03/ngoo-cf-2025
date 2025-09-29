@@ -29,14 +29,14 @@ export const Modal: FC<PropsWithChildren & TModalProps> = ({
     createPortal(
       <div
         className={cn(
-          'fixed inset-0 z-50 flex h-screen w-screen items-center justify-center bg-black/30 p-2 backdrop-blur-sm',
+          'fixed inset-0 z-[999] flex h-screen w-screen items-center justify-center bg-black/30 p-2 backdrop-blur-sm',
           overlayClassName,
         )}
         onClick={closeOnOutsideClick ? onClose : undefined}
       >
         <div
           className={cn(
-            'rounded-2 border-dark-600/10 text-dark-600 flex max-h-full w-full max-w-[80%] min-w-80 flex-col border bg-white/70 shadow backdrop-blur-2xl',
+            'rounded-2 border-dark-600/10 text-dark-600 bg-beige-50 flex max-h-full w-full max-w-[80%] min-w-80 flex-col border shadow backdrop-blur-2xl',
             className,
           )}
           onClick={(e) => e.stopPropagation()}
