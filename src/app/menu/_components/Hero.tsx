@@ -27,6 +27,7 @@ const Hero = () => {
 
   const handleSelectItem = (id: ENewProduct) => {
     setAnimation(false)
+    setItemAmount(1)
     const timeout = setTimeout(() => {
       setSelectedProduct(id)
       setAnimation(true)
@@ -195,6 +196,7 @@ const Hero = () => {
           <div className='flex w-full items-center justify-between'>
             <AmountCounter
               onChange={setItemAmount}
+              amount={itemAmount}
               buttonClassName='rounded-2! border border-white p-1.5 bg-transparent'
             />
             <Button

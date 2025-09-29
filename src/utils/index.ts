@@ -6,16 +6,13 @@ export function cn(...args: ClassValue[]) {
   return twMerge(clsx(args))
 }
 
-export const truncateAddress = (
-  address?: string,
-  start: number = 4,
-  end: number = 4,
-): string => {
-  if (typeof address !== 'string' || address.length <= start + end) {
-    return address ?? ''
+export const truncateAddress = (input: string, nums?: number): string => {
+  if (input.length <= 10) {
+    return input
   }
-
-  return `${address.slice(0, start)}...${address.slice(-end)}`
+  const start = input.slice(0, nums || 5) // First 5 characters
+  const end = input.slice(nums ? nums * -1 : -5) // Last 5 characters
+  return `${start}...${end}`
 }
 
 export const formatBalance = (

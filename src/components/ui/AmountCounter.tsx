@@ -1,6 +1,6 @@
 import { cn } from '@/utils'
 import { MinusIcon, PlusIcon } from '@phosphor-icons/react/dist/ssr'
-import { FC, useState } from 'react'
+import { FC } from 'react'
 import Button from './Button'
 
 type TAmountCounter = {
@@ -15,24 +15,20 @@ type TAmountCounter = {
 const AmountCounter: FC<TAmountCounter> = ({
   isInputAmount,
   className,
-  amount,
+  amount = 1,
   onChange,
   buttonClassName,
   amountClassName,
 }) => {
-  const [itemAmount, setItemAmount] = useState<number>(amount || 1)
-
   const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
     if (/^\d*$/.test(value)) {
-      setItemAmount(Number(value) || 0)
       onChange(Number(value) || 0)
     }
   }
 
   const handleUpdateAmount = (amount: number) => {
     const safeValue = Math.max(0, amount)
-    setItemAmount(safeValue)
     onChange(safeValue)
   }
 
@@ -44,8 +40,8 @@ const AmountCounter: FC<TAmountCounter> = ({
       )}
     >
       <Button
-        onClick={() => handleUpdateAmount(itemAmount - 1)}
-        disabled={itemAmount < 1}
+        onClick={() => handleUpdateAmount(amount - 1)}
+        disabled={amount < 1}
         className={cn('rounded-full bg-green-500 p-1.5', buttonClassName)}
         disableAnimation
         icon={<MinusIcon className='text-white' size={14} weight='bold' />}
@@ -58,7 +54,7 @@ const AmountCounter: FC<TAmountCounter> = ({
           )}
           type='number'
           aria-label='Enter page'
-          value={String(itemAmount)}
+          value={String(amount)}
           min={0}
           onChange={onChangeAmount}
         />
@@ -69,11 +65,11 @@ const AmountCounter: FC<TAmountCounter> = ({
             amountClassName,
           )}
         >
-          {itemAmount}
+          {amount}
         </p>
       )}
       <Button
-        onClick={() => handleUpdateAmount(itemAmount + 1)}
+        onClick={() => handleUpdateAmount(amount + 1)}
         className={cn('rounded-full bg-green-500 p-1.5', buttonClassName)}
         disableAnimation
         icon={<PlusIcon className='text-white' size={14} weight='bold' />}
