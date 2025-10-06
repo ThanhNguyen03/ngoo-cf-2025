@@ -1,7 +1,7 @@
 'use client'
 
+import { liptonTea } from '@/assets/products'
 import { useParallaxLayer } from '@/hooks/use-parallax-layer'
-import { liptonTea } from '@/products'
 import useCartStore from '@/store/cart-store'
 import { TItem } from '@/types'
 import { cn } from '@/utils'
@@ -155,7 +155,7 @@ const BestSeller: FC<TBestSellerProps> = ({ isInview, ref }) => {
       ref={ref}
     >
       <ProductPosition />
-      <div className='z-30 mb-20 px-2 py-10 md:py-20 lg:px-10 lg:pt-30 lg:pb-50'>
+      <div className='z-30 mb-20 px-2 py-10 md:px-6 md:py-20 lg:px-10 lg:pt-30 lg:pb-50'>
         <div className='relative mx-auto flex w-full max-w-[1024px] flex-col gap-2 md:gap-6'>
           <h2 className='text-44 md:text-55 font-lobster mx-auto w-fit bg-[url(/images/title-background.jpg)] bg-clip-text text-center font-black text-transparent'>
             Best Seller

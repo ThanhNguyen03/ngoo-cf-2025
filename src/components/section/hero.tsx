@@ -1,6 +1,6 @@
 'use client'
 
-import { coffeeShop, ngooCfText } from '@/images'
+import { coffeeShop, ngooCfText } from '@/assets/images'
 import { cn } from '@/utils'
 import { ArrowRightIcon, CowIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
@@ -86,7 +86,7 @@ const Hero = () => {
             src={ngooCfText}
             width={3287}
             height={1641}
-            className='absolute size-full -top-10 left-17 min-h-70 object-fill'
+            className='absolute -top-10 left-17 size-full min-h-70 object-fill'
             priority
           />
         </div>

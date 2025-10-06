@@ -85,7 +85,7 @@ const Hero = () => {
         NEW_PRODUCT_DATA[selectedProduct].bgClassName,
       )}
     >
-      <div className='mx-auto flex h-[calc(100dvh-322px)] w-full max-w-[1024px] justify-center gap-4'>
+      <div className='mx-auto flex h-[calc(100dvh-300px)] max-h-[885px] w-full max-w-[1024px] justify-center gap-4'>
         {/* Left column */}
         <div className='mt-8 flex h-full w-[30%] flex-col items-start justify-between gap-4 md:gap-6 lg:gap-10'>
           <div className='flex flex-col items-start gap-2'>

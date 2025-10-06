@@ -1,15 +1,15 @@
 'use client'
 import { FC, RefObject, useEffect, useState } from 'react'
 
-import { LIST_NEW_PRODUCT } from '@/constants'
-import { useParallaxLayer } from '@/hooks/use-parallax-layer'
 import {
   cloudCube,
   cloudDoubleCube,
   cloudDoubleRectangle,
   cloudFlat,
-} from '@/icons'
-import { collectionBanner } from '@/images'
+} from '@/assets/icons'
+import { collectionBanner } from '@/assets/images'
+import { LIST_NEW_PRODUCT } from '@/constants'
+import { useParallaxLayer } from '@/hooks/use-parallax-layer'
 import { ENewProduct, TCollectionData } from '@/types'
 import { cn } from '@/utils'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr'
