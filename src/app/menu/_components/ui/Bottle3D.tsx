@@ -1,5 +1,6 @@
 'use client'
 
+import { TCursorPosition } from '@/types'
 import { cn } from '@/utils'
 import { useGLTF } from '@react-three/drei'
 import { Canvas, useFrame } from '@react-three/fiber'
@@ -14,15 +15,10 @@ import {
 } from 'react'
 import * as THREE from 'three'
 
-type TCursor = {
-  x: number
-  y: number
-}
-
 type TDraggableBottleProps = {
   url: string
   speed?: number
-  delta?: TCursor
+  delta?: TCursorPosition
   isRotate?: boolean
 }
 
@@ -32,7 +28,7 @@ const DraggableBottle = forwardRef<THREE.Group, TDraggableBottleProps>(
     const cloned = useMemo(() => scene.clone(), [scene])
 
     const groupRef = useRef<THREE.Group>(null)
-    const velocity = useRef<TCursor>({ x: 0, y: 0 })
+    const velocity = useRef<TCursorPosition>({ x: 0, y: 0 })
     const animating = useRef<boolean>(false)
     const targetRotation = useRef<number>(0)
 
@@ -115,8 +111,8 @@ type TBottle3DProps = {
 const Bottle3D: FC<TBottle3DProps> = ({ glbUrl, className, isRotate }) => {
   const bottleRef = useRef<THREE.Group>(null)
   const [isDragging, setIsDragging] = useState<boolean>(false)
-  const [lastPos, setLastPos] = useState<TCursor>({ x: 0, y: 0 })
-  const deltaRef = useRef<TCursor>({ x: 0, y: 0 })
+  const [lastPos, setLastPos] = useState<TCursorPosition>({ x: 0, y: 0 })
+  const deltaRef = useRef<TCursorPosition>({ x: 0, y: 0 })
 
   const handlePointerMove = (e: React.PointerEvent) => {
     if (!isDragging) {
