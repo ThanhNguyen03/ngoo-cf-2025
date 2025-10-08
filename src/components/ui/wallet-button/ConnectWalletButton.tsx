@@ -32,7 +32,7 @@ export const ConnectWalletButton = ({
           <>
             {isConnected && connector ? (
               <button
-                className='flex w-fit cursor-pointer items-center'
+                className='hidden w-fit cursor-pointer items-center md:flex'
                 onClick={() => setOpenAccountPopup(!openAccountPopup)}
               >
                 <Tooltip
@@ -99,7 +99,7 @@ export const ConnectWalletButton = ({
               </button>
             ) : (
               <button
-                className='rounded-2 text-14! from-secondary-300 flex cursor-pointer items-center justify-center gap-1 bg-linear-to-br to-red-500 px-2 py-1 leading-[160%] font-semibold text-white shadow'
+                className='rounded-2 text-14! from-secondary-300 hidden cursor-pointer items-center justify-center gap-1 bg-linear-to-br to-red-500 px-2 py-1 leading-[160%] font-semibold text-white shadow md:flex'
                 onClick={() => setIsConnectWalletModalOpen(true)}
               >
                 <WalletIcon size={18} />

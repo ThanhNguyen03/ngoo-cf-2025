@@ -35,7 +35,7 @@ const AmountCounter: FC<TAmountCounter> = ({
   return (
     <div
       className={cn(
-        'flex items-center justify-center gap-2 md:gap-4',
+        'flex items-center justify-center gap-2 md:gap-3 lg:gap-4',
         className,
       )}
     >

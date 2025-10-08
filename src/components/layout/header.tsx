@@ -2,12 +2,17 @@
 
 import { LIST_HEADER_NAVIGATION } from '@/constants'
 import { cn } from '@/utils'
-import { ListIcon, XIcon } from '@phosphor-icons/react/dist/ssr'
+import {
+  ListIcon,
+  ShoppingCartSimpleIcon,
+  XIcon,
+} from '@phosphor-icons/react/dist/ssr'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { ConnectWalletButton } from '../ui'
 import NgOoLogo from '../ui/NgOoLogo'
+import SwitchButton from '../ui/SwitchButton'
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
@@ -44,20 +49,16 @@ const Header = () => {
         <div className='flex h-full items-center justify-center gap-2 py-2'>
           {/* demo connect wallet button */}
           <ConnectWalletButton />
-
+          <ShoppingCartSimpleIcon size={24} />
           {/* menu button */}
           {
-            <div
+            <SwitchButton
+              variant='white'
               onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-              className={cn(
-                'rounded-2 cursor-pointer p-1.5 md:hidden',
-                isDrawerOpen
-                  ? 'border-primary-500 bg-primary-600 border-2 text-white'
-                  : 'border border-neutral-900/10 bg-white',
-              )}
+              className='rounded-2! h-8.25 min-h-8.25 w-fit px-2 md:hidden'
             >
               {isDrawerOpen ? <XIcon /> : <ListIcon />}
-            </div>
+            </SwitchButton>
           }
         </div>
       </div>
