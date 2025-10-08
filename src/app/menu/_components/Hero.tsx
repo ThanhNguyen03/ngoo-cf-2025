@@ -9,7 +9,7 @@ import { ENewProduct, TItem } from '@/types'
 import { cn } from '@/utils'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
-import Bottle3D from './ui/Bottle3D'
+import { Bottle3D } from './ui/Bottle3D'
 
 const ANIMATION_DURATION = 700 // ms
 
