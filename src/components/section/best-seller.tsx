@@ -1,7 +1,7 @@
 'use client'
 
 import { liptonTea } from '@/assets/products'
-import { useParallaxLayer } from '@/hooks/use-parallax-layer'
+import { useParallaxLayer } from '@/hooks'
 import useCartStore from '@/store/cart-store'
 import { TItem } from '@/types'
 import { cn } from '@/utils'

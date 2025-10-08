@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react'
 import { useAccount } from 'wagmi'
 
-import { useIsHydrated } from '@/hooks/use-is-hydrated'
 import { cn, truncateAddress } from '@/utils'
 import { WalletIcon } from '@phosphor-icons/react'
 import { CaretDownIcon, WarningIcon } from '@phosphor-icons/react/dist/ssr'
@@ -9,6 +8,7 @@ import Image from 'next/image'
 import { AccountModal, ConnectWalletModal } from '../modal'
 import { SkeletonLoader } from '../SkeletonLoader'
 import { Tooltip } from '../Tooltip'
+import { useIsHydrated } from '@/hooks'
 
 type TConnectWalletButtonProps = {
   className?: string

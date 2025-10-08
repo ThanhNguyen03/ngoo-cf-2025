@@ -9,7 +9,7 @@ import {
 } from '@/assets/icons'
 import { collectionBanner } from '@/assets/images'
 import { LIST_NEW_PRODUCT } from '@/constants'
-import { useParallaxLayer } from '@/hooks/use-parallax-layer'
+import { useParallaxLayer } from '@/hooks'
 import { ENewProduct, TCollectionData } from '@/types'
 import { cn } from '@/utils'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr'
