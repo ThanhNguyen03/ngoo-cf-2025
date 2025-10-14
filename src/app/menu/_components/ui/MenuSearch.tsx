@@ -45,7 +45,7 @@ const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
       }
     }
 
-    document.addEventListener('click', listener)
+    document.addEventListener('click', listener) 
     document.addEventListener('touchstart', listener)
 
     return () => {
