@@ -1,10 +1,10 @@
 'use client'
 
+import { TCursorPosition } from '@/types'
 import { cn } from '@/utils'
 import { useGLTF } from '@react-three/drei'
 import { Canvas, useFrame } from '@react-three/fiber'
-import {
-  FC,
+import React, {
   forwardRef,
   Suspense,
   useEffect,
@@ -14,15 +14,10 @@ import {
 } from 'react'
 import * as THREE from 'three'
 
-type TCursor = {
-  x: number
-  y: number
-}
-
 type TDraggableBottleProps = {
   url: string
   speed?: number
-  delta?: TCursor
+  delta?: TCursorPosition
   isRotate?: boolean
 }
 
@@ -32,7 +27,7 @@ const DraggableBottle = forwardRef<THREE.Group, TDraggableBottleProps>(
     const cloned = useMemo(() => scene.clone(), [scene])
 
     const groupRef = useRef<THREE.Group>(null)
-    const velocity = useRef<TCursor>({ x: 0, y: 0 })
+    const velocity = useRef<TCursorPosition>({ x: 0, y: 0 })
     const animating = useRef<boolean>(false)
     const targetRotation = useRef<number>(0)
 
@@ -112,64 +107,66 @@ type TBottle3DProps = {
   isRotate?: boolean
 }
 
-const Bottle3D: FC<TBottle3DProps> = ({ glbUrl, className, isRotate }) => {
-  const bottleRef = useRef<THREE.Group>(null)
-  const [isDragging, setIsDragging] = useState<boolean>(false)
-  const [lastPos, setLastPos] = useState<TCursor>({ x: 0, y: 0 })
-  const deltaRef = useRef<TCursor>({ x: 0, y: 0 })
+export const Bottle3D = React.memo(
+  ({ glbUrl, className, isRotate }: TBottle3DProps) => {
+    const bottleRef = useRef<THREE.Group>(null)
+    const [isDragging, setIsDragging] = useState<boolean>(false)
+    const [lastPos, setLastPos] = useState<TCursorPosition>({ x: 0, y: 0 })
+    const deltaRef = useRef<TCursorPosition>({ x: 0, y: 0 })
 
-  const handlePointerMove = (e: React.PointerEvent) => {
-    if (!isDragging) {
-      return
+    const handlePointerMove = (e: React.PointerEvent) => {
+      if (!isDragging) {
+        return
+      }
+      const deltaX = e.clientX - lastPos.x
+      const deltaY = e.clientY - lastPos.y
+      deltaRef.current.x += deltaX * 0.01
+      deltaRef.current.y += deltaY * 0.01
+      setLastPos({ x: e.clientX, y: e.clientY })
     }
-    const deltaX = e.clientX - lastPos.x
-    const deltaY = e.clientY - lastPos.y
-    deltaRef.current.x += deltaX * 0.01
-    deltaRef.current.y += deltaY * 0.01
-    setLastPos({ x: e.clientX, y: e.clientY })
-  }
 
-  const handlePointerDown = (e: React.PointerEvent) => {
-    setIsDragging(true)
-    setLastPos({ x: e.clientX, y: e.clientY })
-  }
+    const handlePointerDown = (e: React.PointerEvent) => {
+      setIsDragging(true)
+      setLastPos({ x: e.clientX, y: e.clientY })
+    }
 
-  const handlePointerUp = () => {
-    setIsDragging(false)
-  }
+    const handlePointerUp = () => {
+      setIsDragging(false)
+    }
 
-  return (
-    <div className={cn('size-[400px]', className)}>
-      <Canvas
-        camera={{ position: [0, 0, 3], fov: 45 }}
-        shadows
-        className={cn(
-          'pointer-events-none size-full cursor-grab',
-          isDragging && 'cursor-grabbing',
-        )}
-        onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        onPointerMove={handlePointerMove}
-        onPointerLeave={handlePointerUp}
-      >
-        <ambientLight intensity={1} />
-        <directionalLight
-          position={[5, 5, 5]}
-          intensity={3}
-          castShadow
-          color='white'
-        />
-        <Suspense fallback={null}>
-          <DraggableBottle
-            url={glbUrl}
-            isRotate={isRotate}
-            ref={bottleRef}
-            delta={deltaRef.current}
+    return (
+      <div className={cn('size-[400px]', className)}>
+        <Canvas
+          camera={{ position: [0, 0, 3], fov: 45 }}
+          shadows
+          className={cn(
+            'pointer-events-none size-full cursor-grab',
+            isDragging && 'cursor-grabbing',
+          )}
+          onPointerDown={handlePointerDown}
+          onPointerUp={handlePointerUp}
+          onPointerMove={handlePointerMove}
+          onPointerLeave={handlePointerUp}
+        >
+          <ambientLight intensity={1} />
+          <directionalLight
+            position={[5, 5, 5]}
+            intensity={3}
+            castShadow
+            color='white'
           />
-        </Suspense>
-      </Canvas>
-    </div>
-  )
-}
+          <Suspense fallback={null}>
+            <DraggableBottle
+              url={glbUrl}
+              isRotate={isRotate}
+              ref={bottleRef}
+              delta={deltaRef.current}
+            />
+          </Suspense>
+        </Canvas>
+      </div>
+    )
+  },
+)
 
-export default Bottle3D
+Bottle3D.displayName = 'Bottle3D'

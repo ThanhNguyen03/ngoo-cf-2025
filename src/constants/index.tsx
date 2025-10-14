@@ -3,7 +3,7 @@ import {
   kiwiJuiceBottole,
   orangeJuiceBottle,
   strawberryJuiceBottle,
-} from '@/products'
+} from '@/assets/products'
 import {
   ENewProduct,
   TCollectionData,

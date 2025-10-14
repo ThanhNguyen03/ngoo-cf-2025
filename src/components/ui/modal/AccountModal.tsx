@@ -5,7 +5,7 @@ import type { TModalProps } from '@/types'
 import { formatBalance, truncateAddress } from '@/utils'
 import { CopyIcon } from '@phosphor-icons/react'
 
-import { defaultAvatar } from '@/images'
+import { defaultAvatar } from '@/assets/images'
 import Image from 'next/image'
 import { Tooltip } from '../Tooltip'
 import { DisconnectWalletButton } from '../wallet-button/DisconnectWalletButton'

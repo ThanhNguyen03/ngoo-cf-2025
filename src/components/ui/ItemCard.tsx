@@ -1,4 +1,4 @@
-import { polygon } from '@/icons'
+import { polygon } from '@/assets/icons'
 import { TItem } from '@/types'
 import { cn } from '@/utils'
 import { PlusIcon, TagIcon } from '@phosphor-icons/react/dist/ssr'

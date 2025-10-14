@@ -57,3 +57,5 @@ export enum ENewProduct {
   Orange = 'orange',
   Strawberry = 'strawberry',
 }
+
+export type TCursorPosition = { x: number; y: number }

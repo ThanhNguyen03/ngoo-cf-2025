@@ -1,11 +1,12 @@
 'use client'
 
+import { notifyBg } from '@/assets/images'
 import BestSeller from '@/components/section/best-seller'
 import ContactForWork from '@/components/section/contact-for-work'
 import Hero from '@/components/section/hero'
 import NewCollection from '@/components/section/new-collection'
+import Services from '@/components/section/services'
 import { InfiniteCarousel } from '@/components/ui/InfiniteCarousel'
-import { notifyBg } from '@/images'
 import { TCollectionData } from '@/types'
 import { SealPercentIcon } from '@phosphor-icons/react/dist/ssr'
 import { useInView } from 'framer-motion'
@@ -74,7 +75,8 @@ export default function Home() {
         setSelectedProduct={setSelectedProduct}
         selectedProduct={selectedProduct}
       />
-      <ContactForWork isHover={!!selectedProduct} />
+      <Services isHover={!!selectedProduct} />
+      <ContactForWork />
     </main>
   )
 }

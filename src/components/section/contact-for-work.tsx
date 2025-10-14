@@ -1,50 +1,59 @@
-import { cn } from '@/utils'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr'
 import Link from 'next/link'
-import { FC } from 'react'
+import { LinePattern } from '../icons/LinePattern'
+import SwitchButton from '../ui/SwitchButton'
+import { useSpotlightCursor } from '@/hooks'
 
-type TContactForWorkProps = {
-  isHover?: boolean
-}
-
-const ContactForWork: FC<TContactForWorkProps> = ({ isHover }) => {
+const ContactForWork = () => {
+  const { position, onMouseMove } = useSpotlightCursor()
   return (
     <section
-      className={cn(
-        'relative overflow-hidden px-2 pt-10 pb-6 md:px-6 md:pt-20 md:pb-10 lg:px-10 lg:pt-40 lg:pb-20',
-        isHover
-          ? 'from-dark-600 bg-linear-to-b to-white to-20%'
-          : 'bg-linear-to-b from-[#dfd7be] to-white to-20%',
-      )}
+      className='relative overflow-hidden bg-linear-to-br from-neutral-900 via-blue-700 to-blue-900'
+      onMouseMove={onMouseMove}
     >
-      <div className='mx-auto flex w-full max-w-[1024px] flex-col gap-4 md:gap-6 lg:gap-10'>
-        <h2 className='md:text-35 text-28 w-fit font-black text-[#3d3c3a]'>
-          Contact For Work
-        </h2>
-        <div className='flex items-start justify-between gap-4 md:gap-6'>
-          <div className='text-16 max-w-[640px] text-neutral-900/70'>
-            This website is created and maintained solely as a personal project.
-            It is not intended for commercial use or profit-making purposes.
-            <br />
-            <br />
-            For any inquiries or work-related contact, please email:{' '}
-            <Link
-              className='font-light italic underline'
-              href='mailto:thanhfng.dev@gmail.com'
+      {/* pattern */}
+      <div className='from-dark-600/30 absolute h-[480px] w-screen overflow-hidden bg-radial-[130.34%_100%_at_13.96%_0%] to-black/10'>
+        <LinePattern
+          id='hero-banner'
+          position={position}
+          cursorRadius={125}
+          opacity={0.1}
+          highlightColor='#df73ff'
+          secondHighlightColor='hsl(32,99%,45%)'
+          spotlightColor='hsl(335,75%,85%,0.3)'
+          spotlightOpacity={0.5}
+          className='absolute inset-0 w-full min-w-[1440px] mix-blend-color-dodge select-none'
+        />
+      </div>
+      <div className='relative z-10 px-2 py-6 md:px-6 md:py-10 lg:px-10 lg:py-20'>
+        <div className='mx-auto flex w-full max-w-[1024px] flex-col gap-4 md:gap-6 lg:gap-10'>
+          <div className='flex items-start justify-between gap-4 md:gap-6'>
+            <div className='text-16 text-beige-50 max-w-[640px]'>
+              This website is created and maintained solely as a personal
+              project. It is not intended for commercial use or profit-making
+              purposes.
+              <br />
+              <br />
+              For any inquiries or work-related contact, please email:{' '}
+              <Link
+                className='font-light italic underline'
+                href='mailto:thanhfng.dev@gmail.com'
+                target='_blank'
+              >
+                thanhfng.dev@gmail.com
+              </Link>
+              .
+            </div>
+            <SwitchButton
               target='_blank'
+              className='rounded-3! flex w-fit gap-2 border-0'
+              href='https://thanhng-portfolio-2024.vercel.app/'
+              variant='pink'
             >
-              thanhfng.dev@gmail.com
-            </Link>
-            .
+              Explore more
+              <ArrowRightIcon />
+            </SwitchButton>
           </div>
-          <Link
-            target='_blank'
-            href='https://thanhng-portfolio-2024.vercel.app/'
-            className='bg-secondary-500 rounded-4 flex items-center gap-2 px-4 py-3 text-nowrap text-white'
-          >
-            Explore more
-            <ArrowRightIcon />
-          </Link>
         </div>
       </div>
     </section>

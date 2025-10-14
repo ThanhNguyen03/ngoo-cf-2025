@@ -4,7 +4,7 @@ import NgOoLogo from '../ui/NgOoLogo'
 
 const Footer = () => {
   return (
-    <footer className='to-beige-300 border-t border-neutral-900/10 bg-linear-to-b from-white px-2 md:p-10 lg:px-10 lg:py-0'>
+    <footer className='border-t border-neutral-900/10 bg-white px-2 md:p-10 lg:px-10 lg:py-0'>
       <div className='relative mx-auto flex w-full max-w-[1024px] flex-col items-center justify-center gap-14 pt-10'>
         {/* list */}
         <div className='flex w-full flex-col gap-10 pb-10 md:flex-row md:justify-between'>
