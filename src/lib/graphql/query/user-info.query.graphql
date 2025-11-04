@@ -1,0 +1,11 @@
+query UserInfo {
+  userInfo {
+    uuid
+    email
+    name
+    walletAddress
+    role
+    address
+    phoneNumber
+  }
+}
