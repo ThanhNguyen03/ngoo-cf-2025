@@ -2,8 +2,12 @@ import Footer from '@/components/layout/footer'
 import Header from '@/components/layout/header'
 import Toaster from '@/components/ui/Toaster'
 import { DEV_APP_URL } from '@/constants'
+import authOptions from '@/lib/auth-option'
+import { ApolloProvider } from '@/providers/apollo-provider'
 import { WalletConnectProvider } from '@/providers/wallet-connect-provider'
 import type { Metadata } from 'next'
+import { getServerSession } from 'next-auth'
+import { SessionProvider } from 'next-auth/react'
 import getConfig from 'next/config'
 import { headers } from 'next/headers'
 import { cookieToInitialState } from 'wagmi'
@@ -20,6 +24,8 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const session = await getServerSession(authOptions)
+
   const initialState = cookieToInitialState(
     getConfig(),
     (await headers()).get('cookie'),
@@ -41,13 +47,16 @@ export default async function RootLayout({
       </head>
 
       <body className='font-raleway scroll-smooth bg-white lining-nums antialiased'>
-        <WalletConnectProvider initialState={initialState}>
-          <Header />
-          {children}
-          <Toaster />
-          <Footer />
-        </WalletConnectProvider>
-        {/* <Footer /> */}
+        <SessionProvider session={session}>
+          <ApolloProvider>
+            <WalletConnectProvider initialState={initialState}>
+              <Header />
+              {children}
+              <Toaster />
+              <Footer />
+            </WalletConnectProvider>
+          </ApolloProvider>
+        </SessionProvider>
       </body>
     </html>
   )
