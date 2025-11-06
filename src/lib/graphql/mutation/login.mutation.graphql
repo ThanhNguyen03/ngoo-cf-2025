@@ -1,6 +1,0 @@
-mutation UserLogin($token: String!) {
-  userLogin(token: $token) {
-    accessToken
-    refreshToken
-  }
-}
