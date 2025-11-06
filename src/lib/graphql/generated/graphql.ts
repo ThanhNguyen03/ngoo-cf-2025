@@ -48,9 +48,8 @@ export type CategoryInput = {
 /** Input types */
 export type ConfirmPaymentInput = {
   codTransactionId?: InputMaybe<Scalars['String']['input']>
-  momoTransactionId?: InputMaybe<Scalars['String']['input']>
   orderId: Scalars['String']['input']
-  paymentMethod: EPaymentMethod
+  paypalOrderId?: InputMaybe<Scalars['String']['input']>
   txHash?: InputMaybe<Scalars['String']['input']>
 }
 
@@ -76,9 +75,10 @@ export type CreateItemInput = {
 }
 
 export type CreateOrderInput = {
-  items: Array<InputMaybe<OrderItemInput>>
+  cancelUrl: Scalars['String']['input']
+  items: Array<OrderItemInput>
   paymentMethod: EPaymentMethod
-  userId: Scalars['String']['input']
+  returnUrl: Scalars['String']['input']
 }
 
 export enum EAuditAction {
@@ -107,7 +107,7 @@ export enum EOrderStatus {
 export enum EPaymentMethod {
   Cod = 'COD',
   Crypto = 'CRYPTO',
-  Momo = 'MOMO',
+  Paypal = 'PAYPAL',
 }
 
 export enum EPaymentStatus {
@@ -225,6 +225,14 @@ export type PaginationInput = {
   query?: InputMaybe<Array<InputMaybe<QueryByInput>>>
 }
 
+export type PaypalPayment = {
+  __typename?: 'PaypalPayment'
+  payerId: Scalars['String']['output']
+  paypalCaptureId: Scalars['String']['output']
+  paypalPayerEmail: Scalars['String']['output']
+  rawResponse?: Maybe<Scalars['Object']['output']>
+}
+
 export type Query = {
   __typename?: 'Query'
   cryptoWalletWithNone: Scalars['String']['output']
@@ -318,9 +326,9 @@ export type TCreateOrderResponse = {
   codPaymentData?: Maybe<Scalars['String']['output']>
   createdAt: Scalars['Timestamp']['output']
   cryptoPaymentData?: Maybe<Scalars['String']['output']>
-  momoPaymentUrl?: Maybe<Scalars['String']['output']>
-  momoRequestId?: Maybe<Scalars['String']['output']>
   orderId: Scalars['String']['output']
+  paypalApproveUrl?: Maybe<Scalars['String']['output']>
+  paypalOrderId?: Maybe<Scalars['String']['output']>
   updatedAt: Scalars['Timestamp']['output']
 }
 
@@ -382,6 +390,7 @@ export type TOrderResponse = {
   orderId: Scalars['String']['output']
   orderStatus: EOrderStatus
   paymentMethod: EPaymentMethod
+  paypalOrderId?: Maybe<Scalars['String']['output']>
   totalPrice: Scalars['Int']['output']
   updatedAt: Scalars['Timestamp']['output']
   userInfoSnapshot: TUserInfoSnapshot
@@ -392,10 +401,10 @@ export type TPaymentResponse = {
   codTransactionId?: Maybe<Scalars['String']['output']>
   createdAt: Scalars['Timestamp']['output']
   items: Array<Maybe<TOrderItem>>
-  momoTransactionId?: Maybe<Scalars['String']['output']>
   orderId: Scalars['String']['output']
   paymentId: Scalars['String']['output']
   paymentMethod: EPaymentMethod
+  paypalTransaction?: Maybe<PaypalPayment>
   status: EPaymentStatus
   totalPrice: Scalars['Float']['output']
   txHash?: Maybe<Scalars['String']['output']>
@@ -447,6 +456,99 @@ export type UserInfo = {
   walletAddress?: Maybe<Scalars['String']['output']>
 }
 
+export type CreateCategoryMutationVariables = Exact<{
+  name: Scalars['String']['input']
+}>
+
+export type CreateCategoryMutation = {
+  __typename?: 'Mutation'
+  createCategory: { __typename?: 'Category'; categoryId: string; name: string }
+}
+
+export type DeleteCategoryMutationVariables = Exact<{
+  categoryId: Scalars['String']['input']
+}>
+
+export type DeleteCategoryMutation = {
+  __typename?: 'Mutation'
+  deleteCategory?: boolean | null
+}
+
+export type UpdateCategoryMutationVariables = Exact<{
+  category: CategoryInput
+}>
+
+export type UpdateCategoryMutation = {
+  __typename?: 'Mutation'
+  updateCategory: { __typename?: 'Category'; categoryId: string; name: string }
+}
+
+export type CreateItemMutationVariables = Exact<{
+  input: CreateItemInput
+}>
+
+export type CreateItemMutation = {
+  __typename?: 'Mutation'
+  createItem: {
+    __typename?: 'TItemResponse'
+    itemId: string
+    name: string
+    image: string
+    price: number
+    description?: string | null
+    discountPercent?: number | null
+    status?: Array<EItemStatus | null> | null
+    categoryName: string
+    createdAt: number
+    updatedAt: number
+    requireOption?: Array<{
+      __typename?: 'TItemOption'
+      group: string
+      name: string
+      extraPrice?: number | null
+    } | null> | null
+    additionalOption?: Array<{
+      __typename?: 'TItemOption'
+      group: string
+      name: string
+      extraPrice?: number | null
+    } | null> | null
+  }
+}
+
+export type UpdateItemMutationVariables = Exact<{
+  input: UpdateItemInput
+}>
+
+export type UpdateItemMutation = {
+  __typename?: 'Mutation'
+  updateItem: {
+    __typename?: 'TItemResponse'
+    itemId: string
+    name: string
+    image: string
+    price: number
+    description?: string | null
+    discountPercent?: number | null
+    status?: Array<EItemStatus | null> | null
+    categoryName: string
+    createdAt: number
+    updatedAt: number
+    requireOption?: Array<{
+      __typename?: 'TItemOption'
+      group: string
+      name: string
+      extraPrice?: number | null
+    } | null> | null
+    additionalOption?: Array<{
+      __typename?: 'TItemOption'
+      group: string
+      name: string
+      extraPrice?: number | null
+    } | null> | null
+  }
+}
+
 export type UserLoginMutationVariables = Exact<{
   token: Scalars['String']['input']
 }>
@@ -457,6 +559,332 @@ export type UserLoginMutation = {
     __typename?: 'TUserAuth'
     accessToken: string
     refreshToken: string
+  }
+}
+
+export type UserLogoutMutationVariables = Exact<{
+  logoutEverywhere?: InputMaybe<Scalars['Boolean']['input']>
+}>
+
+export type UserLogoutMutation = {
+  __typename?: 'Mutation'
+  userLogout: boolean
+}
+
+export type CreateOrderMutationVariables = Exact<{
+  input: CreateOrderInput
+}>
+
+export type CreateOrderMutation = {
+  __typename?: 'Mutation'
+  createOrder: {
+    __typename?: 'TCreateOrderResponse'
+    orderId: string
+    paypalOrderId?: string | null
+    paypalApproveUrl?: string | null
+    cryptoPaymentData?: string | null
+    codPaymentData?: string | null
+    createdAt: number
+    updatedAt: number
+  }
+}
+
+export type ConfirmPaymentMutationVariables = Exact<{
+  paymentInput: ConfirmPaymentInput
+}>
+
+export type ConfirmPaymentMutation = {
+  __typename?: 'Mutation'
+  confirmPayment: {
+    __typename?: 'TPaymentResponse'
+    paymentId: string
+    orderId: string
+    paymentMethod: EPaymentMethod
+    totalPrice: number
+    status: EPaymentStatus
+    txHash?: string | null
+    codTransactionId?: string | null
+    createdAt: number
+    updatedAt: number
+    userInfo: {
+      __typename?: 'TUserInfoSnapshot'
+      name?: string | null
+      address: string
+      phoneNumber: string
+      email: string
+    }
+    items: Array<{
+      __typename?: 'TOrderItem'
+      name: string
+      amount: number
+      price: number
+      note?: string | null
+      discountPercent?: number | null
+      selectedOptions?: Array<{
+        __typename?: 'TItemOption'
+        group: string
+        name: string
+        extraPrice?: number | null
+      } | null> | null
+    } | null>
+    paypalTransaction?: {
+      __typename?: 'PaypalPayment'
+      paypalPayerEmail: string
+      paypalCaptureId: string
+      payerId: string
+      rawResponse?: { [key: string]: unknown } | null
+    } | null
+  }
+}
+
+export type RefreshTokenMutationVariables = Exact<{
+  refreshToken: Scalars['String']['input']
+}>
+
+export type RefreshTokenMutation = {
+  __typename?: 'Mutation'
+  refreshToken: {
+    __typename?: 'TUserAuth'
+    accessToken: string
+    refreshToken: string
+  }
+}
+
+export type ListCategoryQueryVariables = Exact<{ [key: string]: never }>
+
+export type ListCategoryQuery = {
+  __typename?: 'Query'
+  listCategory: Array<{
+    __typename?: 'Category'
+    categoryId: string
+    name: string
+  } | null>
+}
+
+export type GetItemByCategoryQueryVariables = Exact<{
+  categoryId: Scalars['String']['input']
+}>
+
+export type GetItemByCategoryQuery = {
+  __typename?: 'Query'
+  getItemByCategory: {
+    __typename?: 'TItemResponse'
+    itemId: string
+    name: string
+    image: string
+    price: number
+    description?: string | null
+    discountPercent?: number | null
+    status?: Array<EItemStatus | null> | null
+    categoryName: string
+    createdAt: number
+    updatedAt: number
+    requireOption?: Array<{
+      __typename?: 'TItemOption'
+      group: string
+      name: string
+      extraPrice?: number | null
+    } | null> | null
+    additionalOption?: Array<{
+      __typename?: 'TItemOption'
+      group: string
+      name: string
+      extraPrice?: number | null
+    } | null> | null
+  }
+}
+
+export type ListItemQueryVariables = Exact<{
+  offset?: InputMaybe<Scalars['Int']['input']>
+  limit?: InputMaybe<Scalars['Int']['input']>
+  query?: InputMaybe<Array<InputMaybe<QueryByInput>> | InputMaybe<QueryByInput>>
+}>
+
+export type ListItemQuery = {
+  __typename?: 'Query'
+  listItem: {
+    __typename?: 'TListItemResponse'
+    offset: number
+    limit: number
+    total: number
+    query: Array<{
+      __typename?: 'TQueryBy'
+      column?: string | null
+      sort?: ESort | null
+    } | null>
+    records: Array<{
+      __typename?: 'TItemResponse'
+      itemId: string
+      name: string
+      image: string
+      price: number
+      description?: string | null
+      discountPercent?: number | null
+      status?: Array<EItemStatus | null> | null
+      categoryName: string
+      createdAt: number
+      updatedAt: number
+      requireOption?: Array<{
+        __typename?: 'TItemOption'
+        group: string
+        name: string
+        extraPrice?: number | null
+      } | null> | null
+      additionalOption?: Array<{
+        __typename?: 'TItemOption'
+        group: string
+        name: string
+        extraPrice?: number | null
+      } | null> | null
+    } | null>
+  }
+}
+
+export type GetOrderQueryVariables = Exact<{
+  orderId: Scalars['String']['input']
+}>
+
+export type GetOrderQuery = {
+  __typename?: 'Query'
+  getOrder: {
+    __typename?: 'TOrderResponse'
+    orderId: string
+    paypalOrderId?: string | null
+    totalPrice: number
+    paymentMethod: EPaymentMethod
+    orderStatus: EOrderStatus
+    createdAt: number
+    updatedAt: number
+    userInfoSnapshot: {
+      __typename?: 'TUserInfoSnapshot'
+      name?: string | null
+      address: string
+      phoneNumber: string
+      email: string
+    }
+    items: Array<{
+      __typename?: 'TOrderItem'
+      name: string
+      amount: number
+      price: number
+      note?: string | null
+      discountPercent?: number | null
+      selectedOptions?: Array<{
+        __typename?: 'TItemOption'
+        group: string
+        name: string
+        extraPrice?: number | null
+      } | null> | null
+    } | null>
+  }
+}
+
+export type ListPaymentHistoryQueryVariables = Exact<{
+  offset?: InputMaybe<Scalars['Int']['input']>
+  limit?: InputMaybe<Scalars['Int']['input']>
+  query?: InputMaybe<Array<InputMaybe<QueryByInput>> | InputMaybe<QueryByInput>>
+}>
+
+export type ListPaymentHistoryQuery = {
+  __typename?: 'Query'
+  listPaymentHistory: {
+    __typename?: 'TListPaymentResponse'
+    offset: number
+    limit: number
+    total: number
+    query: Array<{
+      __typename?: 'TQueryBy'
+      column?: string | null
+      sort?: ESort | null
+    } | null>
+    records: Array<{
+      __typename?: 'TPaymentResponse'
+      paymentId: string
+      orderId: string
+      paymentMethod: EPaymentMethod
+      totalPrice: number
+      status: EPaymentStatus
+      txHash?: string | null
+      codTransactionId?: string | null
+      createdAt: number
+      updatedAt: number
+      userInfo: {
+        __typename?: 'TUserInfoSnapshot'
+        name?: string | null
+        address: string
+        phoneNumber: string
+        email: string
+      }
+      items: Array<{
+        __typename?: 'TOrderItem'
+        name: string
+        amount: number
+        price: number
+        note?: string | null
+        discountPercent?: number | null
+        selectedOptions?: Array<{
+          __typename?: 'TItemOption'
+          group: string
+          name: string
+          extraPrice?: number | null
+        } | null> | null
+      } | null>
+      paypalTransaction?: {
+        __typename?: 'PaypalPayment'
+        paypalPayerEmail: string
+        paypalCaptureId: string
+        payerId: string
+        rawResponse?: { [key: string]: unknown } | null
+      } | null
+    } | null>
+  }
+}
+
+export type PaymentHistoryQueryVariables = Exact<{
+  paymentId: Scalars['String']['input']
+}>
+
+export type PaymentHistoryQuery = {
+  __typename?: 'Query'
+  paymentHistory: {
+    __typename?: 'TPaymentResponse'
+    paymentId: string
+    orderId: string
+    paymentMethod: EPaymentMethod
+    totalPrice: number
+    status: EPaymentStatus
+    txHash?: string | null
+    codTransactionId?: string | null
+    createdAt: number
+    updatedAt: number
+    userInfo: {
+      __typename?: 'TUserInfoSnapshot'
+      name?: string | null
+      address: string
+      phoneNumber: string
+      email: string
+    }
+    items: Array<{
+      __typename?: 'TOrderItem'
+      name: string
+      amount: number
+      price: number
+      note?: string | null
+      discountPercent?: number | null
+      selectedOptions?: Array<{
+        __typename?: 'TItemOption'
+        group: string
+        name: string
+        extraPrice?: number | null
+      } | null> | null
+    } | null>
+    paypalTransaction?: {
+      __typename?: 'PaypalPayment'
+      paypalPayerEmail: string
+      paypalCaptureId: string
+      payerId: string
+      rawResponse?: { [key: string]: unknown } | null
+    } | null
   }
 }
 
@@ -476,6 +904,353 @@ export type UserInfoQuery = {
   }
 }
 
+export const CreateCategoryDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateCategory' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: { kind: 'Variable', name: { kind: 'Name', value: 'name' } },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createCategory' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'name' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'name' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'categoryId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  CreateCategoryMutation,
+  CreateCategoryMutationVariables
+>
+export const DeleteCategoryDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'DeleteCategory' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'categoryId' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'deleteCategory' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'categoryId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'categoryId' },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  DeleteCategoryMutation,
+  DeleteCategoryMutationVariables
+>
+export const UpdateCategoryDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateCategory' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'category' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CategoryInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateCategory' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'category' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'category' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'categoryId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  UpdateCategoryMutation,
+  UpdateCategoryMutationVariables
+>
+export const CreateItemDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateItem' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'input' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CreateItemInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createItem' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'input' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'itemId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'image' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'discountPercent' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'requireOption' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'group' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'extraPrice' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'additionalOption' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'group' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'extraPrice' },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'categoryName' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CreateItemMutation, CreateItemMutationVariables>
+export const UpdateItemDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UpdateItem' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'input' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'UpdateItemInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'updateItem' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'input' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'itemId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'image' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'discountPercent' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'requireOption' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'group' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'extraPrice' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'additionalOption' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'group' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'extraPrice' },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'categoryName' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UpdateItemMutation, UpdateItemMutationVariables>
 export const UserLoginDocument = {
   kind: 'Document',
   definitions: [
@@ -531,6 +1306,1151 @@ export const UserLoginDocument = {
     },
   ],
 } as unknown as DocumentNode<UserLoginMutation, UserLoginMutationVariables>
+export const UserLogoutDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'UserLogout' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'logoutEverywhere' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Boolean' } },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'userLogout' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'logoutEverywhere' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'logoutEverywhere' },
+                },
+              },
+            ],
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<UserLogoutMutation, UserLogoutMutationVariables>
+export const CreateOrderDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'CreateOrder' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'input' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'CreateOrderInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'createOrder' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'input' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'input' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'orderId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paypalOrderId' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paypalApproveUrl' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'cryptoPaymentData' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'codPaymentData' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<CreateOrderMutation, CreateOrderMutationVariables>
+export const ConfirmPaymentDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'ConfirmPayment' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'paymentInput' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'ConfirmPaymentInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'confirmPayment' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'paymentInput' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'paymentInput' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'paymentId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'orderId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paymentMethod' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'totalPrice' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'userInfo' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'address' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'phoneNumber' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'items' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'amount' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'note' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'discountPercent' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'selectedOptions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'group' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'extraPrice' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'txHash' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paypalTransaction' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'paypalPayerEmail' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'paypalCaptureId' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'payerId' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'rawResponse' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'codTransactionId' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ConfirmPaymentMutation,
+  ConfirmPaymentMutationVariables
+>
+export const RefreshTokenDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'mutation',
+      name: { kind: 'Name', value: 'RefreshToken' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'refreshToken' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'refreshToken' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'refreshToken' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'refreshToken' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'accessToken' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'refreshToken' },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  RefreshTokenMutation,
+  RefreshTokenMutationVariables
+>
+export const ListCategoryDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'ListCategory' },
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'listCategory' },
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'categoryId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ListCategoryQuery, ListCategoryQueryVariables>
+export const GetItemByCategoryDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetItemByCategory' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'categoryId' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getItemByCategory' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'categoryId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'categoryId' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'itemId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'image' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'description' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'discountPercent' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'requireOption' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'group' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'extraPrice' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'additionalOption' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'group' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'extraPrice' },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'categoryName' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  GetItemByCategoryQuery,
+  GetItemByCategoryQueryVariables
+>
+export const ListItemDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'ListItem' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'offset' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'limit' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'query' },
+          },
+          type: {
+            kind: 'ListType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'QueryByInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'listItem' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'offset' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'offset' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'limit' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'limit' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'query' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'query' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'offset' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'query' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'column' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'sort' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'records' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'itemId' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'image' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'description' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'discountPercent' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'requireOption' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'group' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'extraPrice' },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'additionalOption' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'group' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'extraPrice' },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'status' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'categoryName' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'createdAt' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'updatedAt' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<ListItemQuery, ListItemQueryVariables>
+export const GetOrderDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'GetOrder' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'orderId' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'getOrder' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'orderId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'orderId' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'orderId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paypalOrderId' },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'userInfoSnapshot' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'address' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'phoneNumber' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'items' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'amount' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'note' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'discountPercent' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'selectedOptions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'group' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'extraPrice' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'totalPrice' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paymentMethod' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'orderStatus' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<GetOrderQuery, GetOrderQueryVariables>
+export const ListPaymentHistoryDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'ListPaymentHistory' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'offset' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'limit' },
+          },
+          type: { kind: 'NamedType', name: { kind: 'Name', value: 'Int' } },
+        },
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'query' },
+          },
+          type: {
+            kind: 'ListType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'QueryByInput' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'listPaymentHistory' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'offset' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'offset' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'limit' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'limit' },
+                },
+              },
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'query' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'query' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'offset' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'limit' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'total' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'query' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'column' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'sort' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'records' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'paymentId' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'orderId' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'paymentMethod' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'totalPrice' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'status' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'userInfo' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'address' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'phoneNumber' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'email' },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'items' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'amount' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'price' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'note' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'discountPercent' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'selectedOptions' },
+                              selectionSet: {
+                                kind: 'SelectionSet',
+                                selections: [
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'group' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'name' },
+                                  },
+                                  {
+                                    kind: 'Field',
+                                    name: { kind: 'Name', value: 'extraPrice' },
+                                  },
+                                ],
+                              },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'txHash' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'paypalTransaction' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'paypalPayerEmail' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'paypalCaptureId' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'payerId' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'rawResponse' },
+                            },
+                          ],
+                        },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'codTransactionId' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'createdAt' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'updatedAt' },
+                      },
+                    ],
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<
+  ListPaymentHistoryQuery,
+  ListPaymentHistoryQueryVariables
+>
+export const PaymentHistoryDocument = {
+  kind: 'Document',
+  definitions: [
+    {
+      kind: 'OperationDefinition',
+      operation: 'query',
+      name: { kind: 'Name', value: 'PaymentHistory' },
+      variableDefinitions: [
+        {
+          kind: 'VariableDefinition',
+          variable: {
+            kind: 'Variable',
+            name: { kind: 'Name', value: 'paymentId' },
+          },
+          type: {
+            kind: 'NonNullType',
+            type: {
+              kind: 'NamedType',
+              name: { kind: 'Name', value: 'String' },
+            },
+          },
+        },
+      ],
+      selectionSet: {
+        kind: 'SelectionSet',
+        selections: [
+          {
+            kind: 'Field',
+            name: { kind: 'Name', value: 'paymentHistory' },
+            arguments: [
+              {
+                kind: 'Argument',
+                name: { kind: 'Name', value: 'paymentId' },
+                value: {
+                  kind: 'Variable',
+                  name: { kind: 'Name', value: 'paymentId' },
+                },
+              },
+            ],
+            selectionSet: {
+              kind: 'SelectionSet',
+              selections: [
+                { kind: 'Field', name: { kind: 'Name', value: 'paymentId' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'orderId' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paymentMethod' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'totalPrice' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'status' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'userInfo' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'address' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'phoneNumber' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'email' } },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'items' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      { kind: 'Field', name: { kind: 'Name', value: 'name' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'amount' },
+                      },
+                      { kind: 'Field', name: { kind: 'Name', value: 'price' } },
+                      { kind: 'Field', name: { kind: 'Name', value: 'note' } },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'discountPercent' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'selectedOptions' },
+                        selectionSet: {
+                          kind: 'SelectionSet',
+                          selections: [
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'group' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'name' },
+                            },
+                            {
+                              kind: 'Field',
+                              name: { kind: 'Name', value: 'extraPrice' },
+                            },
+                          ],
+                        },
+                      },
+                    ],
+                  },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'txHash' } },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'paypalTransaction' },
+                  selectionSet: {
+                    kind: 'SelectionSet',
+                    selections: [
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'paypalPayerEmail' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'paypalCaptureId' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'payerId' },
+                      },
+                      {
+                        kind: 'Field',
+                        name: { kind: 'Name', value: 'rawResponse' },
+                      },
+                    ],
+                  },
+                },
+                {
+                  kind: 'Field',
+                  name: { kind: 'Name', value: 'codTransactionId' },
+                },
+                { kind: 'Field', name: { kind: 'Name', value: 'createdAt' } },
+                { kind: 'Field', name: { kind: 'Name', value: 'updatedAt' } },
+              ],
+            },
+          },
+        ],
+      },
+    },
+  ],
+} as unknown as DocumentNode<PaymentHistoryQuery, PaymentHistoryQueryVariables>
 export const UserInfoDocument = {
   kind: 'Document',
   definitions: [

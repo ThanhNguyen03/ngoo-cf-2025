@@ -1,0 +1,24 @@
+mutation CreateItem($input: CreateItemInput!) {
+  createItem(input: $input) {
+    itemId
+    name
+    image
+    price
+    description
+    discountPercent
+    requireOption {
+      group
+      name
+      extraPrice
+    }
+    additionalOption {
+      group
+      name
+      extraPrice
+    }
+    status
+    categoryName
+    createdAt
+    updatedAt
+  }
+}
