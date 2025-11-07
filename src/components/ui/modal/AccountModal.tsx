@@ -40,7 +40,7 @@ export const AccountModal: FC<TModalProps> = ({ isOpen, onClose }) => {
   }, [isConnected, onClose])
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose}>
+    <Modal isOpen={isOpen} onClose={onClose} closeOnOutsideClick>
       <div className='flex items-center gap-3 p-4'>
         <Image alt='default-avt' src={defaultAvatar} className='size-10' />
         <div className='flex flex-col justify-center gap-0.5'>

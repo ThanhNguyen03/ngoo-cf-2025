@@ -7,10 +7,6 @@ import { ApolloProvider } from '@/providers/apollo-provider'
 import { WalletConnectProvider } from '@/providers/wallet-connect-provider'
 import type { Metadata } from 'next'
 import { getServerSession } from 'next-auth'
-import { SessionProvider } from 'next-auth/react'
-import getConfig from 'next/config'
-import { headers } from 'next/headers'
-import { cookieToInitialState } from 'wagmi'
 import './globals.css'
 
 export const metadata: Metadata = {
@@ -25,11 +21,6 @@ export default async function RootLayout({
   children: React.ReactNode
 }>) {
   const session = await getServerSession(authOptions)
-
-  const initialState = cookieToInitialState(
-    getConfig(),
-    (await headers()).get('cookie'),
-  )
 
   return (
     <html lang='en' className='scroll-smooth'>
@@ -47,16 +38,14 @@ export default async function RootLayout({
       </head>
 
       <body className='font-raleway scroll-smooth bg-white lining-nums antialiased'>
-        <SessionProvider session={session}>
-          <ApolloProvider>
-            <WalletConnectProvider initialState={initialState}>
-              <Header />
-              {children}
-              <Toaster />
-              <Footer />
-            </WalletConnectProvider>
-          </ApolloProvider>
-        </SessionProvider>
+        <ApolloProvider session={session}>
+          <WalletConnectProvider>
+            <Header />
+            {children}
+            <Toaster />
+            <Footer />
+          </WalletConnectProvider>
+        </ApolloProvider>
       </body>
     </html>
   )

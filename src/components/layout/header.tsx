@@ -1,6 +1,7 @@
 'use client'
 
 import { LIST_HEADER_NAVIGATION } from '@/constants'
+import { useIsHydrated } from '@/hooks'
 import { cn } from '@/utils'
 import {
   ListIcon,
@@ -11,21 +12,24 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { ConnectWalletButton } from '../ui'
+import { LoginModal } from '../ui/modal/LoginModal'
 import NgOoLogo from '../ui/NgOoLogo'
 import SwitchButton from '../ui/SwitchButton'
 
 const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
+  const [openLoginModal, setOpenLoginModal] = useState<boolean>(false)
   const pathname = usePathname()
+  const isHydrated = useIsHydrated()
 
   return (
-    <header className='bg-beige-100 sticky top-0 z-[99] border-b border-white/[2%] px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
+    <header className='bg-beige-100 sticky top-0 z-50 border-b border-white/[2%] px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
       <div className='mx-auto flex h-12 w-full max-w-[1024px] items-center justify-between'>
         {/* left */}
         <NgOoLogo isDark />
 
         {/* center content */}
-        <div className='hidden h-full items-center justify-center md:flex lg:gap-4'>
+        <div className='absolute left-1/2 hidden size-full -translate-x-1/2 items-center justify-center md:flex lg:gap-4'>
           {LIST_HEADER_NAVIGATION.map((link) => (
             <Link
               key={link.name}
@@ -46,10 +50,16 @@ const Header = () => {
         </div>
 
         {/* right */}
-        <div className='flex h-full items-center justify-center gap-2 py-2'>
+        <div className='z-10 flex h-full items-center justify-center gap-2 py-2'>
           {/* demo connect wallet button */}
-          <ConnectWalletButton />
-          <ShoppingCartSimpleIcon size={24} />
+          {isHydrated && <ConnectWalletButton />}
+          <div className='hidden h-full w-0.25 bg-neutral-900 md:inline' />
+
+          <ShoppingCartSimpleIcon
+            size={24}
+            onClick={() => setOpenLoginModal(true)}
+            className='hidden md:inline'
+          />
           {/* menu button */}
           {
             <SwitchButton
@@ -62,6 +72,10 @@ const Header = () => {
           }
         </div>
       </div>
+      <LoginModal
+        isOpen={openLoginModal}
+        onClose={() => setOpenLoginModal(false)}
+      />
     </header>
   )
 }
