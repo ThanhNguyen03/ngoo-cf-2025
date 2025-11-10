@@ -56,7 +56,7 @@ export const Header = () => {
 
           {/* authen button */}
 
-          <div className='hidden h-full w-0.25 bg-neutral-900 md:inline' />
+          <div className='hidden h-full w-0.25 bg-neutral-900/10 md:inline' />
 
           <ShoppingCartSimpleIcon
             size={24}
