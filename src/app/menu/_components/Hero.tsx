@@ -1,8 +1,8 @@
 'use client'
 
 import { Tooltip } from '@/components/ui'
-import AmountCounter from '@/components/ui/AmountCounter'
-import SwitchButton from '@/components/ui/SwitchButton'
+import { AmountCounter } from '@/components/ui/AmountCounter'
+import { SwitchButton } from '@/components/ui/SwitchButton'
 import { LIST_NEW_PRODUCT, NEW_PRODUCT_DATA, SIZE_OPTION } from '@/constants'
 import useCartStore, { calculateItemPrice } from '@/store/cart-store'
 import { ENewProduct, TItem } from '@/types'
@@ -13,7 +13,7 @@ import { Bottle3D } from './ui/Bottle3D'
 
 const ANIMATION_DURATION = 700 // ms
 
-const Hero = () => {
+export const Hero = () => {
   const { addToCart, removeFromCart, updateCartItem, listCartItem } =
     useCartStore()
   const [selectedProduct, setSelectedProduct] = useState<ENewProduct>(
@@ -376,5 +376,3 @@ const Hero = () => {
     </section>
   )
 }
-
-export default Hero

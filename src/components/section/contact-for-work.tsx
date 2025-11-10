@@ -1,10 +1,10 @@
+import { SwitchButton } from '@/components/ui'
+import { useSpotlightCursor } from '@/hooks'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr'
 import Link from 'next/link'
 import { LinePattern } from '../icons/LinePattern'
-import SwitchButton from '../ui/SwitchButton'
-import { useSpotlightCursor } from '@/hooks'
 
-const ContactForWork = () => {
+export const ContactForWork = () => {
   const { position, onMouseMove } = useSpotlightCursor()
   return (
     <section
@@ -59,5 +59,3 @@ const ContactForWork = () => {
     </section>
   )
 }
-
-export default ContactForWork

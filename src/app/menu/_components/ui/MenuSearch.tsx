@@ -19,7 +19,7 @@ const LIST_CATEGORIES = [
   'Smoothies',
 ]
 
-const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
+export const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false)
   const [openSearchBar, setOpenSearchBar] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
@@ -45,7 +45,7 @@ const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
       }
     }
 
-    document.addEventListener('click', listener) 
+    document.addEventListener('click', listener)
     document.addEventListener('touchstart', listener)
 
     return () => {
@@ -154,5 +154,3 @@ const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
     </div>
   )
 }
-
-export default MenuSearch

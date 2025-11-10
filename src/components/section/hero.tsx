@@ -1,15 +1,15 @@
 'use client'
 
 import { coffeeShop, ngooCfText } from '@/assets/images'
+import { Button } from '@/components/ui'
 import { cn } from '@/utils'
 import { ArrowRightIcon, CowIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
-import Button from '../ui/Button'
 
 const ANIMATION_DURATION = 700 // 700ms
 
-const Hero = () => {
+export const Hero = () => {
   const [animationEnded, setAnimationEnded] = useState<boolean>(false)
   useEffect(() => {
     const animationTimeOut = setTimeout(
@@ -94,5 +94,3 @@ const Hero = () => {
     </section>
   )
 }
-
-export default Hero

@@ -68,7 +68,7 @@ type TNewCollectionProps = {
   ref: RefObject<HTMLDivElement | null>
 }
 
-const NewCollection: FC<TNewCollectionProps> = ({
+export const NewCollection: FC<TNewCollectionProps> = ({
   setSelectedProduct,
   selectedProduct,
   ref,
@@ -279,5 +279,3 @@ const NewCollection: FC<TNewCollectionProps> = ({
     </section>
   )
 }
-
-export default NewCollection

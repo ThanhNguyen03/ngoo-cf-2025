@@ -1,5 +1,8 @@
 'use client'
 
+import { NgOoLogo, SwitchButton } from '@/components/ui'
+import { LoginModal } from '@/components/ui/modal'
+import { ConnectWalletButton } from '@/components/ui/wallet-button'
 import { LIST_HEADER_NAVIGATION } from '@/constants'
 import { useIsHydrated } from '@/hooks'
 import { cn } from '@/utils'
@@ -11,12 +14,8 @@ import {
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
-import { ConnectWalletButton } from '../ui'
-import { LoginModal } from '../ui/modal/LoginModal'
-import NgOoLogo from '../ui/NgOoLogo'
-import SwitchButton from '../ui/SwitchButton'
 
-const Header = () => {
+export const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
   const [openLoginModal, setOpenLoginModal] = useState<boolean>(false)
   const pathname = usePathname()
@@ -53,6 +52,9 @@ const Header = () => {
         <div className='z-10 flex h-full items-center justify-center gap-2 py-2'>
           {/* demo connect wallet button */}
           {isHydrated && <ConnectWalletButton />}
+
+          {/* authen button */}
+
           <div className='hidden h-full w-0.25 bg-neutral-900 md:inline' />
 
           <ShoppingCartSimpleIcon
@@ -79,5 +81,3 @@ const Header = () => {
     </header>
   )
 }
-
-export default Header

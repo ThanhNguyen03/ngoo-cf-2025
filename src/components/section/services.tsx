@@ -56,7 +56,7 @@ const LIST_SERVICE_DATA: TService[] = [
       'Pay with cryptocurrencies like ETH or USDT – borderless, secure, and tailored for Web3 users.',
   },
 ]
-const Services: FC<TServicesProps> = ({ isHover }) => {
+export const Services: FC<TServicesProps> = ({ isHover }) => {
   return (
     <section
       className={cn(
@@ -84,5 +84,3 @@ const Services: FC<TServicesProps> = ({ isHover }) => {
     </section>
   )
 }
-
-export default Services

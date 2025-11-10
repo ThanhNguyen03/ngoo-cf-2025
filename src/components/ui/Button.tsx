@@ -9,7 +9,7 @@ type TButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
     disableAnimation?: boolean
   }
 
-const Button: FC<TButtonProps> = ({
+export const Button: FC<TButtonProps> = ({
   icon,
   children,
   className,
@@ -32,5 +32,3 @@ const Button: FC<TButtonProps> = ({
     </button>
   )
 }
-
-export default Button

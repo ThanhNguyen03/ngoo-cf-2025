@@ -1,7 +1,7 @@
 import { cn } from '@/utils'
 import { MinusIcon, PlusIcon } from '@phosphor-icons/react/dist/ssr'
 import { FC } from 'react'
-import Button from './Button'
+import { Button } from './Button'
 
 type TAmountCounter = {
   isInputAmount?: boolean
@@ -12,7 +12,7 @@ type TAmountCounter = {
   onChange: (amount: number) => void
 }
 
-const AmountCounter: FC<TAmountCounter> = ({
+export const AmountCounter: FC<TAmountCounter> = ({
   isInputAmount,
   className,
   amount = 1,
@@ -77,5 +77,3 @@ const AmountCounter: FC<TAmountCounter> = ({
     </div>
   )
 }
-
-export default AmountCounter

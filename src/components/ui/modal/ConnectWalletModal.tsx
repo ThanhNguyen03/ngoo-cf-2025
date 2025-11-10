@@ -3,14 +3,14 @@ import { Connector, CreateConnectorFn, useAccount, useConnect } from 'wagmi'
 
 import type { TModalProps } from '@/types'
 
+import { SwitchButton } from '@/components/ui'
 import { METAMASK_BASE64_ICON } from '@/constants'
+import { useIsHydrated } from '@/hooks'
 import { cn } from '@/utils'
 import { XIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
 import Link from 'next/link'
-import SwitchButton from '../SwitchButton'
 import { Modal } from './Modal'
-import { useIsHydrated } from '@/hooks'
 
 type TWalletConnetorProps = {
   connector: Connector<CreateConnectorFn>

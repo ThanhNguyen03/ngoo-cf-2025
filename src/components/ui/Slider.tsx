@@ -18,7 +18,7 @@ import {
   useRef,
   useState,
 } from 'react'
-import Button from './Button'
+import { Button } from './Button'
 
 const NEXT_SLIDE_DURATION = 7000
 const ANIMATION_DURATION = 600

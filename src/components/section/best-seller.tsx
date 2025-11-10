@@ -2,15 +2,14 @@
 
 import titleBackground from '@/assets/images/title-background.jpg'
 import { liptonTea } from '@/assets/products'
+import { ItemCard, Slider } from '@/components/ui'
+import { ItemDetailModal } from '@/components/ui/modal'
 import { useParallaxLayer } from '@/hooks'
 import useCartStore from '@/store/cart-store'
 import { TItem } from '@/types'
 import { cn } from '@/utils'
 import { FC, useMemo, useState } from 'react'
 import { FenceCloud } from '../icons'
-import ItemCard from '../ui/ItemCard'
-import { Slider } from '../ui/Slider'
-import ItemDetailModal from '../ui/modal/ItemDetailModal'
 
 const MOCKED_ITEMS_DATA: TItem[] = [
   {
@@ -134,7 +133,7 @@ type TBestSellerProps = {
   ref: React.RefObject<HTMLDivElement | null>
 }
 
-const BestSeller: FC<TBestSellerProps> = ({ isInview, ref }) => {
+export const BestSeller: FC<TBestSellerProps> = ({ isInview, ref }) => {
   const cloudFenceRef = useParallaxLayer<SVGSVGElement>(ref, {
     translateRatio: -3,
   })
@@ -203,5 +202,3 @@ const BestSeller: FC<TBestSellerProps> = ({ isInview, ref }) => {
     </section>
   )
 }
-
-export default BestSeller

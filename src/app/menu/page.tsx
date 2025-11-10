@@ -1,12 +1,12 @@
 import { Metadata } from 'next'
-import Hero from './_components/Hero'
-import Menu from './_components/Menu'
+import { Hero } from './_components/Hero'
+import { Menu } from './_components/Menu'
 
 export const metadata: Metadata = {
   title: 'Land of Prosperity',
 }
 
-export default function LandOfProsperityPage() {
+export default function MenuPage() {
   return (
     <main>
       <Hero />

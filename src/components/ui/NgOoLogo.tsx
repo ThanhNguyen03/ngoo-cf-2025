@@ -7,9 +7,9 @@ type TNgOoLogoProps = {
   isDark?: boolean
 }
 
-const NgOoLogo: FC<TNgOoLogoProps> = ({ isDark }) => {
+export const NgOoLogo: FC<TNgOoLogoProps> = ({ isDark }) => {
   return (
-    <Link href='/' className='flex items-center justify-center gap-2 py-2'>
+    <Link href='/' className='z-10 flex items-center justify-center gap-2 py-2'>
       {/* logo */}
       <div
         className={cn(
@@ -34,5 +34,3 @@ const NgOoLogo: FC<TNgOoLogoProps> = ({ isDark }) => {
     </Link>
   )
 }
-
-export default NgOoLogo

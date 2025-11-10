@@ -1,11 +1,13 @@
 'use client'
 
 import { notifyBg } from '@/assets/images'
-import BestSeller from '@/components/section/best-seller'
-import ContactForWork from '@/components/section/contact-for-work'
-import Hero from '@/components/section/hero'
-import NewCollection from '@/components/section/new-collection'
-import Services from '@/components/section/services'
+import {
+  BestSeller,
+  ContactForWork,
+  Hero,
+  NewCollection,
+  Services,
+} from '@/components/section'
 import { InfiniteCarousel } from '@/components/ui/InfiniteCarousel'
 import { useIsHydrated } from '@/hooks'
 import { TCollectionData } from '@/types'
