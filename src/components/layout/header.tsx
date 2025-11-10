@@ -2,9 +2,9 @@
 
 import { NgOoLogo, SwitchButton } from '@/components/ui'
 import { LoginModal } from '@/components/ui/modal'
-import { ConnectWalletButton } from '@/components/ui/wallet-button'
+import { AuthenButton } from '@/components/ui/wallet-button'
 import { LIST_HEADER_NAVIGATION } from '@/constants'
-import { useIsHydrated } from '@/hooks'
+// import { useIsHydrated } from '@/hooks'
 import { cn } from '@/utils'
 import {
   ListIcon,
@@ -19,7 +19,7 @@ export const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
   const [openLoginModal, setOpenLoginModal] = useState<boolean>(false)
   const pathname = usePathname()
-  const isHydrated = useIsHydrated()
+  // const isHydrated = useIsHydrated()
 
   return (
     <header className='bg-beige-100 sticky top-0 z-50 border-b border-white/[2%] px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
@@ -51,7 +51,8 @@ export const Header = () => {
         {/* right */}
         <div className='z-10 flex h-full items-center justify-center gap-2 py-2'>
           {/* demo connect wallet button */}
-          {isHydrated && <ConnectWalletButton />}
+          {/* {isHydrated && <ConnectWalletButton />} */}
+          <AuthenButton />
 
           {/* authen button */}
 

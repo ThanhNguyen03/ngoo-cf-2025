@@ -1,6 +1,7 @@
 import { twMerge } from 'tailwind-merge'
 import { formatUnits } from 'viem'
 import { ClassValue, clsx } from './clsx'
+import { toast } from '@/components/ui'
 
 export function cn(...args: ClassValue[]) {
   return twMerge(clsx(args))
@@ -74,4 +75,48 @@ export const formatNumber = (
     minimumFractionDigits,
     maximumFractionDigits,
   })
+}
+
+const USER_REJECT_TRANSACTION_ERROR_MESSAGE = 'User rejected the request.'
+/**
+ * Log the error and show error toast with appropriate message.
+ *
+ * @param error - The error to handle
+ * @param customErrorMessage - Custom error message
+ * @param isDevMode - Optional flag to control error message to show toast (default: true)
+ */
+export const handleError = (
+  error: unknown,
+  customErrorMessage: string,
+  isDevMode: boolean = true,
+) => {
+  let errorMessage = customErrorMessage
+
+  if (error instanceof Error) {
+    const { message } = error
+
+    // Internal errors — show actual message without prefix
+    // if (message.startsWith(INTERNAL_ERROR_PREFIX)) {
+    //   errorMessage = message.slice(INTERNAL_ERROR_PREFIX.length)
+    // }
+
+    // User rejected transaction
+    if (message.includes(USER_REJECT_TRANSACTION_ERROR_MESSAGE)) {
+      errorMessage = USER_REJECT_TRANSACTION_ERROR_MESSAGE
+    }
+
+    // Non-production: show full error message for debugging
+    errorMessage = isDevMode
+      ? `${customErrorMessage}:\n${message}`
+      : customErrorMessage
+  }
+
+  // Log details in dev, only simplified message in prod
+  if (isDevMode) {
+    console.error(customErrorMessage, error)
+  } else {
+    console.error(errorMessage)
+  }
+
+  toast.error(errorMessage)
 }
