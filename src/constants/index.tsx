@@ -1,4 +1,9 @@
-import { walletConnectIcon } from '@/assets/icons'
+import {
+  ethereumIcon,
+  monadIcon,
+  u2uIcon,
+  walletConnectIcon,
+} from '@/assets/icons'
 import {
   cherryJuiceBottle,
   kiwiJuiceBottole,
@@ -14,7 +19,9 @@ import {
 } from '@/types'
 import {
   ChatsCircleIcon,
+  ClockUserIcon,
   FacebookLogoIcon,
+  GearSixIcon,
   GithubLogoIcon,
   HouseIcon,
   LinkedinLogoIcon,
@@ -22,6 +29,7 @@ import {
   TelegramLogoIcon,
   VaultIcon,
 } from '@phosphor-icons/react/dist/ssr'
+import { mainnet, monadTestnet, sepolia } from 'viem/chains'
 
 export const DEV_APP_URL = 'http://localhost:3000'
 export const LOCALSTORAGE_KEY = 'ngoo_coffee_visited'
@@ -33,6 +41,13 @@ export const METAMASK_BASE64_ICON =
 
 export const LIST_CONNECTOR_ICON: Record<string, string> = {
   walletConnect: walletConnectIcon.src,
+}
+
+export const LIST_CHAIN_ICON: Record<number, string> = {
+  [mainnet.id]: ethereumIcon,
+  [sepolia.id]: ethereumIcon,
+  [monadTestnet.id]: monadIcon,
+  2484: u2uIcon,
 }
 
 export const LIST_HEADER_NAVIGATION: TNavigationItem[] = [
@@ -215,3 +230,23 @@ export const NEW_PRODUCT_DATA: Record<ENewProduct, TNewItem> = {
       'Strawberry Juice bursts with the sweet, refreshing taste of ripe strawberries. Each sip delivers freshness and a natural energy boost. More than just a drink, it’s a delightful treat for your senses that you’ll fall in love with instantly.',
   },
 }
+
+export const LIST_ACCOUNT_NAVIGATION: TNavigationItem[] = [
+  {
+    name: 'Settings',
+    icon: <GearSixIcon weight='fill' size={24} className='text-primary-400' />,
+    href: '/profile',
+  },
+  {
+    name: 'Faucet',
+    icon: <VaultIcon weight='fill' size={24} className='text-primary-400' />,
+    href: '#', // TODO: faucet page ex: u2u, ftm, monad,...
+  },
+  {
+    name: 'Activity',
+    icon: (
+      <ClockUserIcon weight='fill' size={24} className='text-primary-400' />
+    ),
+    href: '/activity',
+  },
+]

@@ -59,3 +59,9 @@ export enum ENewProduct {
 }
 
 export type TCursorPosition = { x: number; y: number }
+
+export type TPopoverProps = {
+  isOpen: boolean
+  onClose: () => void
+  className?: string | undefined
+}
