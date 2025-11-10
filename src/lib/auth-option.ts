@@ -1,4 +1,5 @@
-import { NextAuthOptions } from 'next-auth'
+import { getServerSession, NextAuthOptions, User } from 'next-auth'
+import Credentials from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 
 const authOptions: NextAuthOptions = {
@@ -7,57 +8,43 @@ const authOptions: NextAuthOptions = {
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID || '',
       clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+    }),
 
-      // async authorize(credentials) {
-      //   try {
-      //     if (!projectKey) {
-      //       throw new Error('Missing project key')
-      //     }
-      //     if (!credentials) {
-      //       return null
-      //     }
-      //     // refresh and update accessToken
-      //     if (credentials.isRefreshToken) {
-      //       const session = await getServerSession(authOptions)
-      //       if (!session?.uuid) {
-      //         throw new Error('Missing session uuid')
-      //       }
-      //       if (!session?.accessToken || !session?.refreshToken) {
-      //         throw new Error('Missing accessToken or refreshToken')
-      //       }
-      //       const { data: refreshTokenData, error: refreshTokenError } =
-      //         await mutateUserRefreshToken({
-      //           accessToken: session?.accessToken,
-      //           refreshToken: session?.refreshToken,
-      //         })
-      //       if (refreshTokenError) {
-      //         throw new Error(refreshTokenError.message)
-      //       }
-      //       return {
-      //         id: session.uuid,
-      //         accessToken: refreshTokenData.accessToken,
-      //         refreshToken: session.refreshToken,
-      //         uuid: session.uuid,
-      //       } satisfies User
-      //     }
-      //     const { data, error } = await mutateUserVerifyAuthCode({
-      //       authCode: credentials.authCode,
-      //       projectKey,
-      //     })
-      //     if (error) {
-      //       throw new Error(error.message)
-      //     }
-      //     return {
-      //       id: `${pageName}-${data.userUuid}`,
-      //       accessToken: data.accessToken,
-      //       refreshToken: data.refreshToken,
-      //       uuid: `${pageName}-${data.userUuid}`,
-      //     } satisfies User
-      //   } catch (error) {
-      //     logger.error(`Error from verify auth code in next-auth`, error)
-      //     return null
-      //   }
-      // },
+    Credentials({
+      credentials: {
+        email: { type: 'text' },
+        password: { type: 'text' },
+        isRefresh: { type: 'boolean' },
+      },
+      async authorize(credentials) {
+        try {
+          if (!credentials) {
+            return null
+          }
+          // refresh and update accessToken
+          if (credentials.isRefresh) {
+            const session = await getServerSession(authOptions)
+            if (!session?.uuid) {
+              throw new Error('Missing session uuid')
+            }
+            if (!session?.accessToken || !session?.refreshToken) {
+              throw new Error('Missing accessToken or refreshToken')
+            }
+
+            // TODO: call refresh token api here to get new access token
+          }
+          // TODO: call verify auth code api here to get user info
+          return {
+            id: 'session.uuid',
+            accessToken: 'refreshTokenData.accessToken',
+            refreshToken: 'session.refreshToken',
+            uuid: 'session.uuid',
+          } satisfies User
+        } catch (error) {
+          console.error(`Error from verify auth code in next-auth`, error)
+          return null
+        }
+      },
     }),
   ],
   callbacks: {
@@ -76,6 +63,7 @@ const authOptions: NextAuthOptions = {
       return session
     },
   },
+  // TODO: implement sign out api
   // events: {
   //   async signOut({ session, token }) {
   //     if (token.refreshToken) {
