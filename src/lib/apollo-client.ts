@@ -1,9 +1,9 @@
-import { ApolloLink, HttpLink } from '@apollo/client'
 import {
   ApolloClient,
+  ApolloLink,
+  HttpLink,
   InMemoryCache,
-  registerApolloClient,
-} from '@apollo/client-integration-nextjs'
+} from '@apollo/client'
 import { SetContextLink } from '@apollo/client/link/context'
 import { getServerSession } from 'next-auth'
 import authOptions from './auth-option'
@@ -34,11 +34,7 @@ const authLink = new SetContextLink(async ({ headers }) => {
   }
 })
 
-export const { getClient } = registerApolloClient(() => {
-  return new ApolloClient({
-    cache: new InMemoryCache(),
-    link: ApolloLink.from([authLink, httpLink]), // authLink must come before httpLink
-  })
+export const client = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: ApolloLink.from([authLink, httpLink]), // authLink must come before httpLink
 })
-
-export const client = getClient()

@@ -1,7 +1,9 @@
 'use client'
 
+import Loading from '@/app/loading'
 import { Toaster } from '@/components/ui'
 import { wagmiConfig } from '@/lib/wagmi-config'
+import useAuthStore from '@/store/auth-store'
 import { cn } from '@/utils'
 import {
   ConfettiIcon,
@@ -10,16 +12,28 @@ import {
   XIcon,
 } from '@phosphor-icons/react/dist/ssr'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { type PropsWithChildren, useState } from 'react'
+import { useSession } from 'next-auth/react'
+import { type PropsWithChildren, useEffect, useState } from 'react'
 import { WagmiProvider } from 'wagmi'
 
 export const WalletConnectProvider = ({ children }: PropsWithChildren) => {
   const [queryClient] = useState(() => new QueryClient())
   const [config] = useState(() => wagmiConfig)
+  const { status } = useSession()
+  const { getUserInfo, loading } = useAuthStore()
+
+  useEffect(() => {
+    if (status === 'authenticated') {
+      getUserInfo()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [status])
 
   return (
     <WagmiProvider config={config}>
-      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+      <QueryClientProvider client={queryClient}>
+        {loading ? <Loading /> : children}
+      </QueryClientProvider>
       <Toaster
         duration={3000}
         offset={50}

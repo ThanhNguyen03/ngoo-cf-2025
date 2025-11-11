@@ -128,7 +128,7 @@ export const LoginModal: FC<TModalProps> = ({ isOpen, onClose }) => {
             width={500}
             height={500}
             className={cn(
-              'size-full object-cover',
+              'size-full object-cover duration-500',
               isLogin ? 'rounded-l-3.5' : 'rounded-r-3.5',
             )}
           />

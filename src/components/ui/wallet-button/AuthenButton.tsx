@@ -1,11 +1,12 @@
 import { LoginModal } from '@/components/ui/modal'
 import { AccountPopover } from '@/components/ui/popover'
-import { EAuthMethod, ERole, UserInfo } from '@/lib/graphql/generated/graphql'
+import { EAuthMethod, ERole, TUserInfo } from '@/lib/graphql/generated/graphql'
 import { truncateAddress } from '@/utils'
 import { SignInIcon } from '@phosphor-icons/react/dist/ssr'
+import { useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
 
-const MOCK_USER_INFO: UserInfo = {
+const MOCK_USER_INFO: TUserInfo = {
   uuid: '1',
   name: 'John Doe',
   email: 'asdasdasasd@gmail.com',
@@ -15,8 +16,7 @@ const MOCK_USER_INFO: UserInfo = {
 }
 
 export const AuthenButton = () => {
-  // const { status } = useSession()
-  const status = 'authenticated' // for demo purpose
+  const { status } = useSession()
 
   const [openLoginModal, setOpenLoginModal] = useState<boolean>(false)
   const [openAccountPopover, setOpenAccountPopover] = useState<boolean>(false)
