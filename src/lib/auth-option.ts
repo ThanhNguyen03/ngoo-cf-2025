@@ -1,6 +1,12 @@
-import { getServerSession, NextAuthOptions, User } from 'next-auth'
+import { handleError } from '@/utils'
+import { NextAuthOptions, User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
+import { client } from './apollo-client'
+import {
+  UserLoginDocument,
+  UserLogoutDocument,
+} from './graphql/generated/graphql'
 
 const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET || '',
@@ -14,34 +20,35 @@ const authOptions: NextAuthOptions = {
       credentials: {
         email: { type: 'text' },
         password: { type: 'text' },
-        isRefresh: { type: 'boolean' },
       },
       async authorize(credentials) {
         try {
           if (!credentials) {
             return null
           }
-          // refresh and update accessToken
-          if (credentials.isRefresh) {
-            const session = await getServerSession(authOptions)
-            if (!session?.uuid) {
-              throw new Error('Missing session uuid')
-            }
-            if (!session?.accessToken || !session?.refreshToken) {
-              throw new Error('Missing accessToken or refreshToken')
-            }
-
-            // TODO: call refresh token api here to get new access token
+          const variables = {
+            email: credentials.email,
+            password: credentials.password,
           }
-          // TODO: call verify auth code api here to get user info
-          return {
-            id: 'session.uuid',
-            accessToken: 'refreshTokenData.accessToken',
-            refreshToken: 'session.refreshToken',
-            uuid: 'session.uuid',
-          } satisfies User
+          const { data, error } = await client.mutate({
+            mutation: UserLoginDocument,
+            variables,
+          })
+
+          if (error) {
+            throw error
+          }
+          if (data) {
+            return {
+              id: '',
+              accessToken: data.userLogin.accessToken,
+              refreshToken: data.userLogin.refreshToken,
+            } satisfies User
+          }
+
+          return null
         } catch (error) {
-          console.error(`Error from verify auth code in next-auth`, error)
+          handleError(error, 'Error from verify auth code in next-auth')
           return null
         }
       },
@@ -49,6 +56,7 @@ const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
+      // TODO: handle refresh, login by google
       if (user) {
         token.accessToken = user.accessToken
         token.refreshToken = user.refreshToken
@@ -56,6 +64,7 @@ const authOptions: NextAuthOptions = {
       }
       return token
     },
+
     async session({ session, token }) {
       session.accessToken = token.accessToken
       session.refreshToken = token.refreshToken
@@ -64,24 +73,26 @@ const authOptions: NextAuthOptions = {
     },
   },
   // TODO: implement sign out api
-  // events: {
-  //   async signOut({ session, token }) {
-  //     if (token.refreshToken) {
-  //       try {
-  //         const { error } = await mutateUserSignOut({
-  //           // TODO: will remove hard code when have design about logout button
-  //           logoutEverywhere: false,
-  //           refreshToken: token.refreshToken,
-  //         })
-  //         if (error) {
-  //           throw new Error(error.message)
-  //         }
-  //       } catch (error) {
-  //         logger.error('Error while logout user', error)
-  //       }
-  //     }
-  //   },
-  // },
+  events: {
+    async signOut({ token }) {
+      if (token.refreshToken) {
+        try {
+          const { error } = await client.mutate({
+            // TODO: will remove hard code when have design about logout button
+            mutation: UserLogoutDocument,
+            variables: {
+              logoutEverywhere: false,
+            },
+          })
+          if (error) {
+            throw error
+          }
+        } catch (error) {
+          handleError(error, 'Error while logout user')
+        }
+      }
+    },
+  },
   // TODO: Design auth error page
   // pages: {
   //   // redirect to error page if hit error when signin

@@ -103,7 +103,7 @@ export const LoginModal: FC<TModalProps> = ({ isOpen, onClose }) => {
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className='rounded-4 bg-dark-600 border-secondary-500/10! w-80 border-2 md:h-[50dvh] md:w-[560px] lg:w-[680px]'
+      className='rounded-4 bg-dark-600 border-secondary-500/10! w-80 border-2 md:h-[500px] md:w-[560px] lg:w-[680px]'
       closable={false}
       closeOnOutsideClick
     >
