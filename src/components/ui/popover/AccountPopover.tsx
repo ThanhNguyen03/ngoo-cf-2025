@@ -5,7 +5,7 @@ import {
   SwitchChainButton,
 } from '@/components/ui/wallet-button'
 import { LIST_ACCOUNT_NAVIGATION, LIST_CONNECTOR_ICON } from '@/constants'
-import { EAuthMethod, ERole, UserInfo } from '@/lib/graphql/generated/graphql'
+import { TUserInfo } from '@/lib/graphql/generated/graphql'
 import { TPopoverProps } from '@/types'
 import { cn } from '@/utils'
 import {
@@ -13,26 +13,22 @@ import {
   PlugsIcon,
   SignOutIcon,
 } from '@phosphor-icons/react/dist/ssr'
+import { signOut } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ComponentPropsWithRef, FC, useState } from 'react'
 import { useAccount, useDisconnect } from 'wagmi'
 
-const MOCK_USER_INFO: UserInfo = {
-  uuid: '1',
-  name: 'John Doe',
-  email: 'asdasdasasd@gmail.com',
-  role: ERole.User,
-  walletAddress: '0x26c89c7A0b40E318C74B21752CdDC9bd7d6415A8',
-  authMethod: EAuthMethod.Google,
-}
-
-type TAccountPopoverProps = TPopoverProps & ComponentPropsWithRef<'div'>
+type TAccountPopoverProps = TPopoverProps &
+  ComponentPropsWithRef<'div'> & {
+    userInfo: TUserInfo
+  }
 
 export const AccountPopover: FC<TAccountPopoverProps> = ({
   isOpen,
   ref,
   className,
+  userInfo,
 }) => {
   const { isConnected, address, connector } = useAccount()
   const { disconnect } = useDisconnect()
@@ -93,24 +89,24 @@ export const AccountPopover: FC<TAccountPopoverProps> = ({
                 isConnected && 'pr-6',
               )}
             >
-              <p className='text-16 text-primary-600 font-bold -tracking-[0.32px]'>
-                {MOCK_USER_INFO.email}
+              <p className='text-16 text-primary-600 text-right font-bold -tracking-[0.32px] wrap-anywhere'>
+                {userInfo.email}
               </p>
-              <p className='text-14 font-medium'>{MOCK_USER_INFO.name}</p>
+              <p className='text-14 font-medium'>{userInfo.name}</p>
             </div>
 
             {/* divider */}
             <div className='h-px w-full bg-linear-to-l from-black/10 to-black/[2%]' />
           </div>
         </div>
-        {isConnected && MOCK_USER_INFO.walletAddress && (
+        {isConnected && userInfo.walletAddress && (
           <div className='text-14 mt-4 flex items-center gap-2 px-2 font-semibold text-black/80 md:px-3'>
             <Tooltip
-              content={MOCK_USER_INFO.walletAddress}
+              content={userInfo.walletAddress}
               wrapperClassName='wrap-anywhere'
               className='text-primary-500 bg-white font-semibold shadow'
             >
-              {MOCK_USER_INFO.walletAddress}
+              {userInfo.walletAddress}
             </Tooltip>
             <Tooltip
               content={tooltipContent}
@@ -170,6 +166,7 @@ export const AccountPopover: FC<TAccountPopoverProps> = ({
             </Button>
           )}
           <Button
+            onClick={() => signOut()}
             className='bg-secondary-500 text-beige-50! text-14 hover:bg-secondary-600 w-full'
             disableAnimation
             icon={<SignOutIcon />}

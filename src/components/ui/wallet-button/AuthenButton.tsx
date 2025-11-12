@@ -1,22 +1,14 @@
 import { LoginModal } from '@/components/ui/modal'
 import { AccountPopover } from '@/components/ui/popover'
-import { EAuthMethod, ERole, TUserInfo } from '@/lib/graphql/generated/graphql'
+import useAuthStore from '@/store/auth-store'
 import { truncateAddress } from '@/utils'
 import { SignInIcon } from '@phosphor-icons/react/dist/ssr'
 import { useSession } from 'next-auth/react'
 import { useEffect, useRef, useState } from 'react'
 
-const MOCK_USER_INFO: TUserInfo = {
-  uuid: '1',
-  name: 'John Doe',
-  email: 'asdasdasasd@gmail.com',
-  role: ERole.User,
-  walletAddress: '0x26c89c7A0b40E318C74B21752CdDC9bd7d6415A8',
-  authMethod: EAuthMethod.Google,
-}
-
 export const AuthenButton = () => {
   const { status } = useSession()
+  const userInfo = useAuthStore((state) => state.userInfo)
 
   const [openLoginModal, setOpenLoginModal] = useState<boolean>(false)
   const [openAccountPopover, setOpenAccountPopover] = useState<boolean>(false)
@@ -51,7 +43,7 @@ export const AuthenButton = () => {
 
   return (
     <div className='relative w-fit' ref={containerRef}>
-      {status === 'authenticated' ? (
+      {status === 'authenticated' && userInfo ? (
         <>
           <button
             className='flex cursor-pointer flex-col items-end justify-end'
@@ -59,16 +51,17 @@ export const AuthenButton = () => {
             ref={triggerButtonRef}
           >
             <p className='text-16 text-primary-600 max-w-[113px]! truncate font-bold -tracking-[0.32px]'>
-              {MOCK_USER_INFO.name || MOCK_USER_INFO.email}
+              {userInfo.name || userInfo.email}
             </p>
-            {MOCK_USER_INFO.walletAddress && (
+            {userInfo.walletAddress && (
               <p className='text-14 max-w-[113px]! truncate font-bold -tracking-[0.32px]'>
-                {truncateAddress(MOCK_USER_INFO.walletAddress, 6)}
+                {truncateAddress(userInfo.walletAddress, 6)}
               </p>
             )}
           </button>
 
           <AccountPopover
+            userInfo={userInfo}
             isOpen={openAccountPopover}
             onClose={() => setOpenAccountPopover(false)}
             ref={popoverRef}

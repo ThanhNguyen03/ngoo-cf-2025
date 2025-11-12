@@ -40,7 +40,7 @@ const authOptions: NextAuthOptions = {
           }
           if (data) {
             return {
-              id: '',
+              id: data.userLogin.userUuid,
               accessToken: data.userLogin.accessToken,
               refreshToken: data.userLogin.refreshToken,
             } satisfies User
@@ -48,26 +48,49 @@ const authOptions: NextAuthOptions = {
 
           return null
         } catch (error) {
-          handleError(error, 'Error from verify auth code in next-auth')
+          handleError(error, 'Failed to sign up')
           return null
         }
       },
     }),
   ],
+  session: {
+    strategy: 'jwt',
+    maxAge: 60 * 15, // 15 minutes
+  },
   callbacks: {
-    async jwt({ token, user }) {
-      // TODO: handle refresh, login by google
-      if (user) {
+    async jwt({ token, user, account }) {
+      // handle login by google
+      if (account?.provider === 'google' && account.id_token) {
+        try {
+          const { data, error } = await client.mutate({
+            mutation: UserLoginDocument,
+            variables: { token: account.id_token },
+          })
+          if (error) {
+            throw error
+          }
+          if (data) {
+            token.accessToken = data.userLogin.accessToken
+            token.refreshToken = data.userLogin.refreshToken
+            token.uuid = data.userLogin.userUuid
+          }
+          return token
+        } catch (error) {
+          handleError(error, 'Failed to sign up')
+        }
+      } else if (user) {
         token.accessToken = user.accessToken
         token.refreshToken = user.refreshToken
         token.uuid = user.uuid
       }
+
+      // TODO: handle refresh
       return token
     },
 
     async session({ session, token }) {
       session.accessToken = token.accessToken
-      session.refreshToken = token.refreshToken
       session.uuid = token.uuid
       return session
     },

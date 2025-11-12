@@ -1,12 +1,7 @@
-import {
-  ApolloClient,
-  ApolloLink,
-  HttpLink,
-  InMemoryCache,
-} from '@apollo/client'
+import { ApolloLink, HttpLink } from '@apollo/client'
+import { ApolloClient, InMemoryCache } from '@apollo/client-integration-nextjs'
 import { SetContextLink } from '@apollo/client/link/context'
-import { getServerSession } from 'next-auth'
-import authOptions from './auth-option'
+import { getSession } from 'next-auth/react'
 
 const httpLink = new HttpLink({
   uri: process.env.NGOO_BACKEND_API,
@@ -14,7 +9,7 @@ const httpLink = new HttpLink({
 })
 
 const authLink = new SetContextLink(async ({ headers }) => {
-  const session = await getServerSession(authOptions)
+  const session = await getSession()
 
   return {
     headers: {

@@ -1,7 +1,6 @@
 'use client'
 
 import { NgOoLogo, SwitchButton } from '@/components/ui'
-import { LoginModal } from '@/components/ui/modal'
 import { AuthenButton } from '@/components/ui/wallet-button'
 import { LIST_HEADER_NAVIGATION } from '@/constants'
 import { cn } from '@/utils'
@@ -16,7 +15,6 @@ import { useState } from 'react'
 
 export const Header = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState<boolean>(false)
-  const [openLoginModal, setOpenLoginModal] = useState<boolean>(false)
   const pathname = usePathname()
 
   return (
@@ -53,11 +51,7 @@ export const Header = () => {
 
           <div className='hidden h-full w-0.25 bg-neutral-900/10 md:inline' />
 
-          <ShoppingCartSimpleIcon
-            size={24}
-            onClick={() => setOpenLoginModal(true)}
-            className='hidden md:inline'
-          />
+          <ShoppingCartSimpleIcon size={24} className='hidden md:inline' />
           {/* menu button */}
           {
             <SwitchButton
@@ -70,10 +64,6 @@ export const Header = () => {
           }
         </div>
       </div>
-      <LoginModal
-        isOpen={openLoginModal}
-        onClose={() => setOpenLoginModal(false)}
-      />
     </header>
   )
 }

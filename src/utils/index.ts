@@ -1,7 +1,7 @@
+import { toast } from '@/components/ui'
 import { twMerge } from 'tailwind-merge'
 import { formatUnits } from 'viem'
 import { ClassValue, clsx } from './clsx'
-import { toast } from '@/components/ui'
 
 export function cn(...args: ClassValue[]) {
   return twMerge(clsx(args))
@@ -119,4 +119,64 @@ export const handleError = (
   }
 
   toast.error(errorMessage)
+}
+
+type TAsyncHandlerOptions = {
+  errorMessage?: string
+  onError?: (err: unknown) => void
+  onSuccess?: (result: unknown) => void
+  onFinally?: () => void
+}
+
+/**
+ * Wraps an asynchronous Apollo or generic async function with
+ * standardized error handling, success/finally callbacks, and optional error message.
+ *
+ * @template TArgs - Tuple type of arguments passed to the async function.
+ * @template TResult - The resolved result type of the async function.
+ *
+ * @param {(...args: TArgs) => Promise<TResult>} fn
+ * The async function to be executed (e.g. a GraphQL query or mutation).
+ *
+ * @param {Object} [options] - Optional configuration for handler behavior.
+ * @param {string} [options.errorMessage] - Custom message to show when an error occurs.
+ * @param {(err: unknown) => void} [options.onError] - Callback executed when an error is caught.
+ * @param {(result: TResult) => void} [options.onSuccess] - Callback executed when the function resolves successfully.
+ * @param {() => void} [options.onFinally] - Callback executed in the `finally` block, regardless of success or failure.
+ *
+ * @returns {(...args: TArgs) => Promise<TResult | void>}
+ * Returns a new function that wraps the original async function with standardized handling.
+ *
+ * @example
+ * ```ts
+ * const fetchUser = async (id: string) => {
+ *   return await client.query({ query: UserDocument, variables: { id } });
+ * }
+ *
+ * const safeFetchUser = apolloWrapper(fetchUser, {
+ *   errorMessage: 'Failed to fetch user',
+ *   onSuccess: (data) => console.log('✅ User fetched:', data),
+ *   onError: (err) => console.error('❌ Error:', err),
+ *   onFinally: () => console.log('🎯 Done'),
+ * });
+ *
+ * await safeFetchUser('123');
+ * ```
+ */
+export function apolloWrapper<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => Promise<TResult>,
+  options?: TAsyncHandlerOptions,
+): (...args: TArgs) => Promise<TResult | void> {
+  return async (...args) => {
+    try {
+      const result = await fn(...args)
+      options?.onSuccess?.(result)
+      return result
+    } catch (err) {
+      options?.onError?.(err)
+      handleError(err, options?.errorMessage || '')
+    } finally {
+      options?.onFinally?.()
+    }
+  }
 }
