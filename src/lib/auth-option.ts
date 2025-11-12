@@ -1,11 +1,14 @@
 import { handleError } from '@/utils'
+import { ErrorLike } from '@apollo/client'
 import { NextAuthOptions, User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import { client } from './apollo-client'
 import {
+  TUserAuth,
   UserLoginDocument,
   UserLogoutDocument,
+  UserRegisterDocument,
 } from './graphql/generated/graphql'
 
 const authOptions: NextAuthOptions = {
@@ -18,6 +21,7 @@ const authOptions: NextAuthOptions = {
 
     Credentials({
       credentials: {
+        isRegister: { type: 'text' },
         email: { type: 'text' },
         password: { type: 'text' },
       },
@@ -30,19 +34,29 @@ const authOptions: NextAuthOptions = {
             email: credentials.email,
             password: credentials.password,
           }
-          const { data, error } = await client.mutate({
-            mutation: UserLoginDocument,
-            variables,
-          })
 
-          if (error) {
-            throw error
+          let result: { data?: TUserAuth; error?: ErrorLike }
+          if (credentials.isRegister === 'true') {
+            const { data, error } = await client.mutate({
+              mutation: UserRegisterDocument,
+              variables,
+            })
+            result = { data: data?.userRegister, error }
+          } else {
+            const { data, error } = await client.mutate({
+              mutation: UserLoginDocument,
+              variables,
+            })
+            result = { data: data?.userLogin, error }
           }
-          if (data) {
+          if (result.error) {
+            throw result.error
+          }
+          if (result.data) {
             return {
-              id: data.userLogin.userUuid,
-              accessToken: data.userLogin.accessToken,
-              refreshToken: data.userLogin.refreshToken,
+              id: result.data.userUuid,
+              accessToken: result.data.accessToken,
+              refreshToken: result.data.refreshToken,
             } satisfies User
           }
 
@@ -98,13 +112,18 @@ const authOptions: NextAuthOptions = {
   // TODO: implement sign out api
   events: {
     async signOut({ token }) {
-      if (token.refreshToken) {
+      if (token.refreshToken && token.accessToken) {
         try {
           const { error } = await client.mutate({
             // TODO: will remove hard code when have design about logout button
             mutation: UserLogoutDocument,
             variables: {
               logoutEverywhere: false,
+            },
+            context: {
+              headers: {
+                Authorization: `Bearer ${token.accessToken}`,
+              },
             },
           })
           if (error) {

@@ -3,7 +3,6 @@ import { handleError } from '@/utils'
 import { signIn, signOut } from 'next-auth/react'
 import { create } from 'zustand'
 import {
-  EAuthMethod,
   MutationUserLoginArgs,
   TUserInfo,
   UserInfoDocument,
@@ -17,7 +16,7 @@ type TAuthState = {
 
 type TAuthAction = {
   getUserInfo: () => Promise<void>
-  login: (method: EAuthMethod, data: MutationUserLoginArgs) => Promise<void>
+  login: (data: MutationUserLoginArgs, isRegister?: boolean) => Promise<void>
   logout: () => Promise<void>
 }
 
@@ -79,28 +78,19 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
     }
   },
 
-  login: async (method: EAuthMethod, data: MutationUserLoginArgs) => {
+  login: async (data: MutationUserLoginArgs, isRegister?: boolean) => {
     set({ loading: true })
-    if (method === EAuthMethod.Credential) {
-      if (!data.email && !data.password) {
-        throw new Error('Failed to sign in: Invalid data!')
-      }
-
-      await signIn('credentials', {
-        redirect: false,
-        email: data.email,
-        password: data.password,
-      })
-    } else {
-      if (!data.token) {
-        throw new Error('Failed to sign in: Invalid data!')
-      }
-
-      await signIn('google', {
-        redirect: false,
-      })
+    if (!data.email && !data.password) {
+      throw new Error('Failed to sign in: Invalid data!')
     }
-    await get().getUserInfo()
+
+    await signIn('credentials', {
+      redirect: false,
+      isRegister,
+      email: data.email,
+      password: data.password,
+    })
+
     set({ loading: false })
   },
 

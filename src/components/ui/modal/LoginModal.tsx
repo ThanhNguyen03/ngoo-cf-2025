@@ -4,6 +4,7 @@ import { googleIcon } from '@/assets/icons'
 import { loginBg } from '@/assets/images'
 import { Button } from '@/components/ui'
 import { useDebounce } from '@/hooks'
+import useAuthStore from '@/store/auth-store'
 import { TModalProps } from '@/types'
 import { cn } from '@/utils'
 import { EyeIcon, EyeSlashIcon, XIcon } from '@phosphor-icons/react/dist/ssr'
@@ -59,6 +60,7 @@ export const validateLoginInput = (
 const DEBOUNCE_DELAY = 500
 
 export const LoginModal: FC<TModalProps> = ({ isOpen, onClose }) => {
+  const login = useAuthStore((state) => state.login)
   const [isLogin, setIsLogin] = useState<boolean>(true)
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [emailInput, setEmailInput] = useState<string>('')
@@ -146,6 +148,12 @@ export const LoginModal: FC<TModalProps> = ({ isOpen, onClose }) => {
             <form
               id='login'
               className='mx-auto flex w-full flex-col items-center justify-center gap-3'
+              onSubmit={() =>
+                login(
+                  { email: emailDebounce, password: passwordDebounce },
+                  !isLogin,
+                )
+              }
             >
               <div
                 className={cn(
@@ -219,6 +227,12 @@ export const LoginModal: FC<TModalProps> = ({ isOpen, onClose }) => {
                 type='submit'
                 form='login'
                 disableAnimation
+                disabled={
+                  !!errorMessage.email ||
+                  !!errorMessage.password ||
+                  !emailDebounce ||
+                  !passwordDebounce
+                }
               >
                 {isLogin ? 'Sign In' : 'Sign Up'}
               </Button>
