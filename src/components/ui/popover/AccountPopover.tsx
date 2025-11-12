@@ -6,6 +6,7 @@ import {
 } from '@/components/ui/wallet-button'
 import { LIST_ACCOUNT_NAVIGATION, LIST_CONNECTOR_ICON } from '@/constants'
 import { TUserInfo } from '@/lib/graphql/generated/graphql'
+import useAuthStore from '@/store/auth-store'
 import { TPopoverProps } from '@/types'
 import { cn } from '@/utils'
 import {
@@ -13,7 +14,6 @@ import {
   PlugsIcon,
   SignOutIcon,
 } from '@phosphor-icons/react/dist/ssr'
-import { signOut } from 'next-auth/react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ComponentPropsWithRef, FC, useState } from 'react'
@@ -32,6 +32,7 @@ export const AccountPopover: FC<TAccountPopoverProps> = ({
 }) => {
   const { isConnected, address, connector } = useAccount()
   const { disconnect } = useDisconnect()
+  const logout = useAuthStore((state) => state.logout)
 
   const [tooltipContent, setTooltipContent] = useState<'Copy' | 'Copied!'>(
     'Copy',
@@ -166,7 +167,7 @@ export const AccountPopover: FC<TAccountPopoverProps> = ({
             </Button>
           )}
           <Button
-            onClick={() => signOut()}
+            onClick={logout}
             className='bg-secondary-500 text-beige-50! text-14 hover:bg-secondary-600 w-full'
             disableAnimation
             icon={<SignOutIcon />}

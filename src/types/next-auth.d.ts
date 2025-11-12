@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-import NextAuth, { DefaultSession } from 'next-auth'
+import 'next-auth'
 
 declare module 'next-auth' {
   interface Session {
     accessToken?: string
-    refreshToken?: string
+    accessTokenExpires?: number
     uuid?: string
+    error?: string
   }
   interface User {
     accessToken?: string
@@ -19,5 +19,7 @@ declare module 'next-auth/jwt' {
     accessToken?: string
     refreshToken?: string
     uuid?: string
+    accessTokenExpires?: number
+    error?: string
   }
 }

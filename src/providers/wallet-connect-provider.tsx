@@ -2,6 +2,7 @@
 
 import Loading from '@/app/loading'
 import { Toaster } from '@/components/ui'
+import { useAutoRefresh } from '@/hooks/use-auto-refresh'
 import { wagmiConfig } from '@/lib/wagmi-config'
 import useAuthStore from '@/store/auth-store'
 import { cn } from '@/utils'
@@ -19,8 +20,10 @@ import { WagmiProvider } from 'wagmi'
 export const WalletConnectProvider = ({ children }: PropsWithChildren) => {
   const [queryClient] = useState(() => new QueryClient())
   const [config] = useState(() => wagmiConfig)
-  const { status } = useSession()
-  const { getUserInfo, loading } = useAuthStore()
+  const { status, data } = useSession()
+  const { getUserInfo, loading, logout } = useAuthStore()
+
+  useAutoRefresh()
 
   useEffect(() => {
     if (status === 'authenticated') {
@@ -28,6 +31,13 @@ export const WalletConnectProvider = ({ children }: PropsWithChildren) => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [status])
+
+  useEffect(() => {
+    if (data?.error === 'RefreshAccessTokenError') {
+      logout() // Force sign in to hopefully resolve error
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data])
 
   return (
     <WagmiProvider config={config}>
