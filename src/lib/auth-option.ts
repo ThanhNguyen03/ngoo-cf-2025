@@ -1,3 +1,4 @@
+import { EXPIRES_IN } from '@/constants'
 import { handleError } from '@/utils'
 import { ErrorLike } from '@apollo/client'
 import { NextAuthOptions, User } from 'next-auth'
@@ -5,6 +6,7 @@ import Credentials from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import { client } from './apollo-client'
 import {
+  RefreshTokenDocument,
   TUserAuth,
   UserLoginDocument,
   UserLogoutDocument,
@@ -30,12 +32,13 @@ const authOptions: NextAuthOptions = {
           if (!credentials) {
             return null
           }
+
           const variables = {
             email: credentials.email,
             password: credentials.password,
           }
-
           let result: { data?: TUserAuth; error?: ErrorLike }
+          // register flow
           if (credentials.isRegister === 'true') {
             const { data, error } = await client.mutate({
               mutation: UserRegisterDocument,
@@ -43,6 +46,7 @@ const authOptions: NextAuthOptions = {
             })
             result = { data: data?.userRegister, error }
           } else {
+            // login flow
             const { data, error } = await client.mutate({
               mutation: UserLoginDocument,
               variables,
@@ -61,16 +65,14 @@ const authOptions: NextAuthOptions = {
           }
 
           return null
-        } catch (error) {
-          handleError(error, 'Failed to sign up')
-          return null
+        } catch {
+          throw new Error('Failed to sign up')
         }
       },
     }),
   ],
   session: {
     strategy: 'jwt',
-    maxAge: 60 * 15, // 15 minutes
   },
   callbacks: {
     async jwt({ token, user, account }) {
@@ -88,24 +90,70 @@ const authOptions: NextAuthOptions = {
             token.accessToken = data.userLogin.accessToken
             token.refreshToken = data.userLogin.refreshToken
             token.uuid = data.userLogin.userUuid
+            token.accessTokenExpires = Date.now() + EXPIRES_IN
           }
           return token
         } catch (error) {
-          handleError(error, 'Failed to sign up')
+          console.error(error, 'Failed to sign up')
+          return token
         }
-      } else if (user) {
+      }
+      if (user) {
         token.accessToken = user.accessToken
         token.refreshToken = user.refreshToken
         token.uuid = user.uuid
+        token.accessTokenExpires = Date.now() + EXPIRES_IN
+
+        return token
       }
 
-      // TODO: handle refresh
+      if (!token.accessTokenExpires) {
+        return token
+      }
+
+      // refresh flow
+      if (Date.now() >= token.accessTokenExpires - 60 * 1000) {
+        try {
+          if (!token.refreshToken || !token.accessToken) {
+            throw new Error('Failed to refresh token')
+          }
+          const { data, error } = await client.mutate({
+            mutation: RefreshTokenDocument,
+            variables: {
+              refreshToken: token.refreshToken,
+            },
+            context: {
+              headers: {
+                Authorization: `Bearer ${token.accessToken}`,
+              },
+            },
+          })
+          if (error) {
+            throw error
+          }
+          if (data) {
+            token.accessToken = data.refreshToken.accessToken
+            token.accessTokenExpires = Date.now() + EXPIRES_IN
+            token.refreshToken = data.refreshToken.refreshToken
+            token.uuid = data.refreshToken.userUuid
+          }
+          return token
+        } catch (error) {
+          console.log(error)
+          token.error = 'RefreshAccessTokenError'
+          return token
+        }
+      }
+
       return token
     },
 
     async session({ session, token }) {
       session.accessToken = token.accessToken
+      session.accessTokenExpires = token.accessTokenExpires
       session.uuid = token.uuid
+      session.error = token.error
+
       return session
     },
   },

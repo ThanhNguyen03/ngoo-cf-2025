@@ -61,6 +61,7 @@ const DEBOUNCE_DELAY = 500
 
 export const LoginModal: FC<TModalProps> = ({ isOpen, onClose }) => {
   const login = useAuthStore((state) => state.login)
+
   const [isLogin, setIsLogin] = useState<boolean>(true)
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [emailInput, setEmailInput] = useState<string>('')

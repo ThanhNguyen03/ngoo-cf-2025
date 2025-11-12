@@ -29,28 +29,6 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
     if (get().userInfo) {
       return
     }
-    const refresh = async () => {
-      try {
-        set({ loading: true })
-        await signIn('credentials', {
-          redirect: false,
-          isRefresh: true,
-        })
-
-        const { data, error } = await client.query({
-          query: UserInfoDocument,
-        })
-        if (error) {
-          throw new Error(error.message)
-        }
-        set({ userInfo: data?.userInfo })
-      } catch (error) {
-        set({ userInfo: null, error })
-        signOut()
-      } finally {
-        set({ loading: false })
-      }
-    }
 
     try {
       set({ loading: true })
@@ -60,11 +38,7 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
       })
 
       if (error) {
-        if (error.message.includes('Missing access token')) {
-          await refresh()
-        } else {
-          set({ userInfo: null, error: error.message })
-        }
+        set({ userInfo: null, error: error.message })
         throw error
       }
 
