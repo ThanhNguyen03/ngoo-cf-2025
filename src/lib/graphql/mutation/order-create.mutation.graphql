@@ -1,0 +1,11 @@
+mutation CreateOrder($input: CreateOrderInput!) {
+  createOrder(input: $input) {
+    orderId
+    paypalOrderId
+    paypalApproveUrl
+    cryptoPaymentData
+    codPaymentData
+    createdAt
+    updatedAt
+  }
+}

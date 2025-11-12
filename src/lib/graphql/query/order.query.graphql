@@ -1,0 +1,29 @@
+query GetOrder($orderId: String!) {
+  getOrder(orderId: $orderId) {
+    orderId
+    paypalOrderId
+    userInfoSnapshot {
+      name
+      address
+      phoneNumber
+      email
+    }
+    items {
+      name
+      amount
+      price
+      note
+      discountPercent
+      selectedOptions {
+        group
+        name
+        extraPrice
+      }
+    }
+    totalPrice
+    paymentMethod
+    orderStatus
+    createdAt
+    updatedAt
+  }
+}

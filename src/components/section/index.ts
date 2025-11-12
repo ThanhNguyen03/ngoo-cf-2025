@@ -1,0 +1,5 @@
+export * from './best-seller'
+export * from './contact-for-work'
+export * from './hero'
+export * from './new-collection'
+export * from './services'

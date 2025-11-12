@@ -1,0 +1,7 @@
+mutation UserRegister($email: String!, $password: String!) {
+  userRegister(email: $email, password: $password) {
+    accessToken
+    refreshToken
+    userUuid
+  }
+}

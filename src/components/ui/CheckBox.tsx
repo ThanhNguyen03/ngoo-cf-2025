@@ -1,3 +1,5 @@
+'use client'
+
 import { cn } from '@/utils'
 import { CheckIcon } from '@phosphor-icons/react'
 import { forwardRef, InputHTMLAttributes } from 'react'

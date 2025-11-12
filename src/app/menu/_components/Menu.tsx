@@ -1,9 +1,9 @@
 'use client'
 
-import MenuDetail from './ui/MenuDetail'
-import MenuSearch from './ui/MenuSearch'
+import { MenuDetail } from './ui/MenuDetail'
+import { MenuSearch } from './ui/MenuSearch'
 
-const Menu = () => {
+export const Menu = () => {
   return (
     <section className='relative h-[500px] px-2 py-10 md:px-6 md:py-20 lg:px-10 lg:py-30'>
       <div className='mx-auto flex size-full max-w-[1024px] flex-col items-start gap-4 md:gap-6'>
@@ -19,5 +19,3 @@ const Menu = () => {
     </section>
   )
 }
-
-export default Menu

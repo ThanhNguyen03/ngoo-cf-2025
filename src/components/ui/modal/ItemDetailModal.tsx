@@ -1,3 +1,4 @@
+import { AmountCounter, Button, Checkbox } from '@/components/ui'
 import { DEBOUNCE_DURATION, SIZE_OPTION } from '@/constants'
 import useCartStore, { calculateItemPrice } from '@/store/cart-store'
 import { TGroupOption, TItem, TItemOption, TModalProps } from '@/types'
@@ -5,9 +6,6 @@ import { cn } from '@/utils'
 import { TagIcon, TrashIcon, XIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
 import { FC, useEffect, useMemo, useState } from 'react'
-import AmountCounter from '../AmountCounter'
-import Button from '../Button'
-import { Checkbox } from '../CheckBox'
 import { Modal } from './Modal'
 
 const LIST_REQUIRED_OPTION_GROUP = ['size', 'sweet', 'ice']
@@ -138,7 +136,7 @@ const ItemOption: FC<TItemOptionProps> = ({
   )
 }
 
-const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
+export const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
   isOpen,
   onClose,
   data,
@@ -350,5 +348,3 @@ const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
     </Modal>
   )
 }
-
-export default ItemDetailModal

@@ -1,3 +1,4 @@
+'use client'
 import { useEffect, type FC, type PropsWithChildren } from 'react'
 
 import type { TModalProps } from '@/types'

@@ -1,0 +1,46 @@
+query ListPaymentHistory($offset: Int, $limit: Int, $query: [QueryByInput]) {
+  listPaymentHistory(offset: $offset, limit: $limit, query: $query) {
+    offset
+    limit
+    total
+    query {
+      column
+      sort
+    }
+    records {
+      paymentId
+      orderId
+      paymentMethod
+      totalPrice
+      status
+      userInfo {
+        name
+        address
+        phoneNumber
+        email
+      }
+      items {
+        name
+        amount
+        price
+        note
+        discountPercent
+        selectedOptions {
+          group
+          name
+          extraPrice
+        }
+      }
+      txHash
+      paypalTransaction {
+        paypalPayerEmail
+        paypalCaptureId
+        payerId
+        rawResponse
+      }
+      codTransactionId
+      createdAt
+      updatedAt
+    }
+  }
+}

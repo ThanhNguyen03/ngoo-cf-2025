@@ -4,14 +4,14 @@ import { cn } from '@/utils'
 import { PlusIcon, TagIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
 import { Dispatch, FC, SetStateAction } from 'react'
-import Button from './Button'
+import { Button } from './Button'
 
 type TItemCardProps = {
   data: TItem
   setSelectedItem: Dispatch<SetStateAction<TItem | undefined>>
 }
 
-const ItemCard: FC<TItemCardProps> = ({ data, setSelectedItem }) => {
+export const ItemCard: FC<TItemCardProps> = ({ data, setSelectedItem }) => {
   return (
     <>
       <div
@@ -75,5 +75,3 @@ const ItemCard: FC<TItemCardProps> = ({ data, setSelectedItem }) => {
     </>
   )
 }
-
-export default ItemCard

@@ -30,7 +30,7 @@ type TButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> &
 
 type TUnionButtonProps = TAnchorProps | TButtonProps
 
-const SwitchButton: FC<TUnionButtonProps> = ({
+export const SwitchButton: FC<TUnionButtonProps> = ({
   variant = 'green',
   children,
   className,
@@ -99,5 +99,3 @@ const SwitchButton: FC<TUnionButtonProps> = ({
     </button>
   )
 }
-
-export default SwitchButton

@@ -1,8 +1,8 @@
 import { LIST_FOOTER_NAVIGATION, LIST_SOCIAL_BUTTON } from '@/constants'
 import Link from 'next/link'
-import NgOoLogo from '../ui/NgOoLogo'
+import { NgOoLogo } from '../ui/NgOoLogo'
 
-const Footer = () => {
+export const Footer = () => {
   return (
     <footer className='border-t border-neutral-900/10 bg-white px-2 md:p-10 lg:px-10 lg:py-0'>
       <div className='relative mx-auto flex w-full max-w-[1024px] flex-col items-center justify-center gap-14 pt-10'>
@@ -86,5 +86,3 @@ const Footer = () => {
     </footer>
   )
 }
-
-export default Footer

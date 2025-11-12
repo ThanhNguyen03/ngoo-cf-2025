@@ -1,0 +1,33 @@
+query ListItem($offset: Int, $limit: Int, $query: [QueryByInput]) {
+  listItem(offset: $offset, limit: $limit, query: $query) {
+    offset
+    limit
+    total
+    query {
+      column
+      sort
+    }
+    records {
+      itemId
+      name
+      image
+      price
+      description
+      discountPercent
+      requireOption {
+        group
+        name
+        extraPrice
+      }
+      additionalOption {
+        group
+        name
+        extraPrice
+      }
+      status
+      categoryName
+      createdAt
+      updatedAt
+    }
+  }
+}

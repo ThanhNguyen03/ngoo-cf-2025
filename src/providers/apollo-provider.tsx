@@ -7,7 +7,8 @@ import {
   InMemoryCache,
 } from '@apollo/client-integration-nextjs'
 import { SetContextLink } from '@apollo/client/link/context'
-import { getSession } from 'next-auth/react'
+import { Session } from 'next-auth'
+import { getSession, SessionProvider } from 'next-auth/react'
 
 const makeClient = () => {
   const httpLink = new HttpLink({
@@ -31,10 +32,15 @@ const makeClient = () => {
   })
 }
 
-export function ApolloProvider({ children }: React.PropsWithChildren) {
+export function ApolloProvider({
+  children,
+  session,
+}: { session?: Session | null } & React.PropsWithChildren) {
   return (
-    <ApolloNextAppProvider makeClient={makeClient}>
-      {children}
-    </ApolloNextAppProvider>
+    <SessionProvider session={session}>
+      <ApolloNextAppProvider makeClient={makeClient}>
+        {children}
+      </ApolloNextAppProvider>
+    </SessionProvider>
   )
 }
