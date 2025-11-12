@@ -80,8 +80,8 @@ export const AuthenButton = () => {
             className='rounded-2 text-14! from-secondary-300 hidden cursor-pointer items-center justify-center gap-1 bg-linear-to-br to-red-500 px-2 py-1 leading-[160%] font-semibold text-white shadow md:flex'
             onClick={() => setOpenLoginModal(true)}
           >
-            <SignInIcon size={18} />
             Sign In
+            <SignInIcon size={18} />
           </button>
           <LoginModal
             isOpen={openLoginModal}
