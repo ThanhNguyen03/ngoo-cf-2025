@@ -1,5 +1,4 @@
-import { EXPIRES_IN } from '@/constants'
-import { handleError } from '@/utils'
+import { EXPIRES_IN, REFRESH_GAP } from '@/constants'
 import { ErrorLike } from '@apollo/client'
 import { NextAuthOptions, User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
@@ -12,7 +11,7 @@ import {
   UserLogoutDocument,
   UserRegisterDocument,
 } from './graphql/generated/graphql'
-
+// TODO: remove console log
 const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET || '',
   providers: [
@@ -112,7 +111,7 @@ const authOptions: NextAuthOptions = {
       }
 
       // refresh flow
-      if (Date.now() >= token.accessTokenExpires - 60 * 1000) {
+      if (Date.now() >= token.accessTokenExpires - REFRESH_GAP) {
         try {
           if (!token.refreshToken || !token.accessToken) {
             throw new Error('Failed to refresh token')
@@ -178,7 +177,7 @@ const authOptions: NextAuthOptions = {
             throw error
           }
         } catch (error) {
-          handleError(error, 'Error while logout user')
+          console.error('Error while logout user', error)
         }
       }
     },
