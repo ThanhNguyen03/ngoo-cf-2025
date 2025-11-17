@@ -18,16 +18,16 @@ import { useRef, useState } from 'react'
 import Loading from './loading'
 
 export default function Home() {
-  const collectionContainerRef = useRef<HTMLDivElement | null>(null)
-  const sellerContainerRef = useRef<HTMLDivElement | null>(null)
+  const collectionContainerRef = useRef<HTMLDivElement>(null)
+  const sellerContainerRef = useRef<HTMLDivElement>(null)
   const [selectedProduct, setSelectedProduct] = useState<TCollectionData>()
   const isHydrated = useIsHydrated()
 
   const inSellerView = useInView(sellerContainerRef, {
-    margin: '-100px',
+    margin: '-10%',
   })
   const inCollectionView = useInView(collectionContainerRef, {
-    margin: '-300px',
+    margin: '-30%',
   })
 
   return (
