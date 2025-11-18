@@ -11,7 +11,7 @@ import { cn } from '@/utils'
 import { forwardRef, useMemo, useState } from 'react'
 import { FenceCloud } from '../icons'
 
-const MOCKED_ITEMS_DATA: TItem[] = [
+export const MOCKED_ITEMS_DATA: TItem[] = [
   {
     image: liptonTea,
     title: 'Lipton Xi Muoi 1',

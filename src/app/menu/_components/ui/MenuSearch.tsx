@@ -11,6 +11,7 @@ type TMenuSearchProps = {
 }
 
 const LIST_CATEGORIES = [
+  'For you',
   'Best Sellers',
   'Coffee',
   'Milk Tea',
@@ -99,12 +100,11 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
               <button
                 onClick={() => handleSelectCategory(category)}
                 className={cn(
-                  'text-14! text-dark-600/70 hover:bg-dark-600/10 w-full p-2 text-left leading-[160%] text-nowrap',
+                  'text-14! text-dark-600/70 hover:bg-dark-600/10 w-full cursor-pointer p-2 text-left leading-[160%] text-nowrap',
                   category === selectedCategory && 'hidden',
                 )}
                 key={category}
               >
-                <p></p>
                 {category}
               </button>
             ))}
