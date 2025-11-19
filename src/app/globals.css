@@ -2,10 +2,6 @@
 @import 'tailwindcss';
 @config '../../tailwind.config.ts';
 
-:root {
-  --scroll-speed: 60s;
-}
-
 @layer base {
   textarea {
     @apply resize-none;
@@ -40,6 +36,12 @@ body {
 
 @utility font-small-caps {
   font-variant: all-small-caps;
+}
+
+@utility center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @utility underline-active {
@@ -88,98 +90,120 @@ body {
 } */
 
 /*================ANIMATION==================*/
-@keyframes homepage-zoom-in {
-  0% {
-    transform: scale(1);
-    opacity: 100%;
-    translate: 0px;
+@theme {
+  --animate-fade-in: fadeIn 1s ease 0s forwards;
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
   }
-  90% {
-    transform: scale(3);
-    opacity: 100%;
-    translate: 70% 0px;
-  }
-  100% {
-    transform: scale(3);
-    opacity: 0%;
-    translate: 70% 0px;
-  }
-}
 
-.homepage-animation {
-  animation: homepage-zoom-in 7s ease-in-out forwards;
-  animation-delay: 3s;
-}
+  --animate-draw-line: drawLine 1s ease 0s forwards;
+  @keyframes drawLine {
+    to {
+      stroke-dashoffset: 0;
+    }
+  }
 
-@keyframes return-horizontal-scroll {
-  0% {
-    transform: translateX(0%);
+  --animate-marquee-ltr: marquee-ltr 3s linear infinite;
+  @keyframes marquee-ltr {
+    0% {
+      transform: translateX(-100%);
+    }
+    100% {
+      transform: translateX(0);
+    }
   }
-  50% {
-    transform: translateX(-50%);
-  }
-  100% {
-    transform: translateX(0%);
-  }
-}
 
-.animate-return-horizontal-scroll {
-  animation: var(--scroll-speed) return-horizontal-scroll linear infinite;
-}
+  --animate-shrink-progress-bar: shrink-progress-bar 3s linear forwards;
+  @keyframes shrink-progress-bar {
+    from {
+      width: 100%;
+    }
+    to {
+      width: 0%;
+    }
+  }
 
-@keyframes -return-horizontal-scroll {
-  0% {
-    transform: translateX(-50%);
+  @keyframes homepage-zoom-in {
+    0% {
+      transform: scale(1);
+      opacity: 100%;
+      translate: 0px;
+    }
+    90% {
+      transform: scale(3);
+      opacity: 100%;
+      translate: 70% 0px;
+    }
+    100% {
+      transform: scale(3);
+      opacity: 0%;
+      translate: 70% 0px;
+    }
   }
-  50% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
 
-.-animate-return-horizontal-scroll {
-  animation: var(--scroll-speed) -return-horizontal-scroll linear infinite;
-}
-
-@keyframes -horizontal-scroll {
-  0% {
-    transform: translateX(0);
+  --animate-return-horizontal-scroll: return-horizontal-scroll 60s linear
+    infinite;
+  @keyframes return-horizontal-scroll {
+    0% {
+      transform: translateX(0%);
+    }
+    50% {
+      transform: translateX(-50%);
+    }
+    100% {
+      transform: translateX(0%);
+    }
   }
-  100% {
-    transform: translateX(-50%);
-  }
-}
 
-.-animate-infinite-horizontal-scroll {
-  animation: var(--scroll-speed) -horizontal-scroll linear infinite;
-}
-
-@keyframes translate-vertical-in {
-  0% {
-    transform: translateY(-200%);
+  --animate-return-horizontal-scroll-reverse: -return-horizontal-scroll 60s
+    linear infinite;
+  @keyframes -return-horizontal-scroll {
+    0% {
+      transform: translateX(-50%);
+    }
+    50% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
   }
-  100% {
-    transform: translateY(0);
-  }
-}
 
-.animate-translate-vertical-in {
-  animation: 700ms translate-vertical-in cubic-bezier(0.66, -0.3, 0.47, 1.3)
-    forwards;
-}
-
-@keyframes translate-vertical-out {
-  0% {
-    transform: translateY(0);
+  --animate-infinite-horizontal-scroll-reverse: -horizontal-scroll 60s linear
+    infinite;
+  @keyframes -horizontal-scroll {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
   }
-  100% {
-    transform: translateY(200%);
-  }
-}
 
-.animate-translate-vertical-out {
-  animation: 700ms translate-vertical-out cubic-bezier(0.66, -0.3, 0.47, 1.3)
-    forwards;
+  --animate-translate-vertical-in: translate-vertical-in 700ms
+    cubic-bezier(0.66, -0.3, 0.47, 1.3) forwards;
+  @keyframes translate-vertical-in {
+    0% {
+      transform: translateY(-200%);
+    }
+    100% {
+      transform: translateY(0);
+    }
+  }
+
+  --animate-translate-vertical-out: translate-vertical-out 700ms
+    cubic-bezier(0.66, -0.3, 0.47, 1.3) forwards;
+  @keyframes translate-vertical-out {
+    0% {
+      transform: translateY(0);
+    }
+    100% {
+      transform: translateY(200%);
+    }
+  }
 }

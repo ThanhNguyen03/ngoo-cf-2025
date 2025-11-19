@@ -1,6 +1,7 @@
 'use client'
 
 import Loading from '@/app/loading'
+import { ShoppingCart } from '@/components/layout/shopping-cart'
 import { Toaster } from '@/components/ui'
 import { useAutoRefresh } from '@/hooks/use-auto-refresh'
 import { wagmiConfig } from '@/lib/wagmi-config'
@@ -32,6 +33,7 @@ export const WalletConnectProvider = ({ children }: PropsWithChildren) => {
           children
         )}
       </QueryClientProvider>
+      <ShoppingCart />
       <Toaster
         duration={3000}
         offset={50}

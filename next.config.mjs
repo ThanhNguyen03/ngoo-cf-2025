@@ -1,8 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  experimental: {
-    clientInstrumentationHook: true,
-  },
   /* config options here */
   reactStrictMode: true,
   env: {
