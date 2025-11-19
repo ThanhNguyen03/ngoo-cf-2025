@@ -4,11 +4,8 @@ import {
   MagnifyingGlassIcon,
   XIcon,
 } from '@phosphor-icons/react/dist/ssr'
+import Link from 'next/link'
 import { FC, useEffect, useRef, useState } from 'react'
-
-type TMenuSearchProps = {
-  disabled?: boolean
-}
 
 const LIST_CATEGORIES = [
   'For you',
@@ -20,7 +17,11 @@ const LIST_CATEGORIES = [
   'Smoothies',
 ]
 
-export const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
+type TMenuSearchProps = {
+  disabled?: boolean
+  sectionRef: React.RefObject<Map<string, HTMLDivElement | null>>
+}
+export const MenuSearch: FC<TMenuSearchProps> = ({ disabled, sectionRef }) => {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false)
   const [openSearchBar, setOpenSearchBar] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
@@ -34,6 +35,36 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
     setSelectedCategory(value)
     setOpenDropdown(false)
   }
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const categoryId = entry.target.id
+            const matched = LIST_CATEGORIES.find(
+              (c) => c.toLowerCase().replace(/\s+/g, '-') === categoryId,
+            )
+            if (matched) {
+              setSelectedCategory(matched)
+            }
+          }
+        })
+      },
+      {
+        threshold: 0,
+        rootMargin: '-40% 0px -40% 0px',
+      },
+    )
+
+    sectionRef.current.forEach((el) => {
+      if (el) {
+        observer.observe(el)
+      }
+    })
+
+    return () => observer.disconnect()
+  }, [sectionRef])
 
   // handle click outside to close
   useEffect(() => {
@@ -56,7 +87,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
   }, [openDropdown])
 
   return (
-    <div className='flex w-2/5 flex-col items-start gap-2 md:gap-4'>
+    <div className='sticky top-20 flex w-[30%] flex-col items-start gap-2 md:gap-4'>
       <div className='flex w-full items-center gap-2'>
         {/* select dropdown */}
         <div
@@ -75,7 +106,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
               openDropdown && 'border-primary-500 rounded-b-none border-b-0',
             )}
           >
-            <p className='text-14! text-dark-600 w-full text-left leading-[160%] font-semibold text-nowrap duration-700'>
+            <p className='text-14! text-secondary-500 w-full text-left leading-[160%] font-semibold text-nowrap duration-700'>
               {selectedCategory}
             </p>
             <CaretUpIcon
@@ -97,7 +128,8 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
             )}
           >
             {LIST_CATEGORIES.map((category) => (
-              <button
+              <Link
+                href={`#${category.toLowerCase().trim().replace(/\s+/g, '-')}`}
                 onClick={() => handleSelectCategory(category)}
                 className={cn(
                   'text-14! text-dark-600/70 hover:bg-dark-600/10 w-full cursor-pointer p-2 text-left leading-[160%] text-nowrap',
@@ -106,7 +138,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
                 key={category}
               >
                 {category}
-              </button>
+              </Link>
             ))}
           </div>
         </div>
