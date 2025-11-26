@@ -1,7 +1,7 @@
 mutation UserRegister($email: String!, $password: String!) {
   userRegister(email: $email, password: $password) {
+    userUuid
     accessToken
     refreshToken
-    userUuid
   }
 }

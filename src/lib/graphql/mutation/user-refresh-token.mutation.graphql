@@ -1,7 +1,7 @@
 mutation RefreshToken($refreshToken: String!) {
   refreshToken(refreshToken: $refreshToken) {
+    userUuid
     accessToken
     refreshToken
-    userUuid
   }
 }

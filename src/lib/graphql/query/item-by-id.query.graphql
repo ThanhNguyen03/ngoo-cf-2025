@@ -1,0 +1,24 @@
+query ItemById($itemId: String!) {
+  itemById(itemId: $itemId) {
+    itemId
+    name
+    image
+    price
+    description
+    discountPercent
+    requireOption {
+      group
+      name
+      extraPrice
+    }
+    additionalOption {
+      group
+      name
+      extraPrice
+    }
+    status
+    categoryName
+    createdAt
+    updatedAt
+  }
+}

@@ -1,24 +1,33 @@
-query GetItemByCategory($categoryId: String!) {
-  getItemByCategory(categoryId: $categoryId) {
-    itemId
-    name
-    image
-    price
-    description
-    discountPercent
-    requireOption {
-      group
-      name
-      extraPrice
+query ItemByCategory($categoryName: String!, $offset: Int, $limit: Int) {
+  itemByCategory(categoryName: $categoryName, offset: $offset, limit: $limit) {
+    offset
+    limit
+    total
+    query {
+      column
+      sort
     }
-    additionalOption {
-      group
+    records {
+      itemId
       name
-      extraPrice
+      image
+      price
+      description
+      discountPercent
+      requireOption {
+        group
+        name
+        extraPrice
+      }
+      additionalOption {
+        group
+        name
+        extraPrice
+      }
+      status
+      categoryName
+      createdAt
+      updatedAt
     }
-    status
-    categoryName
-    createdAt
-    updatedAt
   }
 }
