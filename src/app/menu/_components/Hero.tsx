@@ -116,13 +116,13 @@ export const Hero = () => {
           'bg-[length:200%_100%] bg-left lg:bg-[length:100%_100%] lg:bg-center',
         )}
       />
-      <div className='relative mx-auto flex h-[calc(100dvh-300px)] max-h-[885px] w-full max-w-[1024px] justify-center md:gap-4'>
+      <div className='relative mx-auto flex h-[calc(100dvh-300px)] max-h-[885px] w-full max-w-[1200px] justify-center md:gap-4'>
         {/* Left column */}
         <div className='mt-8 flex h-full w-[30%] flex-col items-start gap-10 md:justify-between'>
           <div className='absolute flex flex-col items-start gap-2 md:relative'>
             <h2
               className={cn(
-                'md:text-32 font-lobster text-28! bg-clip-text leading-[120%] font-black text-transparent capitalize duration-500',
+                'md:text-35! font-lobster text-28! bg-clip-text leading-[120%] font-black text-transparent capitalize duration-500',
                 NEW_PRODUCT_DATA[selectedProduct].titleClassName,
                 animation ? 'opacity-100' : 'opacity-0',
               )}
@@ -143,14 +143,14 @@ export const Hero = () => {
               <h3
                 onClick={() => setShowMore(!showMore)}
                 className={cn(
-                  'font-lobster text-18 text-beige-50 max-w-50 cursor-pointer truncate text-left font-medium duration-700 select-none hover:underline min-[550px]:max-w-none min-[550px]:cursor-default',
+                  'font-lobster text-18! text-beige-50 max-w-50 cursor-pointer truncate text-left font-medium duration-700 select-none hover:underline min-[550px]:max-w-none min-[550px]:cursor-default md:hidden',
                   animation ? 'translate-x-0' : '-translate-x-[200%] opacity-0',
                 )}
               >
                 {NEW_PRODUCT_DATA[selectedProduct].tag}
               </h3>
             </Tooltip>
-            <p className='text-14 hidden leading-[160%] text-white md:block'>
+            <p className='text-16! hidden leading-[160%] text-white md:block'>
               {selectedSize === 'M' ? '350ml' : '500ml'}
             </p>
           </div>
@@ -159,13 +159,13 @@ export const Hero = () => {
             {/* description */}
             <p
               className={cn(
-                'text-14! hidden leading-[160%] text-white duration-700 md:mb-20 md:block lg:mb-0',
+                'text-16! hidden leading-[160%] text-white duration-700 md:mb-20 md:block lg:mb-0',
                 animation ? 'translate-x-0' : '-translate-x-[200%] opacity-0',
               )}
             >
               <span
                 className={cn(
-                  'text-ellipsis',
+                  'font-medium text-ellipsis',
                   isShowMore === selectedProduct &&
                     'line-clamp-2 md:line-clamp-4 lg:line-clamp-none',
                 )}
@@ -192,7 +192,7 @@ export const Hero = () => {
                     key={product}
                     onClick={() => handleSelectItem(product)}
                     className={cn(
-                      'rounded-2 cursor-pointer border border-white/10 bg-white/10 p-1 shadow backdrop-blur-3xl',
+                      'rounded-2 xl:rounded-4 cursor-pointer border border-white/10 bg-white/10 p-1 shadow backdrop-blur-3xl',
                       NEW_PRODUCT_DATA[product].buttonClassName,
                       selectedProduct === product &&
                         'border-white/30 bg-linear-to-br from-white/50',
@@ -203,7 +203,7 @@ export const Hero = () => {
                       src={item.img}
                       width={1024}
                       height={1024}
-                      className='size-12'
+                      className='size-12 xl:size-16'
                     />
                   </button>
                 )
@@ -244,7 +244,7 @@ export const Hero = () => {
             isRotate={animation}
             glbUrl={NEW_PRODUCT_DATA[selectedProduct].model}
             className={cn(
-              'absolute -left-25 z-10 min-[620px]:-left-10 sm:-left-20 lg:left-0',
+              'absolute -left-25 z-10 min-[620px]:-left-10 sm:-left-20 lg:left-0 xl:size-[500px]',
               animation
                 ? 'animate-translate-vertical-in'
                 : 'animate-translate-vertical-out',

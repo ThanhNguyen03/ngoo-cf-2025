@@ -146,7 +146,7 @@ export const NewCollection = forwardRef<HTMLDivElement, TNewCollectionProps>(
               : 'from-sky-blue-100 bg-linear-to-b to-white/30 to-20%',
           )}
         >
-          <div className='relative mx-auto flex w-full max-w-[1024px] flex-col items-center justify-center gap-2 md:gap-6'>
+          <div className='relative mx-auto flex w-full max-w-[1200px] flex-col items-center justify-center gap-2 md:gap-6'>
             <h2 className='text-44 md:text-55 font-lobster text-shadow-dark-600 mx-auto w-fit bg-[radial-gradient(ellipse_at_center,hsla(46,100%,61%)_0%,hsl(32,99%,60%)_80%)] bg-clip-text font-black text-transparent drop-shadow-2xl'>
               New Collection
             </h2>

@@ -6,7 +6,7 @@ export const ShoppingCart = () => {
   return (
     <>
       {listCartItem.length > 0 && (
-        <div className='sticky bottom-20 z-50 mx-auto max-w-[1024px]'>
+        <div className='sticky bottom-20 z-50 mx-auto max-w-[1200px]'>
           <div className='relative ml-auto size-fit'>
             <div className='bg-secondary-500 center absolute -top-1 -right-1 flex rounded-full px-1 py-0.5'>
               <p className='center text-12 mt-0.25 text-center text-white'>

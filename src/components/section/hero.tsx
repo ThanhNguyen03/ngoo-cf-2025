@@ -44,7 +44,7 @@ export const Hero = () => {
       </div>
 
       {/* Main Content */}
-      <div className='relative z-10 mx-auto flex h-[calc(100dvh-322px)] w-full max-w-[1024px] grow items-center gap-10 overflow-hidden'>
+      <div className='relative z-10 mx-auto flex h-[calc(100dvh-322px)] w-full max-w-[1200px] grow items-center gap-10 overflow-hidden'>
         <div
           className={cn(
             'z-10 flex w-full translate-x-0 flex-col items-start gap-2 duration-1000 md:gap-6',
