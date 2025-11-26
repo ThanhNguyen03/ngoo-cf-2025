@@ -38,16 +38,16 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
       <h4 className='text-28 font-small-caps text-secondary-500 font-bold'>
         {categoryName}
       </h4>
-      <div className='flex w-full max-w-[560px] flex-col items-start gap-4'>
+      <div className='flex w-full max-w-[560px] flex-col items-start gap-4 xl:max-w-none xl:flex-row xl:flex-wrap'>
         {listTtem.map((item, index) => (
           <React.Fragment key={item.title}>
             <div
               className={cn(
-                'from-primary-500/30 to-primary-500/10 h-px w-full bg-linear-to-r',
-                index === 0 && 'hidden',
+                'flex w-full items-start gap-4 pt-4 xl:w-[calc(50%-16px)]',
+                index > 1 && 'border-dark-600/7 border-t',
+                index % 2 === 0 && 'xl:mr-2',
               )}
-            />
-            <div className='flex items-start gap-4 md:gap-6'>
+            >
               <Image
                 alt={item.title}
                 src={item.image}
@@ -97,7 +97,7 @@ type TMenuDetailProps = {
 }
 export const MenuDetail: FC<TMenuDetailProps> = ({ sectionRef }) => {
   return (
-    <div className='flex w-[70%] flex-col gap-6 md:gap-10'>
+    <div className='flex w-full flex-col gap-6 md:gap-10'>
       {MOCKUP_DATA.map((data) => {
         const id = data.categoryName.toLowerCase().replace(/\s+/g, '-')
 
@@ -108,6 +108,7 @@ export const MenuDetail: FC<TMenuDetailProps> = ({ sectionRef }) => {
             ref={(el) => {
               sectionRef.current.set(id, el)
             }}
+            className='w-full'
           >
             <ItemByCategory {...data} />
           </div>

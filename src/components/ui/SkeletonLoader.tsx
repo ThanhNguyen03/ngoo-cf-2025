@@ -15,7 +15,9 @@ export const SkeletonLoader: FC<TSkeletonLoaderProps> = ({
   <>
     <div
       className={cn(
-        loading ? 'hidden' : 'flex max-h-fit w-full opacity-100 duration-500',
+        loading
+          ? 'hidden'
+          : ['flex max-h-fit w-full opacity-100 duration-500', className],
       )}
     >
       {children}

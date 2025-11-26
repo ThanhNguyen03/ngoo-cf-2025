@@ -239,7 +239,7 @@ export type Query = {
   itemByCategory: TListItemResponse;
   itemById: TItemResponse;
   listAuditLog: Array<TAuditLog>;
-  listCategory?: Maybe<Array<TCategory>>;
+  listCategory: Array<TCategory>;
   listItem: TListItemResponse;
   listPaymentHistory: TListPaymentResponse;
   paymentHistory: TPaymentResponse;
@@ -568,7 +568,7 @@ export type UserRegisterMutation = { __typename?: 'Mutation', userRegister: { __
 export type ListCategoryQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type ListCategoryQuery = { __typename?: 'Query', listCategory?: Array<{ __typename?: 'TCategory', categoryId: string, name: string }> | null };
+export type ListCategoryQuery = { __typename?: 'Query', listCategory: Array<{ __typename?: 'TCategory', categoryId: string, name: string }> };
 
 export type ItemByCategoryQueryVariables = Exact<{
   categoryName: Scalars['String']['input'];

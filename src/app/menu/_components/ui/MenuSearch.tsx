@@ -1,3 +1,4 @@
+import { TCategory } from '@/lib/graphql/generated/graphql'
 import { cn } from '@/utils'
 import {
   CaretUpIcon,
@@ -7,29 +8,25 @@ import {
 import Link from 'next/link'
 import { FC, useEffect, useRef, useState } from 'react'
 
-const LIST_CATEGORIES = [
-  'For you',
-  'Best Sellers',
-  'Coffee',
-  'Milk Tea',
-  'Desserts',
-  'Juices',
-  'Smoothies',
-]
-
 type TMenuSearchProps = {
   disabled?: boolean
   sectionRef: React.RefObject<Map<string, HTMLDivElement | null>>
+  listCategory: TCategory[]
 }
-export const MenuSearch: FC<TMenuSearchProps> = ({ disabled, sectionRef }) => {
+export const MenuSearch: FC<TMenuSearchProps> = ({
+  disabled,
+  sectionRef,
+  listCategory,
+}) => {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false)
   const [openSearchBar, setOpenSearchBar] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
   const [selectedCategory, setSelectedCategory] = useState<string>(
-    LIST_CATEGORIES[0],
+    listCategory[0].name,
   )
 
   const containerRef = useRef<HTMLDivElement>(null)
+  const isScrollingRef = useRef<boolean>(false)
 
   const handleSelectCategory = (value: string) => {
     setSelectedCategory(value)
@@ -39,14 +36,17 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled, sectionRef }) => {
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
+        if (isScrollingRef.current) {
+          return
+        }
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             const categoryId = entry.target.id
-            const matched = LIST_CATEGORIES.find(
-              (c) => c.toLowerCase().replace(/\s+/g, '-') === categoryId,
+            const matched = listCategory.find(
+              (c) => c.name.toLowerCase().replace(/\s+/g, '-') === categoryId,
             )
             if (matched) {
-              setSelectedCategory(matched)
+              setSelectedCategory(matched.name)
             }
           }
         })
@@ -64,7 +64,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled, sectionRef }) => {
     })
 
     return () => observer.disconnect()
-  }, [sectionRef])
+  }, [sectionRef, listCategory])
 
   // handle click outside to close
   useEffect(() => {
@@ -87,7 +87,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled, sectionRef }) => {
   }, [openDropdown])
 
   return (
-    <div className='sticky top-20 flex w-[30%] flex-col items-start gap-2 md:gap-4'>
+    <div className='sticky top-20 flex w-full flex-col items-start gap-2 md:gap-4'>
       <div className='flex w-full items-center gap-2'>
         {/* select dropdown */}
         <div
@@ -127,17 +127,41 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled, sectionRef }) => {
                 : 'pointer-events-none -translate-y-[100%] opacity-0',
             )}
           >
-            {LIST_CATEGORIES.map((category) => (
+            {listCategory.map((category) => (
               <Link
-                href={`#${category.toLowerCase().trim().replace(/\s+/g, '-')}`}
-                onClick={() => handleSelectCategory(category)}
+                href={`#${category.name.toLowerCase().trim().replace(/\s+/g, '-')}`}
+                onClick={(e) => {
+                  e.preventDefault()
+                  isScrollingRef.current = true
+                  const element = sectionRef.current.get(
+                    category.name.toLowerCase().trim().replace(/\s+/g, '-'),
+                  )
+                  if (!element) {
+                    return
+                  }
+
+                  const yOffset = -80 // header height
+                  const y =
+                    element.getBoundingClientRect().top +
+                    window.scrollY +
+                    yOffset
+
+                  window.scrollTo({ top: y, behavior: 'smooth' })
+                  handleSelectCategory(category.name)
+
+                  const scroll = setTimeout(() => {
+                    isScrollingRef.current = false
+                  }, 400)
+
+                  return () => clearTimeout(scroll)
+                }}
                 className={cn(
                   'text-14! text-dark-600/70 hover:bg-dark-600/10 w-full cursor-pointer p-2 text-left leading-[160%] text-nowrap',
-                  category === selectedCategory && 'hidden',
+                  category.name === selectedCategory && 'hidden',
                 )}
-                key={category}
+                key={category.name}
               >
-                {category}
+                {category.name}
               </Link>
             ))}
           </div>
