@@ -1,7 +1,7 @@
 'use client'
 
 import titleBackground from '@/assets/images/title-background.jpg'
-import { ItemCard, SkeletonLoader, Slider } from '@/components/ui'
+import { ItemCard, Slider } from '@/components/ui'
 import { ItemDetailModal } from '@/components/ui/modal'
 import { useParallaxLayer } from '@/hooks'
 import { TItemResponse } from '@/lib/graphql/generated/graphql'
@@ -51,27 +51,20 @@ export const BestSeller = forwardRef<HTMLElement, TBestSellerProps>(
               Best Seller
             </h2>
 
-            {data.length > 0 ? (
-              <Slider
-                numsItemsPerSlice={3}
-                isDot
-                onPause={!!selectedItem}
-                className='z-10 [--webkit-mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)] [mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)]'
-              >
-                {data.map((item) => (
-                  <ItemCard
-                    key={item.itemId}
-                    data={item}
-                    setSelectedItem={setSelectedItem}
-                  />
-                ))}
-              </Slider>
-            ) : (
-              <SkeletonLoader
-                loading={data.length === 0}
-                className='min-h-[500px] w-full'
-              />
-            )}
+            <Slider
+              numsItemsPerSlice={3}
+              isDot
+              onPause={!!selectedItem}
+              className='z-10 [--webkit-mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)] [mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)]'
+            >
+              {data.map((item) => (
+                <ItemCard
+                  key={item.itemId}
+                  data={item}
+                  setSelectedItem={setSelectedItem}
+                />
+              ))}
+            </Slider>
           </div>
         </div>
         <div className='absolute bottom-0 -left-2 z-0 flex h-fit w-[101dvw] items-center justify-center'>

@@ -3,7 +3,9 @@ import { ItemDetailModal } from '@/components/ui/modal'
 import { DEFAULT_PAGINATION } from '@/constants'
 import { client } from '@/lib/apollo-client'
 import {
+  EItemStatus,
   ListItemByCategoryDocument,
+  ListItemByStatusDocument,
   TCategory,
   TItemResponse,
 } from '@/lib/graphql/generated/graphql'
@@ -43,12 +45,33 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
 
   const getListItem = apolloWrapper(
     async () => {
-      // best seller handle sau
-      if (selectedCategory.name === INIT_CATEGORY.name) {
-        return
-      }
       setLoading(true)
       const { list, offset } = itemData
+      if (selectedCategory.name === INIT_CATEGORY.name) {
+        const { data, error } = await client.query({
+          query: ListItemByStatusDocument,
+          variables: {
+            status: [EItemStatus.Seller],
+          },
+        })
+
+        if (error) {
+          throw error
+        }
+
+        if (data) {
+          handleUpdateData(selectedCategory.categoryId, {
+            list:
+              offset === 0
+                ? data.listItemByStatus.records
+                : [...list, ...data.listItemByStatus.records],
+            total: data.listItemByStatus.total,
+            fetched: true,
+          })
+        }
+        return
+      }
+
       const { data, error } = await client.query({
         query: ListItemByCategoryDocument,
         variables: {
@@ -269,10 +292,6 @@ export const MenuDetail: FC<TMenuDetailProps> = ({
 
   useEffect(() => {
     const categoryId = selectedCategory.categoryId
-    // TODO
-    if (selectedCategory.name === INIT_CATEGORY.name) {
-      return
-    }
     const exist = cache[categoryId] // If dont have cache data → fetch data
     if (!exist) {
       handleUpdateCache(categoryId, {
