@@ -1,38 +1,73 @@
+import { TCategory } from '@/lib/graphql/generated/graphql'
 import { cn } from '@/utils'
 import {
   CaretUpIcon,
+  CheckIcon,
   MagnifyingGlassIcon,
   XIcon,
 } from '@phosphor-icons/react/dist/ssr'
+import Link from 'next/link'
 import { FC, useEffect, useRef, useState } from 'react'
 
 type TMenuSearchProps = {
   disabled?: boolean
+  sectionRef: React.RefObject<Map<string, HTMLDivElement | null>>
+  listCategory: TCategory[]
+  selectedCategory: TCategory
+  selectCategory: (category: TCategory) => void
 }
-
-const LIST_CATEGORIES = [
-  'Best Sellers',
-  'Coffee',
-  'Milk Tea',
-  'Desserts',
-  'Juices',
-  'Smoothies',
-]
-
-export const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
+export const MenuSearch: FC<TMenuSearchProps> = ({
+  disabled,
+  sectionRef,
+  listCategory,
+  selectedCategory,
+  selectCategory,
+}) => {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false)
   const [openSearchBar, setOpenSearchBar] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    LIST_CATEGORIES[0],
-  )
 
   const containerRef = useRef<HTMLDivElement>(null)
+  const isScrollingRef = useRef<boolean>(false)
 
-  const handleSelectCategory = (value: string) => {
-    setSelectedCategory(value)
+  const handleSelectCategory = (value: TCategory) => {
+    selectCategory(value)
     setOpenDropdown(false)
   }
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (isScrollingRef.current) {
+          return
+        }
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const categoryId = entry.target.id
+            const matched = listCategory.find(
+              (category) => category.categoryId === categoryId,
+            )
+            if (matched) {
+              selectCategory(matched)
+            }
+          }
+        })
+      },
+      {
+        threshold: 0,
+        rootMargin: '-40% 0px -40% 0px',
+      },
+    )
+
+    sectionRef.current.forEach((el) => {
+      if (el) {
+        observer.observe(el)
+      }
+    })
+
+    return () => observer.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sectionRef, listCategory])
 
   // handle click outside to close
   useEffect(() => {
@@ -55,7 +90,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
   }, [openDropdown])
 
   return (
-    <div className='flex w-2/5 flex-col items-start gap-2 md:gap-4'>
+    <div className='sticky top-20 flex w-[25%] flex-col items-start gap-2 md:gap-4'>
       <div className='flex w-full items-center gap-2'>
         {/* select dropdown */}
         <div
@@ -74,8 +109,8 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
               openDropdown && 'border-primary-500 rounded-b-none border-b-0',
             )}
           >
-            <p className='text-14! text-dark-600 w-full text-left leading-[160%] font-semibold text-nowrap duration-700'>
-              {selectedCategory}
+            <p className='text-14! text-primary-500 w-full text-left leading-[160%] font-semibold text-nowrap duration-700'>
+              {selectedCategory.name}
             </p>
             <CaretUpIcon
               size={20}
@@ -95,18 +130,45 @@ export const MenuSearch: FC<TMenuSearchProps> = ({ disabled }) => {
                 : 'pointer-events-none -translate-y-[100%] opacity-0',
             )}
           >
-            {LIST_CATEGORIES.map((category) => (
-              <button
-                onClick={() => handleSelectCategory(category)}
+            {listCategory.map((category) => (
+              <Link
+                href={`#${category.categoryId}`}
+                onClick={(e) => {
+                  e.preventDefault()
+                  isScrollingRef.current = true
+                  const element = sectionRef.current.get(category.categoryId)
+                  if (!element) {
+                    return
+                  }
+
+                  const yOffset = -80 // header height
+                  const y =
+                    element.getBoundingClientRect().top +
+                    window.scrollY +
+                    yOffset
+
+                  window.scrollTo({ top: y, behavior: 'smooth' })
+                  handleSelectCategory(category)
+
+                  const scroll = setTimeout(() => {
+                    isScrollingRef.current = false
+                  }, 400)
+
+                  return () => clearTimeout(scroll)
+                }}
                 className={cn(
-                  'text-14! text-dark-600/70 hover:bg-dark-600/10 w-full p-2 text-left leading-[160%] text-nowrap',
-                  category === selectedCategory && 'hidden',
+                  'text-14! text-dark-600/70 hover:bg-dark-600/10 flex w-full cursor-pointer items-center justify-between p-2 text-left leading-[160%] text-nowrap',
                 )}
-                key={category}
+                key={category.name}
               >
-                <p></p>
-                {category}
-              </button>
+                {category.name}
+                <CheckIcon
+                  className={cn(
+                    'text-dark-600',
+                    category !== selectedCategory && 'hidden',
+                  )}
+                />
+              </Link>
             ))}
           </div>
         </div>

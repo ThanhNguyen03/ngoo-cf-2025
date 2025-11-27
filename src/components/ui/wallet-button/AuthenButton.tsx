@@ -43,7 +43,7 @@ export const AuthenButton = () => {
 
   return (
     <div className='relative w-fit' ref={containerRef}>
-      {status === 'authenticated' && userInfo ? (
+      {status !== 'unauthenticated' && userInfo ? (
         <>
           <button
             className='flex cursor-pointer flex-col items-end justify-end'

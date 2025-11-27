@@ -4,11 +4,7 @@ import { NgOoLogo, SwitchButton } from '@/components/ui'
 import { AuthenButton } from '@/components/ui/wallet-button'
 import { LIST_HEADER_NAVIGATION } from '@/constants'
 import { cn } from '@/utils'
-import {
-  ListIcon,
-  ShoppingCartSimpleIcon,
-  XIcon,
-} from '@phosphor-icons/react/dist/ssr'
+import { ListIcon, XIcon } from '@phosphor-icons/react/dist/ssr'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
@@ -18,8 +14,8 @@ export const Header = () => {
   const pathname = usePathname()
 
   return (
-    <header className='bg-beige-100 sticky top-0 z-50 border-b border-white/[2%] px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
-      <div className='mx-auto flex h-12 w-full max-w-[1024px] items-center justify-between'>
+    <header className='bg-beige-50 sticky top-0 z-50 border-b border-white/[2%] px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6'>
+      <div className='mx-auto flex min-h-12 w-full max-w-[1200px] items-center justify-between'>
         {/* left */}
         <NgOoLogo isDark />
 
@@ -49,19 +45,14 @@ export const Header = () => {
           {/* authen button */}
           <AuthenButton />
 
-          <div className='hidden h-full w-0.25 bg-neutral-900/10 md:inline' />
-
-          <ShoppingCartSimpleIcon size={24} className='hidden md:inline' />
           {/* menu button */}
-          {
-            <SwitchButton
-              variant='white'
-              onClick={() => setIsDrawerOpen(!isDrawerOpen)}
-              className='rounded-2! h-8.25 min-h-8.25 w-fit px-2 md:hidden'
-            >
-              {isDrawerOpen ? <XIcon /> : <ListIcon />}
-            </SwitchButton>
-          }
+          <SwitchButton
+            variant='white'
+            onClick={() => setIsDrawerOpen(!isDrawerOpen)}
+            className='rounded-2! h-8.25 min-h-8.25 w-fit px-2 md:hidden'
+          >
+            {isDrawerOpen ? <XIcon /> : <ListIcon />}
+          </SwitchButton>
         </div>
       </div>
     </header>

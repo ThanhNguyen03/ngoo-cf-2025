@@ -66,7 +66,7 @@ export const Services: FC<TServicesProps> = ({ isHover }) => {
           : 'bg-linear-to-b from-[#dfd7be] to-white to-20%',
       )}
     >
-      <div className='mx-auto flex w-full max-w-[1024px] flex-col gap-4 md:gap-6 lg:gap-10'>
+      <div className='mx-auto flex w-full max-w-[1200px] flex-col gap-4 md:gap-6 lg:gap-10'>
         <div className='= flex flex-col items-start gap-2'>
           <h2 className='text-18 text-primary-600 font-small-caps w-fit font-semibold'>
             Services

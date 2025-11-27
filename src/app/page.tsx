@@ -10,25 +10,54 @@ import {
 } from '@/components/section'
 import { InfiniteCarousel } from '@/components/ui/InfiniteCarousel'
 import { useIsHydrated } from '@/hooks'
+import { client } from '@/lib/apollo-client'
+import {
+  EItemStatus,
+  ListItemByStatusDocument,
+  TItemResponse,
+} from '@/lib/graphql/generated/graphql'
 import { TCollectionData } from '@/types'
+import { apolloWrapper } from '@/utils'
 import { SealPercentIcon } from '@phosphor-icons/react/dist/ssr'
 import { useInView } from 'framer-motion'
 import Image from 'next/image'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Loading from './loading'
 
 export default function Home() {
-  const collectionContainerRef = useRef<HTMLDivElement | null>(null)
-  const sellerContainerRef = useRef<HTMLDivElement | null>(null)
+  const collectionContainerRef = useRef<HTMLDivElement>(null)
+  const sellerContainerRef = useRef<HTMLDivElement>(null)
   const [selectedProduct, setSelectedProduct] = useState<TCollectionData>()
+  const [bestSellerItem, setBestSellerItem] = useState<TItemResponse[]>([])
   const isHydrated = useIsHydrated()
 
   const inSellerView = useInView(sellerContainerRef, {
-    margin: '-100px',
+    margin: '-10%',
   })
   const inCollectionView = useInView(collectionContainerRef, {
-    margin: '-300px',
+    margin: '-30%',
   })
+
+  useEffect(() => {
+    const getBestSeller = apolloWrapper(async () => {
+      const { data, error } = await client.query({
+        query: ListItemByStatusDocument,
+        variables: {
+          status: [EItemStatus.Seller],
+        },
+      })
+
+      if (error) {
+        throw error
+      }
+
+      if (data) {
+        setBestSellerItem(data.listItemByStatus.records)
+      }
+    })
+
+    getBestSeller()
+  }, [])
 
   return (
     <>
@@ -69,6 +98,7 @@ export default function Home() {
             </InfiniteCarousel>
             <BestSeller
               ref={sellerContainerRef}
+              data={bestSellerItem}
               isInview={inCollectionView && !!selectedProduct}
             />
           </div>

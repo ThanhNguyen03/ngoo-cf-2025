@@ -1,5 +1,5 @@
-query GetItemByCategory($categoryId: String!) {
-  getItemByCategory(categoryId: $categoryId) {
+query ItemById($itemId: String!) {
+  itemById(itemId: $itemId) {
     itemId
     name
     image

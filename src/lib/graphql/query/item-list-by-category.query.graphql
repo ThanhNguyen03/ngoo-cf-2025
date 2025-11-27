@@ -1,0 +1,37 @@
+query ListItemByCategory($categoryName: String!, $offset: Int, $limit: Int) {
+  listItemByCategory(
+    categoryName: $categoryName
+    offset: $offset
+    limit: $limit
+  ) {
+    offset
+    limit
+    total
+    query {
+      column
+      sort
+    }
+    records {
+      itemId
+      name
+      image
+      price
+      description
+      discountPercent
+      requireOption {
+        group
+        name
+        extraPrice
+      }
+      additionalOption {
+        group
+        name
+        extraPrice
+      }
+      status
+      categoryName
+      createdAt
+      updatedAt
+    }
+  }
+}

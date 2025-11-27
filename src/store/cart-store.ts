@@ -1,20 +1,24 @@
-import { TItem, TItemOption } from '@/types'
+import {
+  TItemOption,
+  TItemResponse,
+  TOrderItem,
+} from '@/lib/graphql/generated/graphql'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
 type TCartStoreState = {
-  listCartItem: TItem[]
+  listCartItem: TOrderItem[]
 }
 
 type TCartStoreAction = {
-  addToCart: (item: TItem) => void
+  addToCart: (item: TOrderItem) => void
   removeFromCart: (itemName: string) => void
-  updateCartItem: (item: TItem) => void
+  updateCartItem: (item: TOrderItem) => void
   clearCart: () => void
 }
 
 export const calculateItemPrice = (
-  item: TItem,
+  item: TItemResponse,
   selectedOptions: TItemOption[],
   amount: number,
 ): number => {
@@ -30,7 +34,7 @@ const useCartStore = create<TCartStoreState & TCartStoreAction>()(
     (set) => ({
       listCartItem: [],
 
-      addToCart: (item: TItem) => {
+      addToCart: (item: TOrderItem) => {
         set((state) => {
           const newList = [...state.listCartItem, item]
           return {
@@ -42,7 +46,7 @@ const useCartStore = create<TCartStoreState & TCartStoreAction>()(
       removeFromCart: (itemName: string) => {
         set((state) => {
           const newList = state.listCartItem.filter(
-            (item) => item.title !== itemName,
+            (item) => item.name !== itemName,
           )
           return {
             listCartItem: newList,
@@ -50,10 +54,10 @@ const useCartStore = create<TCartStoreState & TCartStoreAction>()(
         })
       },
 
-      updateCartItem: (item: TItem) => {
+      updateCartItem: (item: TOrderItem) => {
         set((state) => {
           const newList = state.listCartItem.map((i) =>
-            i.title === item.title ? item : i,
+            i.name === item.name ? item : i,
           )
           return {
             listCartItem: newList,

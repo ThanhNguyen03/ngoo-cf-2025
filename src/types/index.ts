@@ -26,23 +26,15 @@ export type TIconProps = SVGProps<SVGSVGElement> & {
   size?: number
 }
 
-export type TItemOption = {
-  name: string
-  extraPrice?: number
-  group: string
+export type TPaginationQuery = {
+  column: string
+  sort: 'asc' | 'desc'
 }
-export type TGroupOption = {
-  group: string
-  isRequired?: boolean
-}
-export type TItem = {
-  image: string | StaticImageData
-  title: string
-  price: number
-  amount: number
-  discountPercent?: number
-  description?: string
-  additionalOption?: TItemOption[]
+
+export type TPagination = {
+  limit: number
+  offset: number
+  query?: TPaginationQuery[]
 }
 
 export type TCollectionData = {

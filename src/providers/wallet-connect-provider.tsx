@@ -1,6 +1,7 @@
 'use client'
 
 import Loading from '@/app/loading'
+import { ShoppingCart } from '@/components/layout/shopping-cart'
 import { Toaster } from '@/components/ui'
 import { useAutoRefresh } from '@/hooks/use-auto-refresh'
 import { wagmiConfig } from '@/lib/wagmi-config'
@@ -13,37 +14,26 @@ import {
   XIcon,
 } from '@phosphor-icons/react/dist/ssr'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import { useSession } from 'next-auth/react'
-import { type PropsWithChildren, useEffect, useState } from 'react'
+import { type PropsWithChildren, useState } from 'react'
 import { WagmiProvider } from 'wagmi'
 
 export const WalletConnectProvider = ({ children }: PropsWithChildren) => {
   const [queryClient] = useState(() => new QueryClient())
   const [config] = useState(() => wagmiConfig)
-  const { status, data } = useSession()
-  const { getUserInfo, loading, logout } = useAuthStore()
+  const { loading } = useAuthStore()
 
   useAutoRefresh()
-
-  useEffect(() => {
-    if (status === 'authenticated') {
-      getUserInfo()
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status])
-
-  useEffect(() => {
-    if (data?.error === 'RefreshAccessTokenError') {
-      logout() // Force sign in to hopefully resolve error
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [data])
 
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        {loading ? <Loading /> : children}
+        {loading ? (
+          <Loading className='from-primary-50/30 to-secondary-50/30 text-beige-50 backdrop-blur-md' />
+        ) : (
+          children
+        )}
       </QueryClientProvider>
+      <ShoppingCart />
       <Toaster
         duration={3000}
         offset={50}
@@ -53,16 +43,16 @@ export const WalletConnectProvider = ({ children }: PropsWithChildren) => {
         closeBtnClassName='static'
         listTypeClass={{
           info: cn(
-            'border-zk-support-500 rounded-3 bg-zk-support-100 shadow-zk-support-200 border-2 shadow-[0_8px_24px]',
+            'rounded-3 border-2 border-blue-500 bg-blue-100 shadow-[0_8px_24px] shadow-blue-200',
           ),
           success: cn(
-            'border-zk-green-500 rounded-3 bg-zk-green-100 shadow-zk-green-200 border-2 shadow-[0_8px_24px]',
+            'rounded-3 border-2 border-green-500 bg-green-100 shadow-[0_8px_24px] shadow-green-200',
           ),
           error: cn(
-            'border-zk-pink-500 rounded-3 bg-zk-pink-100 shadow-zk-pink-200 border-2 shadow-[0_8px_24px]',
+            'rounded-3 border-2 border-pink-500 bg-pink-100 shadow-[0_8px_24px] shadow-pink-200',
           ),
           warning: cn(
-            'border-zk-orange-500 shadow-zk-orange-200 rounded-3 bg-zk-orange-100 border-2 shadow-[0_8px_24px]',
+            'rounded-3 border-2 border-orange-500 bg-orange-100 shadow-[0_8px_24px] shadow-orange-200',
           ),
         }}
         listTypeIcon={{

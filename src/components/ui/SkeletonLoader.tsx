@@ -3,7 +3,7 @@ import { FC } from 'react'
 
 type TSkeletonLoaderProps = {
   className?: string
-  children: React.ReactNode
+  children?: React.ReactNode
   loading: boolean
 }
 
@@ -15,7 +15,11 @@ export const SkeletonLoader: FC<TSkeletonLoaderProps> = ({
   <>
     <div
       className={cn(
-        loading ? 'hidden' : 'flex max-h-fit w-full opacity-100 duration-500',
+        loading
+          ? 'hidden'
+          : children
+            ? ['flex max-h-fit w-full opacity-100 duration-500', className]
+            : 'hidden',
       )}
     >
       {children}

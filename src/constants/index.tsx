@@ -10,12 +10,12 @@ import {
   orangeJuiceBottle,
   strawberryJuiceBottle,
 } from '@/assets/products'
+import { TItemOption, TItemResponse } from '@/lib/graphql/generated/graphql'
 import {
   ENewProduct,
   TCollectionData,
-  TItem,
-  TItemOption,
   TNavigationItem,
+  TPagination,
 } from '@/types'
 import {
   ChatsCircleIcon,
@@ -29,6 +29,7 @@ import {
   TelegramLogoIcon,
   VaultIcon,
 } from '@phosphor-icons/react/dist/ssr'
+import { StaticImageData } from 'next/image'
 import { mainnet, monadTestnet, sepolia } from 'viem/chains'
 
 export const DEV_APP_URL = 'http://localhost:3000'
@@ -36,6 +37,11 @@ export const LOCALSTORAGE_KEY = 'ngoo_coffee_visited'
 export const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000
 export const DEBOUNCE_DURATION = 500 // 500ms
 export const EXPIRES_IN = 2 * 60 * 1000 // 60 minutes
+export const REFRESH_GAP = 60 * 1000 // 60s
+export const DEFAULT_PAGINATION: TPagination = {
+  limit: 20,
+  offset: 0,
+}
 
 export const METAMASK_BASE64_ICON =
   'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzUiIGhlaWdodD0iMzQiIHZpZXdCb3g9IjAgMCAzNSAzNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMyLjcwNzcgMzIuNzUyMkwyNS4xNjg4IDMwLjUxNzRMMTkuNDgzMyAzMy45MDA4TDE1LjUxNjcgMzMuODk5MUw5LjgyNzkzIDMwLjUxNzRMMi4yOTIyNSAzMi43NTIyTDAgMjUuMDQ4OUwyLjI5MjI1IDE2LjQ5OTNMMCA5LjI3MDk0TDIuMjkyMjUgMC4zMTIyNTZMMTQuMDY3NCA3LjMxNTU0SDIwLjkzMjZMMzIuNzA3NyAwLjMxMjI1NkwzNSA5LjI3MDk0TDMyLjcwNzcgMTYuNDk5M0wzNSAyNS4wNDg5TDMyLjcwNzcgMzIuNzUyMloiIGZpbGw9IiNGRjVDMTYiLz4KPHBhdGggZD0iTTIuMjkzOTUgMC4zMTIyNTZMMTQuMDY5MSA3LjMyMDQ3TDEzLjYwMDggMTIuMTMwMUwyLjI5Mzk1IDAuMzEyMjU2WiIgZmlsbD0iI0ZGNUMxNiIvPgo8cGF0aCBkPSJNOS44Mjk1OSAyNS4wNTIyTDE1LjAxMDYgMjguOTgxMUw5LjgyOTU5IDMwLjUxNzVWMjUuMDUyMloiIGZpbGw9IiNGRjVDMTYiLz4KPHBhdGggZD0iTTE0LjU5NjYgMTguNTU2NUwxMy42MDA5IDEyLjEzMzNMNy4yMjY5MiAxNi41MDA5TDcuMjIzNjMgMTYuNDk5M1YxNi41MDI1TDcuMjQzMzUgMjAuOTk4M0w5LjgyODA5IDE4LjU1NjVIOS44Mjk3NEgxNC41OTY2WiIgZmlsbD0iI0ZGNUMxNiIvPgo8cGF0aCBkPSJNMzIuNzA3NyAwLjMxMjI1NkwyMC45MzI2IDcuMzIwNDdMMjEuMzk5MyAxMi4xMzAxTDMyLjcwNzcgMC4zMTIyNTZaIiBmaWxsPSIjRkY1QzE2Ii8+CjxwYXRoIGQ9Ik0yNS4xNzIyIDI1LjA1MjJMMTkuOTkxMiAyOC45ODExTDI1LjE3MjIgMzAuNTE3NVYyNS4wNTIyWiIgZmlsbD0iI0ZGNUMxNiIvPgo8cGF0aCBkPSJNMjcuNzc2NiAxNi41MDI1SDI3Ljc3ODNIMjcuNzc2NlYxNi40OTkzTDI3Ljc3NSAxNi41MDA5TDIxLjQwMSAxMi4xMzMzTDIwLjQwNTMgMTguNTU2NUgyNS4xNzIyTDI3Ljc1ODYgMjAuOTk4M0wyNy43NzY2IDE2LjUwMjVaIiBmaWxsPSIjRkY1QzE2Ii8+CjxwYXRoIGQ9Ik05LjgyNzkzIDMwLjUxNzVMMi4yOTIyNSAzMi43NTIyTDAgMjUuMDUyMkg5LjgyNzkzVjMwLjUxNzVaIiBmaWxsPSIjRTM0ODA3Ii8+CjxwYXRoIGQ9Ik0xNC41OTQ3IDE4LjU1NDlMMTYuMDM0MSAyNy44NDA2TDE0LjAzOTMgMjIuNjc3N0w3LjIzOTc1IDIwLjk5ODRMOS44MjYxMyAxOC41NTQ5SDE0LjU5M0gxNC41OTQ3WiIgZmlsbD0iI0UzNDgwNyIvPgo8cGF0aCBkPSJNMjUuMTcyMSAzMC41MTc1TDMyLjcwNzggMzIuNzUyMkwzNS4wMDAxIDI1LjA1MjJIMjUuMTcyMVYzMC41MTc1WiIgZmlsbD0iI0UzNDgwNyIvPgo8cGF0aCBkPSJNMjAuNDA1MyAxOC41NTQ5TDE4Ljk2NTggMjcuODQwNkwyMC45NjA3IDIyLjY3NzdMMjcuNzYwMiAyMC45OTg0TDI1LjE3MjIgMTguNTU0OUgyMC40MDUzWiIgZmlsbD0iI0UzNDgwNyIvPgo8cGF0aCBkPSJNMCAyNS4wNDg4TDIuMjkyMjUgMTYuNDk5M0g3LjIyMTgzTDcuMjM5OTEgMjAuOTk2N0wxNC4wMzk0IDIyLjY3NkwxNi4wMzQzIDI3LjgzODlMMTUuMDA4OSAyOC45NzZMOS44Mjc5MyAyNS4wNDcySDBWMjUuMDQ4OFoiIGZpbGw9IiNGRjhENUQiLz4KPHBhdGggZD0iTTM1LjAwMDEgMjUuMDQ4OEwzMi43MDc4IDE2LjQ5OTNIMjcuNzc4M0wyNy43NjAyIDIwLjk5NjdMMjAuOTYwNyAyMi42NzZMMTguOTY1OCAyNy44Mzg5TDE5Ljk5MTIgMjguOTc2TDI1LjE3MjIgMjUuMDQ3MkgzNS4wMDAxVjI1LjA0ODhaIiBmaWxsPSIjRkY4RDVEIi8+CjxwYXRoIGQ9Ik0yMC45MzI1IDcuMzE1NDNIMTcuNDk5OUgxNC4wNjczTDEzLjYwMDYgMTIuMTI1MUwxNi4wMzQyIDI3LjgzNEgxOC45NjU2TDIxLjQwMDggMTIuMTI1MUwyMC45MzI1IDcuMzE1NDNaIiBmaWxsPSIjRkY4RDVEIi8+CjxwYXRoIGQ9Ik0yLjI5MjI1IDAuMzEyMjU2TDAgOS4yNzA5NEwyLjI5MjI1IDE2LjQ5OTNINy4yMjE4M0wxMy41OTkxIDEyLjEzMDFMMi4yOTIyNSAwLjMxMjI1NloiIGZpbGw9IiM2NjE4MDAiLz4KPHBhdGggZD0iTTEzLjE3IDIwLjQxOTlIMTAuOTM2OUw5LjcyMDk1IDIxLjYwNjJMMTQuMDQwOSAyMi42NzI3TDEzLjE3IDIwLjQxODJWMjAuNDE5OVoiIGZpbGw9IiM2NjE4MDAiLz4KPHBhdGggZD0iTTMyLjcwNzcgMC4zMTIyNTZMMzQuOTk5OSA5LjI3MDk0TDMyLjcwNzcgMTYuNDk5M0gyNy43NzgxTDIxLjQwMDkgMTIuMTMwMUwzMi43MDc3IDAuMzEyMjU2WiIgZmlsbD0iIzY2MTgwMCIvPgo8cGF0aCBkPSJNMjEuODMzIDIwLjQxOTlIMjQuMDY5NEwyNS4yODUzIDIxLjYwNzlMMjAuOTYwNCAyMi42NzZMMjEuODMzIDIwLjQxODJWMjAuNDE5OVoiIGZpbGw9IiM2NjE4MDAiLz4KPHBhdGggZD0iTTE5LjQ4MTcgMzAuODM2MkwxOS45OTExIDI4Ljk3OTRMMTguOTY1OCAyNy44NDIzSDE2LjAzMjdMMTUuMDA3MyAyOC45Nzk0TDE1LjUxNjcgMzAuODM2MiIgZmlsbD0iIzY2MTgwMCIvPgo8cGF0aCBkPSJNMTkuNDgxNiAzMC44MzU5VjMzLjkwMjFIMTUuNTE2NlYzMC44MzU5SDE5LjQ4MTZaIiBmaWxsPSIjQzBDNENEIi8+CjxwYXRoIGQ9Ik05LjgyOTU5IDMwLjUxNDJMMTUuNTIgMzMuOTAwOFYzMC44MzQ2TDE1LjAxMDYgMjguOTc3OEw5LjgyOTU5IDMwLjUxNDJaIiBmaWxsPSIjRTdFQkY2Ii8+CjxwYXRoIGQ9Ik0yNS4xNzIxIDMwLjUxNDJMMTkuNDgxNyAzMy45MDA4VjMwLjgzNDZMMTkuOTkxMSAyOC45Nzc4TDI1LjE3MjEgMzAuNTE0MloiIGZpbGw9IiNFN0VCRjYiLz4KPC9zdmc+Cg=='
@@ -123,6 +129,25 @@ export const LIST_FOOTER_NAVIGATION: Array<
     ],
   },
 ]
+export const LIST_ACCOUNT_NAVIGATION: TNavigationItem[] = [
+  {
+    name: 'Settings',
+    icon: <GearSixIcon weight='fill' size={24} className='text-primary-400' />,
+    href: '/profile',
+  },
+  {
+    name: 'Faucet',
+    icon: <VaultIcon weight='fill' size={24} className='text-primary-400' />,
+    href: '#', // TODO: faucet page ex: u2u, ftm, monad,...
+  },
+  {
+    name: 'Activity',
+    icon: (
+      <ClockUserIcon weight='fill' size={24} className='text-primary-400' />
+    ),
+    href: '/activity',
+  },
+]
 
 export const LIST_NEW_PRODUCT: TCollectionData[] = [
   {
@@ -151,7 +176,14 @@ export const LIST_NEW_PRODUCT: TCollectionData[] = [
   },
 ]
 
-type TNewItem = TItem & {
+type TNewItem = {
+  image: string | StaticImageData
+  title: string
+  price: number
+  amount: number
+  discountPercent?: number
+  description?: string
+  requireOption?: TItemOption[]
   model: string
   tag: string
   bgClassName?: string
@@ -177,7 +209,7 @@ export const NEW_PRODUCT_DATA: Record<ENewProduct, TNewItem> = {
     tag: 'Sweet, fresh, and a sip of happiness.',
     price: 5,
     amount: 0,
-    additionalOption: SIZE_OPTION,
+    requireOption: SIZE_OPTION,
     bgClassName:
       'bg-[radial-gradient(ellipse_at_center,hsl(340,75%,30%)_0%,hsl(335,75%,42%)_40%,hsla(345,7%,10%)_80%)]',
     buttonClassName: 'hover:bg-linear-to-br from-cherry-500/70 to-white/10',
@@ -192,7 +224,7 @@ export const NEW_PRODUCT_DATA: Record<ENewProduct, TNewItem> = {
     tag: 'Tangy, refreshing, and naturally energizing.',
     price: 5,
     amount: 0,
-    additionalOption: SIZE_OPTION,
+    requireOption: SIZE_OPTION,
     bgClassName:
       'bg-[radial-gradient(ellipse_at_center,hsl(68,76%,30%)_0%,hsl(68,76%,42%)_40%,hsla(345,7%,10%)_80%)]',
     buttonClassName: 'hover:bg-linear-to-br from-kiwi-500/50 to-white/10',
@@ -207,7 +239,7 @@ export const NEW_PRODUCT_DATA: Record<ENewProduct, TNewItem> = {
     tag: 'One glass of orange, one brighter day.',
     price: 5,
     amount: 0,
-    additionalOption: SIZE_OPTION,
+    requireOption: SIZE_OPTION,
     bgClassName:
       'bg-[radial-gradient(ellipse_at_center,hsl(32,99%,30%)_0%,hsl(32,99%,42%)_40%,hsla(345,7%,10%)_80%)]',
     buttonClassName: 'hover:bg-linear-to-br from-orange-500/50 to-white/10',
@@ -222,7 +254,7 @@ export const NEW_PRODUCT_DATA: Record<ENewProduct, TNewItem> = {
     tag: 'Naturally sweet, love at first sip.',
     price: 5,
     amount: 0,
-    additionalOption: SIZE_OPTION,
+    requireOption: SIZE_OPTION,
     bgClassName:
       'bg-[radial-gradient(ellipse_at_center,hsl(0,96%,30%)_0%,hsl(0,96%,42%)_40%,hsla(345,7%,10%)_80%)]',
     buttonClassName: 'hover:bg-linear-to-br from-strawberry-500/50 to-white/10',
@@ -232,22 +264,53 @@ export const NEW_PRODUCT_DATA: Record<ENewProduct, TNewItem> = {
   },
 }
 
-export const LIST_ACCOUNT_NAVIGATION: TNavigationItem[] = [
-  {
-    name: 'Settings',
-    icon: <GearSixIcon weight='fill' size={24} className='text-primary-400' />,
-    href: '/profile',
+export const CART_NEW_DATA: Record<ENewProduct, TItemResponse> = {
+  [ENewProduct.Cherry]: {
+    name: 'Cherry Juice',
+    price: 5,
+    image: cherryJuiceBottle.src,
+    itemId: '123123qdwqasdasdqweqew1',
+    requireOption: SIZE_OPTION,
+    createdAt: 0,
+    updatedAt: 0,
+    categoryName: 'Fruit Juice',
+    description:
+      'Our Cherry Juice shines with a vibrant ruby-red color and a naturally sweet-tart taste from fresh cherries. Packed with antioxidants, it not only refreshes but also supports glowing skin and heart health. A perfect balance of sweetness and lightness in every sip.',
   },
-  {
-    name: 'Faucet',
-    icon: <VaultIcon weight='fill' size={24} className='text-primary-400' />,
-    href: '#', // TODO: faucet page ex: u2u, ftm, monad,...
+  [ENewProduct.Kiwi]: {
+    name: 'Kiwi Juice',
+    price: 5,
+    image: kiwiJuiceBottole.src,
+    itemId: '123123qdwqasdasdqweqew2',
+    requireOption: SIZE_OPTION,
+    createdAt: 0,
+    updatedAt: 0,
+    categoryName: 'Fruit Juice',
+    description:
+      'Kiwi Juice delivers a refreshing surprise with its tangy-sweet balance and distinctive fragrance of fresh kiwi. Rich in vitamin C and fiber, it boosts your energy while keeping you light, fresh, and healthy throughout the day.',
   },
-  {
-    name: 'Activity',
-    icon: (
-      <ClockUserIcon weight='fill' size={24} className='text-primary-400' />
-    ),
-    href: '/activity',
+  [ENewProduct.Orange]: {
+    name: 'Orange Juice',
+    price: 5,
+    image: orangeJuiceBottle.src,
+    itemId: '123123qdwqasdasdqweqew3',
+    requireOption: SIZE_OPTION,
+    createdAt: 0,
+    updatedAt: 0,
+    categoryName: 'Fruit Juice',
+    description:
+      'Nothing beats the freshness of pure Orange Juice. With its sweet, zesty flavor and vitamin C richness, it strengthens immunity, brightens your mood, and fuels your day with vitality. A timeless classic that never goes out of style.',
   },
-]
+  [ENewProduct.Strawberry]: {
+    name: 'Strawberry Juice',
+    price: 5,
+    image: strawberryJuiceBottle.src,
+    itemId: '123123qdwqasdasdqweqew4',
+    requireOption: SIZE_OPTION,
+    createdAt: 0,
+    updatedAt: 0,
+    categoryName: 'Fruit Juice',
+    description:
+      'Strawberry Juice bursts with the sweet, refreshing taste of ripe strawberries. Each sip delivers freshness and a natural energy boost. More than just a drink, it’s a delightful treat for your senses that you’ll fall in love with instantly.',
+  },
+}
