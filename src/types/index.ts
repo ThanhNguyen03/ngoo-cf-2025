@@ -37,25 +37,6 @@ export type TPagination = {
   query?: TPaginationQuery[]
 }
 
-export type TItemOption = {
-  name: string
-  extraPrice?: number
-  group: string
-}
-export type TGroupOption = {
-  group: string
-  isRequired?: boolean
-}
-export type TItem = {
-  image: string | StaticImageData
-  title: string
-  price: number
-  amount: number
-  discountPercent?: number
-  description?: string
-  additionalOption?: TItemOption[]
-}
-
 export type TCollectionData = {
   title: string
   img: string | StaticImageData

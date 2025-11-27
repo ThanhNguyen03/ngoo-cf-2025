@@ -1,5 +1,9 @@
-query ItemByCategory($categoryName: String!, $offset: Int, $limit: Int) {
-  itemByCategory(categoryName: $categoryName, offset: $offset, limit: $limit) {
+query ListItemByCategory($categoryName: String!, $offset: Int, $limit: Int) {
+  listItemByCategory(
+    categoryName: $categoryName
+    offset: $offset
+    limit: $limit
+  ) {
     offset
     limit
     total

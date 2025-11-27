@@ -3,13 +3,14 @@ import { ItemDetailModal } from '@/components/ui/modal'
 import { DEFAULT_PAGINATION } from '@/constants'
 import { client } from '@/lib/apollo-client'
 import {
-  ItemByCategoryDocument,
+  ListItemByCategoryDocument,
   TCategory,
   TItemResponse,
 } from '@/lib/graphql/generated/graphql'
 import useCartStore from '@/store/cart-store'
 import { apolloWrapper, cn } from '@/utils'
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr'
+import Image from 'next/image'
 import React, { FC, useEffect, useRef, useState } from 'react'
 import { INIT_CATEGORY } from '../Menu'
 
@@ -49,7 +50,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
       setLoading(true)
       const { list, offset } = itemData
       const { data, error } = await client.query({
-        query: ItemByCategoryDocument,
+        query: ListItemByCategoryDocument,
         variables: {
           categoryName: selectedCategory.name,
           limit: DEFAULT_PAGINATION.limit,
@@ -66,12 +67,11 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
         handleUpdateData(selectedCategory.categoryId, {
           list:
             offset === 0
-              ? data.itemByCategory.records
-              : [...list, ...data.itemByCategory.records],
-          total: data.itemByCategory.total,
+              ? data.listItemByCategory.records
+              : [...list, ...data.listItemByCategory.records],
+          total: data.listItemByCategory.total,
           fetched: true,
         })
-        console.log('asdasdads', selectedCategory.name, data)
       }
     },
     {
@@ -154,7 +154,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
                 const cartItem = listCartItem.find((c) => c.name === item.name)
 
                 return (
-                  <button
+                  <div
                     key={item.name}
                     className={cn(
                       'flex w-full cursor-pointer items-start gap-4 xl:w-[calc(50%-16px)]',
@@ -163,13 +163,13 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
                     )}
                     onClick={() => setSelectedItem(item)}
                   >
-                    {/* <Image
-              alt={item.name}
-              src={item.image}
-              width={200}
-              height={200}
-              className='rounded-6 aspect-square size-50 object-cover object-center'
-            /> */}
+                    <Image
+                      alt={item.name}
+                      src={item.image}
+                      width={200}
+                      height={200}
+                      className='rounded-6 aspect-square size-50 object-cover object-center'
+                    />
                     <div className='flex h-50 w-full flex-col items-end justify-between'>
                       <div className='flex flex-col items-start gap-1 text-left'>
                         <h5 className='text-18 mb-2 font-semibold'>
@@ -224,7 +224,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
                         />
                       )}
                     </div>
-                  </button>
+                  </div>
                 )
               })
             ) : (

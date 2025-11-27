@@ -1,5 +1,6 @@
 import { polygon } from '@/assets/icons'
-import { TItem } from '@/types'
+import { TItemResponse } from '@/lib/graphql/generated/graphql'
+import useCartStore from '@/store/cart-store'
 import { cn } from '@/utils'
 import { PlusIcon, TagIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
@@ -7,11 +8,13 @@ import { Dispatch, FC, SetStateAction } from 'react'
 import { Button } from './Button'
 
 type TItemCardProps = {
-  data: TItem
-  setSelectedItem: Dispatch<SetStateAction<TItem | undefined>>
+  data: TItemResponse
+  setSelectedItem: Dispatch<SetStateAction<TItemResponse | undefined>>
 }
 
 export const ItemCard: FC<TItemCardProps> = ({ data, setSelectedItem }) => {
+  const { listCartItem } = useCartStore()
+  const cartItem = listCartItem.find((c) => c.name === data.name)
   return (
     <>
       <div
@@ -26,7 +29,7 @@ export const ItemCard: FC<TItemCardProps> = ({ data, setSelectedItem }) => {
           <Image alt='polygon' src={polygon} width={4} height={4} />
         </div>
         <Image
-          alt={`image-${data.title}`}
+          alt={data.itemId}
           src={data.image}
           width={240}
           height={240}
@@ -34,7 +37,7 @@ export const ItemCard: FC<TItemCardProps> = ({ data, setSelectedItem }) => {
         />
 
         <div className='flex flex-col items-start gap-2 p-2 md:gap-3 md:p-4'>
-          <h4 className='text-16! text-dark-600 font-semibold'>{data.title}</h4>
+          <h4 className='text-16! text-dark-600 font-semibold'>{data.name}</h4>
           <div className='flex w-full items-center justify-between'>
             <div className='flex items-start justify-center gap-2'>
               {data.discountPercent && (
@@ -57,9 +60,9 @@ export const ItemCard: FC<TItemCardProps> = ({ data, setSelectedItem }) => {
                 )}
               </div>
             </div>
-            {data.amount > 0 ? (
+            {cartItem ? (
               <div className='text-14 rounded-full border border-green-500 bg-white px-2.5 py-1'>
-                {data.amount}
+                {cartItem.amount}
               </div>
             ) : (
               <Button

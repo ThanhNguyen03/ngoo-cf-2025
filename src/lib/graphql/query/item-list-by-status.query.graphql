@@ -1,0 +1,33 @@
+query ListItemByStatus($status: [EItemStatus]!, $offset: Int, $limit: Int) {
+  listItemByStatus(status: $status, offset: $offset, limit: $limit) {
+    offset
+    limit
+    total
+    query {
+      column
+      sort
+    }
+    records {
+      itemId
+      name
+      image
+      price
+      description
+      discountPercent
+      requireOption {
+        group
+        name
+        extraPrice
+      }
+      additionalOption {
+        group
+        name
+        extraPrice
+      }
+      status
+      categoryName
+      createdAt
+      updatedAt
+    }
+  }
+}

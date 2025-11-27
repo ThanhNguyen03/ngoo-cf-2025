@@ -3,9 +3,15 @@
 import { Tooltip } from '@/components/ui'
 import { AmountCounter } from '@/components/ui/AmountCounter'
 import { SwitchButton } from '@/components/ui/SwitchButton'
-import { LIST_NEW_PRODUCT, NEW_PRODUCT_DATA, SIZE_OPTION } from '@/constants'
+import {
+  CART_NEW_DATA,
+  LIST_NEW_PRODUCT,
+  NEW_PRODUCT_DATA,
+  SIZE_OPTION,
+} from '@/constants'
+import { TOrderItem } from '@/lib/graphql/generated/graphql'
 import useCartStore, { calculateItemPrice } from '@/store/cart-store'
-import { ENewProduct, TItem } from '@/types'
+import { ENewProduct } from '@/types'
 import { cn } from '@/utils'
 import Image from 'next/image'
 import { useEffect, useRef, useState } from 'react'
@@ -25,7 +31,7 @@ export const Hero = () => {
   const [totalPrice, setTotalPrice] = useState<number>(0)
   const [itemAmount, setItemAmount] = useState<number>(1)
   const [selectedSize, setSelectedSize] = useState<string>(
-    NEW_PRODUCT_DATA[selectedProduct].additionalOption?.[0].name || '',
+    NEW_PRODUCT_DATA[selectedProduct].requireOption?.[0].name ?? '',
   )
 
   const containerRef = useRef<HTMLDivElement>(null)
@@ -48,17 +54,19 @@ export const Hero = () => {
     }
     const data = {
       image: NEW_PRODUCT_DATA[selectedProduct].image,
-      title: NEW_PRODUCT_DATA[selectedProduct].title,
+      name: NEW_PRODUCT_DATA[selectedProduct].title,
       price: NEW_PRODUCT_DATA[selectedProduct].price,
       discountPercent: NEW_PRODUCT_DATA[selectedProduct].discountPercent,
     }
-    const newItem: TItem = {
-      ...data,
+    const newItem: TOrderItem = {
+      discountPercent: data.discountPercent,
+      price: data.price,
+      name: data.name,
       amount: itemAmount,
-      additionalOption: SIZE_OPTION.filter((opt) => opt.name === selectedSize),
+      selectedOptions: SIZE_OPTION.filter((opt) => opt.name === selectedSize),
     }
     const existed = listCartItem.some(
-      (i) => i.title === NEW_PRODUCT_DATA[selectedProduct].title,
+      (i) => i.name === NEW_PRODUCT_DATA[selectedProduct].title,
     )
     if (existed) {
       updateCartItem(newItem)
@@ -76,7 +84,7 @@ export const Hero = () => {
   useEffect(() => {
     setTotalPrice(
       calculateItemPrice(
-        NEW_PRODUCT_DATA[selectedProduct],
+        CART_NEW_DATA[selectedProduct],
         SIZE_OPTION.filter((opt) => opt.name === selectedSize),
         itemAmount,
       ),
@@ -225,7 +233,7 @@ export const Hero = () => {
               onClick={handleSubmit}
               disabled={
                 !listCartItem.some(
-                  (i) => i.title === NEW_PRODUCT_DATA[selectedProduct].title,
+                  (i) => i.name === NEW_PRODUCT_DATA[selectedProduct].title,
                 ) && itemAmount === 0
               }
               className={cn(
@@ -307,7 +315,7 @@ export const Hero = () => {
             </p>
 
             <div className='flex w-full flex-col items-end justify-end gap-2 min-[620px]:flex-row md:items-center'>
-              {NEW_PRODUCT_DATA[selectedProduct].additionalOption?.map(
+              {NEW_PRODUCT_DATA[selectedProduct].requireOption?.map(
                 (option) => (
                   <button
                     key={option.name}
@@ -342,7 +350,7 @@ export const Hero = () => {
               onClick={handleSubmit}
               disabled={
                 !listCartItem.some(
-                  (i) => i.title === NEW_PRODUCT_DATA[selectedProduct].title,
+                  (i) => i.name === NEW_PRODUCT_DATA[selectedProduct].title,
                 ) && itemAmount === 0
               }
               className={cn(

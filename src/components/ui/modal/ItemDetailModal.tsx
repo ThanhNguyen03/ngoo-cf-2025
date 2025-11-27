@@ -22,6 +22,11 @@ type TItemOptionProps = {
   listOption: TItemOption[]
 }
 
+type TItemOptionGroup = {
+  group: string
+  list: TItemOption[]
+}
+
 const ItemOption: FC<TItemOptionProps> = ({
   title,
   listOption,
@@ -31,7 +36,7 @@ const ItemOption: FC<TItemOptionProps> = ({
   selectedOptions,
 }) => {
   const isSelected = (opt: TItemOption) =>
-    selectedOptions.some((s) => s.name === opt.name)
+    selectedOptions.some((s) => s.group === opt.group && s.name === opt.name)
 
   const handleCheckboxChange = (opt: TItemOption) => {
     // required only check 1
@@ -41,7 +46,11 @@ const ItemOption: FC<TItemOptionProps> = ({
       // optional
       const exists = isSelected(opt)
       if (exists) {
-        onChange(selectedOptions.filter((s) => s.name !== opt.name))
+        onChange(
+          selectedOptions.filter(
+            (s) => !(s.group === opt.group && s.name === opt.name),
+          ),
+        )
       } else {
         onChange([...selectedOptions, opt])
       }
@@ -127,14 +136,37 @@ export const ItemDetailModal: FC<
     cartItem?.selectedOptions || [],
   )
 
+  const requiredGroups: TItemOptionGroup[] = useMemo(() => {
+    const map = new Map<string, TItemOption[]>()
+    for (const opt of data.requireOption) {
+      if (!map.has(opt.group)) {
+        map.set(opt.group, [])
+      }
+      map.get(opt.group)!.push(opt)
+    }
+    return Array.from(map.entries()).map(([group, list]) => ({ group, list }))
+  }, [data.requireOption])
+
+  const additionalGroups: TItemOptionGroup[] = useMemo(() => {
+    if (!data.additionalOption) {
+      return []
+    }
+    const map = new Map<string, TItemOption[]>()
+    for (const opt of data.additionalOption) {
+      if (!map.has(opt.group)) map.set(opt.group, [])
+      map.get(opt.group)!.push(opt)
+    }
+    return Array.from(map.entries()).map(([group, list]) => ({ group, list }))
+  }, [data.additionalOption])
+
   const isRequiredSelected = useMemo(() => {
-    if (data.requireOption.length === 0) {
+    if (requiredGroups.length === 0) {
       return true
     }
-    return selectedOptions.every((o) =>
-      data.requireOption.some((r) => r.name === o.name),
+    return requiredGroups.every((o) =>
+      selectedOptions.some((r) => r.group === o.group),
     )
-  }, [selectedOptions, data.requireOption])
+  }, [requiredGroups, selectedOptions])
 
   useEffect(() => {
     setLoading(true)
@@ -227,41 +259,42 @@ export const ItemDetailModal: FC<
 
           {/* Optional */}
           <div className='border-dark-600/10 border-b px-2 md:px-4'>
-            {/* REQUIRED OPTIONS */}
-            <ItemOption
-              title='Required options'
-              isRequired
-              listOption={data.requireOption}
-              selectedOptions={selectedOptions.filter((o) =>
-                data.requireOption.some((r) => r.name === o.name),
-              )}
-              onChange={(next) => {
-                setSelectedOptions((prev) => {
-                  const filtered = prev.filter(
-                    (o) => !data.requireOption.some((r) => r.name === o.name),
-                  )
-                  return [...filtered, ...next]
-                })
-              }}
-            />
-
+            {/* REQUIRED OPTIONS */}{' '}
+            {requiredGroups.map((g) => (
+              <ItemOption
+                key={`req-${g.group}`}
+                title={g.group}
+                isRequired
+                listOption={g.list}
+                selectedOptions={selectedOptions.filter(
+                  (s) => s.group === g.group,
+                )}
+                onChange={(next) => {
+                  // replace selectedOptions for this group with next
+                  setSelectedOptions((prev) => [
+                    ...prev.filter((s) => s.group !== g.group),
+                    ...next,
+                  ])
+                }}
+              />
+            ))}
             {/* ADDITIONAL OPTIONS */}
-            <ItemOption
-              title='Additional options'
-              listOption={data.additionalOption}
-              selectedOptions={selectedOptions.filter((o) =>
-                data.additionalOption.some((a) => a.name === o.name),
-              )}
-              onChange={(next) => {
-                setSelectedOptions((prev) => {
-                  const filtered = prev.filter(
-                    (o) =>
-                      !data.additionalOption.some((a) => a.name === o.name),
-                  )
-                  return [...filtered, ...next]
-                })
-              }}
-            />
+            {additionalGroups.map((g) => (
+              <ItemOption
+                key={`add-${g.group}`}
+                title={g.group}
+                listOption={g.list}
+                selectedOptions={selectedOptions.filter(
+                  (s) => s.group === g.group,
+                )}
+                onChange={(next) => {
+                  setSelectedOptions((prev) => [
+                    ...prev.filter((s) => s.group !== g.group),
+                    ...next,
+                  ])
+                }}
+              />
+            ))}
           </div>
 
           {/* Noted */}
