@@ -1,144 +1,294 @@
-import { Button } from '@/components/ui'
+import { Button, SkeletonLoader } from '@/components/ui'
 import { DEFAULT_PAGINATION } from '@/constants'
 import { client } from '@/lib/apollo-client'
 import {
   ItemByCategoryDocument,
+  TCategory,
   TItemResponse,
 } from '@/lib/graphql/generated/graphql'
 import { apolloWrapper, cn } from '@/utils'
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr'
-import Image from 'next/image'
-import React, { FC, useEffect, useState } from 'react'
+import React, { FC, useEffect, useRef, useState } from 'react'
 import { INIT_CATEGORY } from '../Menu'
 
+type TItemByCategoryData = {
+  list: TItemResponse[]
+  total: number
+  offset: number
+  fetched?: boolean
+}
 type TItemByCategoryProps = {
-  categoryName: string
-  listItem: TItemResponse[]
+  selectedCategory: TCategory
+  inViewport?: boolean
+  itemData: TItemByCategoryData
+  handleUpdateData: (
+    categoryId: string,
+    updater: Partial<TItemByCategoryCache[string]>,
+  ) => void
 }
 const ItemByCategory: FC<TItemByCategoryProps> = ({
-  categoryName,
-  listItem,
+  selectedCategory,
+  inViewport,
+  itemData,
+  handleUpdateData,
 }) => {
+  const bottomRef = useRef<HTMLDivElement | null>(null)
+
+  const [loading, setLoading] = useState<boolean>(false)
+
+  const getListItem = apolloWrapper(
+    async () => {
+      // best seller handle sau
+      if (selectedCategory.name === INIT_CATEGORY.name) {
+        return
+      }
+      setLoading(true)
+      const { list, offset } = itemData
+      const { data, error } = await client.query({
+        query: ItemByCategoryDocument,
+        variables: {
+          categoryName: selectedCategory.name,
+          limit: DEFAULT_PAGINATION.limit,
+          offset,
+        },
+        fetchPolicy: 'no-cache',
+      })
+
+      if (error) {
+        throw error
+      }
+
+      if (data) {
+        handleUpdateData(selectedCategory.categoryId, {
+          list:
+            offset === 0
+              ? data.itemByCategory.records
+              : [...list, ...data.itemByCategory.records],
+          total: data.itemByCategory.total,
+          fetched: true,
+        })
+        console.log('asdasdads', selectedCategory.name, data)
+      }
+    },
+    {
+      errorMessage: `Failed to get list item by category ${selectedCategory.name}`,
+      onFinally: () => setLoading(false),
+    },
+  )
+
+  useEffect(() => {
+    if (!inViewport) {
+      return
+    }
+    if (itemData.fetched) {
+      return
+    }
+    if (itemData.list.length > 0 && itemData.offset === 0) {
+      return
+    }
+
+    if (itemData.list.length === 0) {
+      getListItem()
+    }
+    if (itemData.offset > 0) {
+      getListItem()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inViewport, itemData.offset])
+
+  // Infinite scroll
+  useEffect(() => {
+    if (!inViewport) {
+      return
+    }
+    const element = bottomRef.current
+    if (!element) {
+      return
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0].isIntersecting) {
+          return
+        }
+        const { offset, total } = itemData
+        const limit = DEFAULT_PAGINATION.limit
+        const canLoadMore = total > limit + offset
+        if (!canLoadMore) {
+          return
+        }
+        // increase offset
+        handleUpdateData(selectedCategory.categoryId, {
+          offset: offset + limit,
+        })
+      },
+      { threshold: 1 },
+    )
+    observer.observe(element)
+    return () => observer.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inViewport, itemData])
+
   return (
     <div className='text-dark-600 flex w-full flex-col gap-4 lining-nums md:gap-4'>
       <h4 className='text-28 font-small-caps text-secondary-500 font-bold'>
-        {categoryName}
+        {selectedCategory.name}
       </h4>
       <div className='flex w-full max-w-[560px] flex-col items-start gap-4 xl:max-w-none xl:flex-row xl:flex-wrap'>
-        {listItem.map((item, index) => (
-          <React.Fragment key={item.name}>
-            <div
-              className={cn(
-                'flex w-full items-start gap-4 pt-4 xl:w-[calc(50%-16px)]',
-                index > 1 && 'border-dark-600/7 border-t',
-                index % 2 === 0 && 'xl:mr-2',
-              )}
-            >
-              <Image
-                alt={item.name}
-                src={item.image}
-                width={200}
-                height={200}
-                className='rounded-6 aspect-square size-50 object-cover object-center'
-              />
-              <div className='flex h-50 w-full flex-col items-end justify-between'>
-                <div className='flex flex-col items-start gap-1 text-left'>
-                  <h5 className='text-18 mb-2 font-semibold'>{item.name}</h5>
-                  <p className='text-14 text-dark-600/70'>{item.description}</p>
-                  <div className='flex items-end justify-center gap-2'>
-                    {item.discountPercent && (
-                      <p className='text-16! font-semibold'>
-                        {item.price - (item.price * item.discountPercent) / 100}
-                        $
+        {loading ? (
+          Array.from({ length: 4 }).map((_, index) => (
+            <SkeletonLoader
+              key={index}
+              loading={loading}
+              className='flex h-20 w-full items-start gap-4 xl:w-[calc(50%-16px)]'
+            />
+          ))
+        ) : (
+          <>
+            {itemData.list.length > 0 ? (
+              itemData.list.map((item, index) => (
+                <div
+                  key={item.name}
+                  className={cn(
+                    'flex w-full items-start gap-4 xl:w-[calc(50%-16px)]',
+                    index > 1 && 'border-dark-600/7 border-b',
+                    index % 2 === 0 && 'xl:mr-2',
+                  )}
+                >
+                  {/* <Image
+              alt={item.name}
+              src={item.image}
+              width={200}
+              height={200}
+              className='rounded-6 aspect-square size-50 object-cover object-center'
+            /> */}
+                  <div className='flex h-50 w-full flex-col items-end justify-between'>
+                    <div className='flex flex-col items-start gap-1 text-left'>
+                      <h5 className='text-18 mb-2 font-semibold'>
+                        {item.name}
+                      </h5>
+                      <p className='text-14 text-dark-600/70'>
+                        {item.description}
                       </p>
-                    )}
-                    <p
-                      className={cn(
-                        'text-16 font-semibold',
-                        item.discountPercent &&
-                          'text-dark-600/50 text-[13px] font-normal line-through',
-                      )}
-                    >
-                      {item.price}$
-                    </p>
+                      <div className='flex items-end justify-center gap-2'>
+                        {item.discountPercent && (
+                          <p className='text-16! font-semibold'>
+                            {item.price -
+                              (item.price * item.discountPercent) / 100}
+                            $
+                          </p>
+                        )}
+                        <p
+                          className={cn(
+                            'text-16 font-semibold',
+                            item.discountPercent &&
+                              'text-dark-600/50 text-[13px] font-normal line-through',
+                          )}
+                        >
+                          {item.price}$
+                        </p>
+                      </div>
+                    </div>
+
+                    <Button
+                      className='text-16! gap-0 rounded-full bg-green-500 p-1.75'
+                      icon={<PlusIcon size={16} className='text-beige-50' />}
+                      disableAnimation
+                    />
                   </div>
                 </div>
-
-                <Button
-                  className='text-16! gap-0 rounded-full bg-green-500 p-1.75'
-                  icon={<PlusIcon size={16} className='text-beige-50' />}
-                  disableAnimation
-                />
-              </div>
-            </div>
-          </React.Fragment>
-        ))}
+              ))
+            ) : (
+              <p>Empty</p>
+            )}
+          </>
+        )}
       </div>
+
+      {/* Sentinel to trigger load more */}
+      <div ref={bottomRef} className='h-4 w-full' />
     </div>
   )
 }
 
+type TItemByCategoryCache = Record<string, TItemByCategoryData>
 type TMenuDetailProps = {
   sectionRef: React.RefObject<Map<string, HTMLDivElement | null>>
-  selectedCategory: string
+  selectedCategory: TCategory
+  listCategory: TCategory[]
 }
-
 export const MenuDetail: FC<TMenuDetailProps> = ({
   sectionRef,
   selectedCategory,
+  listCategory,
 }) => {
-  const id = selectedCategory.toLowerCase().replace(/\s+/g, '-')
-  const [listItem, setListItem] = useState<TItemResponse[]>()
+  const [cache, setCache] = useState<TItemByCategoryCache>({}) // cache fetched category data
+
+  const handleUpdateCache = (
+    categoryId: string,
+    updater: Partial<TItemByCategoryCache[string]>,
+  ) => {
+    setCache((prev) => ({
+      ...prev,
+      [categoryId]: {
+        fetched: false,
+        ...prev[categoryId],
+        ...updater,
+      },
+    }))
+  }
 
   useEffect(() => {
-    const getListItem = apolloWrapper(
-      async () => {
-        if (selectedCategory === INIT_CATEGORY.name) {
-          return
-        }
-
-        const { data, error } = await client.query({
-          query: ItemByCategoryDocument,
-          variables: {
-            categoryName: selectedCategory,
-            limit: DEFAULT_PAGINATION.limit,
-            offset: DEFAULT_PAGINATION.offset,
-          },
-        })
-        if (error) {
-          throw error
-        }
-
-        if (data) {
-          setListItem(data.itemByCategory.records)
-          console.log('asdasdads', data)
-        }
-      },
-      {
-        errorMessage: 'Failed to fetch list category',
-      },
-    )
-
-    getListItem()
+    const categoryId = selectedCategory.categoryId
+    // TODO
+    if (selectedCategory.name === INIT_CATEGORY.name) {
+      return
+    }
+    const exist = cache[categoryId] // If dont have cache data → fetch data
+    if (!exist) {
+      handleUpdateCache(categoryId, {
+        list: [],
+        total: 0,
+        offset: 0,
+      })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedCategory])
 
   return (
-    <div className='flex w-full flex-col gap-6 md:gap-10'>
-      <div
-        key={id}
-        id={id}
-        ref={(el) => {
-          sectionRef.current.set(id, el)
-          // if (el) {
-          //   observeCategory(el, id)
-          // }
-        }}
-        className='w-full'
-      >
-        {listItem && listItem.length > 0 && (
-          <ItemByCategory categoryName={selectedCategory} listItem={listItem} />
-        )}
-      </div>
+    <div className='flex w-full flex-col gap-4 md:gap-6'>
+      {listCategory.map((category) => {
+        const isActive = selectedCategory.categoryId === category.categoryId
+
+        const cacheData = cache[category.categoryId] ?? {
+          list: [],
+          total: 0,
+          offset: 0,
+          fetched: false,
+        }
+
+        return (
+          <div
+            key={category.categoryId}
+            id={category.categoryId}
+            ref={(el) => {
+              sectionRef.current.set(category.categoryId, el)
+            }}
+            className='w-full'
+          >
+            <ItemByCategory
+              selectedCategory={
+                category.categoryId === INIT_CATEGORY.categoryId
+                  ? INIT_CATEGORY
+                  : category
+              }
+              inViewport={isActive}
+              itemData={cacheData}
+              handleUpdateData={handleUpdateCache}
+            />
+          </div>
+        )
+      })}
     </div>
   )
 }

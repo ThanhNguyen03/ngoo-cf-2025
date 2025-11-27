@@ -13,8 +13,8 @@ type TMenuSearchProps = {
   disabled?: boolean
   sectionRef: React.RefObject<Map<string, HTMLDivElement | null>>
   listCategory: TCategory[]
-  selectedCategory: string
-  selectCategory: (category: string) => void
+  selectedCategory: TCategory
+  selectCategory: (category: TCategory) => void
 }
 export const MenuSearch: FC<TMenuSearchProps> = ({
   disabled,
@@ -30,7 +30,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
   const containerRef = useRef<HTMLDivElement>(null)
   const isScrollingRef = useRef<boolean>(false)
 
-  const handleSelectCategory = (value: string) => {
+  const handleSelectCategory = (value: TCategory) => {
     selectCategory(value)
     setOpenDropdown(false)
   }
@@ -45,10 +45,10 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
           if (entry.isIntersecting) {
             const categoryId = entry.target.id
             const matched = listCategory.find(
-              (c) => c.name.toLowerCase().replace(/\s+/g, '-') === categoryId,
+              (category) => category.categoryId === categoryId,
             )
             if (matched) {
-              selectCategory(matched.name)
+              selectCategory(matched)
             }
           }
         })
@@ -90,7 +90,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
   }, [openDropdown])
 
   return (
-    <div className='sticky top-20 flex w-full flex-col items-start gap-2 md:gap-4'>
+    <div className='sticky top-20 flex w-[25%] flex-col items-start gap-2 md:gap-4'>
       <div className='flex w-full items-center gap-2'>
         {/* select dropdown */}
         <div
@@ -110,7 +110,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
             )}
           >
             <p className='text-14! text-primary-500 w-full text-left leading-[160%] font-semibold text-nowrap duration-700'>
-              {selectedCategory}
+              {selectedCategory.name}
             </p>
             <CaretUpIcon
               size={20}
@@ -132,13 +132,11 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
           >
             {listCategory.map((category) => (
               <Link
-                href={`#${category.name.toLowerCase().trim().replace(/\s+/g, '-')}`}
+                href={`#${category.categoryId}`}
                 onClick={(e) => {
                   e.preventDefault()
                   isScrollingRef.current = true
-                  const element = sectionRef.current.get(
-                    category.name.toLowerCase().trim().replace(/\s+/g, '-'),
-                  )
+                  const element = sectionRef.current.get(category.categoryId)
                   if (!element) {
                     return
                   }
@@ -150,7 +148,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
                     yOffset
 
                   window.scrollTo({ top: y, behavior: 'smooth' })
-                  handleSelectCategory(category.name)
+                  handleSelectCategory(category)
 
                   const scroll = setTimeout(() => {
                     isScrollingRef.current = false
@@ -167,7 +165,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
                 <CheckIcon
                   className={cn(
                     'text-dark-600',
-                    category.name !== selectedCategory && 'hidden',
+                    category !== selectedCategory && 'hidden',
                   )}
                 />
               </Link>

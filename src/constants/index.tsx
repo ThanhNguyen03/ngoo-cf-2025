@@ -10,13 +10,13 @@ import {
   orangeJuiceBottle,
   strawberryJuiceBottle,
 } from '@/assets/products'
-import { PaginationInput } from '@/lib/graphql/generated/graphql'
 import {
   ENewProduct,
   TCollectionData,
   TItem,
   TItemOption,
   TNavigationItem,
+  TPagination,
 } from '@/types'
 import {
   ChatsCircleIcon,
@@ -38,7 +38,7 @@ export const ONE_MONTH_MS = 30 * 24 * 60 * 60 * 1000
 export const DEBOUNCE_DURATION = 500 // 500ms
 export const EXPIRES_IN = 2 * 60 * 1000 // 60 minutes
 export const REFRESH_GAP = 60 * 1000 // 60s
-export const DEFAULT_PAGINATION: PaginationInput = {
+export const DEFAULT_PAGINATION: TPagination = {
   limit: 20,
   offset: 0,
 }

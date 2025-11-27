@@ -26,6 +26,17 @@ export type TIconProps = SVGProps<SVGSVGElement> & {
   size?: number
 }
 
+export type TPaginationQuery = {
+  column: string
+  sort: 'asc' | 'desc'
+}
+
+export type TPagination = {
+  limit: number
+  offset: number
+  query?: TPaginationQuery[]
+}
+
 export type TItemOption = {
   name: string
   extraPrice?: number

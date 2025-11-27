@@ -19,9 +19,8 @@ export const INIT_CATEGORY: TCategory = {
 export const Menu = () => {
   const sectionRef = useRef(new Map<string, HTMLDivElement | null>())
   const [listCategory, setListCategory] = useState<TCategory[]>()
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    INIT_CATEGORY.name,
-  )
+  const [selectedCategory, setSelectedCategory] =
+    useState<TCategory>(INIT_CATEGORY)
 
   useEffect(() => {
     const getListCategory = apolloWrapper(
@@ -54,26 +53,28 @@ export const Menu = () => {
         <div className='relative flex size-full items-start gap-3 md:gap-6'>
           <SkeletonLoader
             loading={!listCategory || listCategory.length === 0}
-            className='min-h-40 w-[25%]'
-          >
-            {listCategory && listCategory.length > 0 && (
-              <MenuSearch
-                sectionRef={sectionRef}
-                listCategory={listCategory}
-                selectedCategory={selectedCategory}
-                selectCategory={setSelectedCategory}
-              />
-            )}
-          </SkeletonLoader>
+            className='relative h-full max-h-none min-h-40 w-[25%]'
+          />
+          {listCategory && listCategory.length > 0 && (
+            <MenuSearch
+              sectionRef={sectionRef}
+              listCategory={listCategory}
+              selectedCategory={selectedCategory}
+              selectCategory={setSelectedCategory}
+            />
+          )}
           <div className='from-primary-500 to-dark-600/10 sticky top-20 h-80 w-0.25 bg-gradient-to-b' />
           <SkeletonLoader
             loading={!listCategory || listCategory.length === 0}
             className='min-h-40 w-[75%]'
           >
-            <MenuDetail
-              selectedCategory={selectedCategory}
-              sectionRef={sectionRef}
-            />
+            {listCategory && listCategory.length > 0 && (
+              <MenuDetail
+                listCategory={listCategory}
+                selectedCategory={selectedCategory}
+                sectionRef={sectionRef}
+              />
+            )}
           </SkeletonLoader>
         </div>
       </div>
