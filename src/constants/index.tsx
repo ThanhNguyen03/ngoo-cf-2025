@@ -164,17 +164,7 @@ type TNewItem = TItem & {
   buttonClassName?: string
   titleClassName?: string
 }
-export const SIZE_OPTION: TItemOption[] = [
-  {
-    group: 'size',
-    name: 'M',
-  },
-  {
-    group: 'size',
-    name: 'L',
-    extraPrice: 2,
-  },
-]
+export const SIZE_OPTION: TItemOption[] = []
 export const NEW_PRODUCT_DATA: Record<ENewProduct, TNewItem> = {
   [ENewProduct.Cherry]: {
     title: 'Cherry Juice',

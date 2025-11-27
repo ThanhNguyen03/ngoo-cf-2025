@@ -360,7 +360,7 @@ export type TItemOption = {
 
 export type TItemResponse = {
   __typename?: 'TItemResponse';
-  additionalOption?: Maybe<Array<Maybe<TItemOption>>>;
+  additionalOption: Array<TItemOption>;
   categoryName: Scalars['String']['output'];
   createdAt: Scalars['Timestamp']['output'];
   description?: Maybe<Scalars['String']['output']>;
@@ -369,7 +369,7 @@ export type TItemResponse = {
   itemId: Scalars['String']['output'];
   name: Scalars['String']['output'];
   price: Scalars['Float']['output'];
-  requireOption?: Maybe<Array<Maybe<TItemOption>>>;
+  requireOption: Array<TItemOption>;
   status?: Maybe<Array<Maybe<EItemStatus>>>;
   updatedAt: Scalars['Timestamp']['output'];
 };
@@ -399,7 +399,7 @@ export type TOrderItem = {
   name: Scalars['String']['output'];
   note?: Maybe<Scalars['String']['output']>;
   price: Scalars['Float']['output'];
-  selectedOptions?: Maybe<Array<Maybe<TItemOption>>>;
+  selectedOptions: Array<TItemOption>;
 };
 
 export type TOrderResponse = {
@@ -511,14 +511,14 @@ export type CreateItemMutationVariables = Exact<{
 }>;
 
 
-export type CreateItemMutation = { __typename?: 'Mutation', createItem: { __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null, additionalOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null } };
+export type CreateItemMutation = { __typename?: 'Mutation', createItem: { __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }>, additionalOption: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> } };
 
 export type UpdateItemMutationVariables = Exact<{
   input: UpdateItemInput;
 }>;
 
 
-export type UpdateItemMutation = { __typename?: 'Mutation', updateItem: { __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null, additionalOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null } };
+export type UpdateItemMutation = { __typename?: 'Mutation', updateItem: { __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }>, additionalOption: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> } };
 
 export type CreateOrderMutationVariables = Exact<{
   input: CreateOrderInput;
@@ -532,7 +532,7 @@ export type ConfirmPaymentMutationVariables = Exact<{
 }>;
 
 
-export type ConfirmPaymentMutation = { __typename?: 'Mutation', confirmPayment: { __typename?: 'TPaymentResponse', paymentId: string, orderId: string, paymentMethod: EPaymentMethod, totalPrice: number, status: EPaymentStatus, txHash?: string | null, codTransactionId?: string | null, createdAt: number, updatedAt: number, userInfo: { __typename?: 'TUserInfoSnapshot', name?: string | null, address: string, phoneNumber: string, email: string }, items: Array<{ __typename?: 'TOrderItem', name: string, amount: number, price: number, note?: string | null, discountPercent?: number | null, selectedOptions?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null } | null>, paypalTransaction?: { __typename?: 'TPaypalPayment', paypalPayerEmail: string, paypalCaptureId: string, payerId: string, rawResponse?: {[key: string]: unknown} | null } | null } };
+export type ConfirmPaymentMutation = { __typename?: 'Mutation', confirmPayment: { __typename?: 'TPaymentResponse', paymentId: string, orderId: string, paymentMethod: EPaymentMethod, totalPrice: number, status: EPaymentStatus, txHash?: string | null, codTransactionId?: string | null, createdAt: number, updatedAt: number, userInfo: { __typename?: 'TUserInfoSnapshot', name?: string | null, address: string, phoneNumber: string, email: string }, items: Array<{ __typename?: 'TOrderItem', name: string, amount: number, price: number, note?: string | null, discountPercent?: number | null, selectedOptions: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> } | null>, paypalTransaction?: { __typename?: 'TPaypalPayment', paypalPayerEmail: string, paypalCaptureId: string, payerId: string, rawResponse?: {[key: string]: unknown} | null } | null } };
 
 export type UserLoginMutationVariables = Exact<{
   token?: InputMaybe<Scalars['String']['input']>;
@@ -577,14 +577,14 @@ export type ItemByCategoryQueryVariables = Exact<{
 }>;
 
 
-export type ItemByCategoryQuery = { __typename?: 'Query', itemByCategory: { __typename?: 'TListItemResponse', offset: number, limit: number, total: number, query: Array<{ __typename?: 'TQueryBy', column?: string | null, sort?: ESort | null } | null>, records: Array<{ __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null, additionalOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null }> } };
+export type ItemByCategoryQuery = { __typename?: 'Query', itemByCategory: { __typename?: 'TListItemResponse', offset: number, limit: number, total: number, query: Array<{ __typename?: 'TQueryBy', column?: string | null, sort?: ESort | null } | null>, records: Array<{ __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }>, additionalOption: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> }> } };
 
 export type ItemByIdQueryVariables = Exact<{
   itemId: Scalars['String']['input'];
 }>;
 
 
-export type ItemByIdQuery = { __typename?: 'Query', itemById: { __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null, additionalOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null } };
+export type ItemByIdQuery = { __typename?: 'Query', itemById: { __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }>, additionalOption: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> } };
 
 export type ListItemQueryVariables = Exact<{
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -593,14 +593,14 @@ export type ListItemQueryVariables = Exact<{
 }>;
 
 
-export type ListItemQuery = { __typename?: 'Query', listItem: { __typename?: 'TListItemResponse', offset: number, limit: number, total: number, query: Array<{ __typename?: 'TQueryBy', column?: string | null, sort?: ESort | null } | null>, records: Array<{ __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null, additionalOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null }> } };
+export type ListItemQuery = { __typename?: 'Query', listItem: { __typename?: 'TListItemResponse', offset: number, limit: number, total: number, query: Array<{ __typename?: 'TQueryBy', column?: string | null, sort?: ESort | null } | null>, records: Array<{ __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }>, additionalOption: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> }> } };
 
 export type GetOrderQueryVariables = Exact<{
   orderId: Scalars['String']['input'];
 }>;
 
 
-export type GetOrderQuery = { __typename?: 'Query', getOrder: { __typename?: 'TOrderResponse', orderId: string, paypalOrderId?: string | null, totalPrice: number, paymentMethod: EPaymentMethod, orderStatus: EOrderStatus, createdAt: number, updatedAt: number, userInfoSnapshot: { __typename?: 'TUserInfoSnapshot', name?: string | null, address: string, phoneNumber: string, email: string }, items: Array<{ __typename?: 'TOrderItem', name: string, amount: number, price: number, note?: string | null, discountPercent?: number | null, selectedOptions?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null } | null> } };
+export type GetOrderQuery = { __typename?: 'Query', getOrder: { __typename?: 'TOrderResponse', orderId: string, paypalOrderId?: string | null, totalPrice: number, paymentMethod: EPaymentMethod, orderStatus: EOrderStatus, createdAt: number, updatedAt: number, userInfoSnapshot: { __typename?: 'TUserInfoSnapshot', name?: string | null, address: string, phoneNumber: string, email: string }, items: Array<{ __typename?: 'TOrderItem', name: string, amount: number, price: number, note?: string | null, discountPercent?: number | null, selectedOptions: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> } | null> } };
 
 export type ListPaymentHistoryQueryVariables = Exact<{
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -609,14 +609,14 @@ export type ListPaymentHistoryQueryVariables = Exact<{
 }>;
 
 
-export type ListPaymentHistoryQuery = { __typename?: 'Query', listPaymentHistory: { __typename?: 'TListPaymentResponse', offset: number, limit: number, total: number, query: Array<{ __typename?: 'TQueryBy', column?: string | null, sort?: ESort | null } | null>, records: Array<{ __typename?: 'TPaymentResponse', paymentId: string, orderId: string, paymentMethod: EPaymentMethod, totalPrice: number, status: EPaymentStatus, txHash?: string | null, codTransactionId?: string | null, createdAt: number, updatedAt: number, userInfo: { __typename?: 'TUserInfoSnapshot', name?: string | null, address: string, phoneNumber: string, email: string }, items: Array<{ __typename?: 'TOrderItem', name: string, amount: number, price: number, note?: string | null, discountPercent?: number | null, selectedOptions?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null } | null>, paypalTransaction?: { __typename?: 'TPaypalPayment', paypalPayerEmail: string, paypalCaptureId: string, payerId: string, rawResponse?: {[key: string]: unknown} | null } | null } | null> } };
+export type ListPaymentHistoryQuery = { __typename?: 'Query', listPaymentHistory: { __typename?: 'TListPaymentResponse', offset: number, limit: number, total: number, query: Array<{ __typename?: 'TQueryBy', column?: string | null, sort?: ESort | null } | null>, records: Array<{ __typename?: 'TPaymentResponse', paymentId: string, orderId: string, paymentMethod: EPaymentMethod, totalPrice: number, status: EPaymentStatus, txHash?: string | null, codTransactionId?: string | null, createdAt: number, updatedAt: number, userInfo: { __typename?: 'TUserInfoSnapshot', name?: string | null, address: string, phoneNumber: string, email: string }, items: Array<{ __typename?: 'TOrderItem', name: string, amount: number, price: number, note?: string | null, discountPercent?: number | null, selectedOptions: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> } | null>, paypalTransaction?: { __typename?: 'TPaypalPayment', paypalPayerEmail: string, paypalCaptureId: string, payerId: string, rawResponse?: {[key: string]: unknown} | null } | null } | null> } };
 
 export type PaymentHistoryQueryVariables = Exact<{
   paymentId: Scalars['String']['input'];
 }>;
 
 
-export type PaymentHistoryQuery = { __typename?: 'Query', paymentHistory: { __typename?: 'TPaymentResponse', paymentId: string, orderId: string, paymentMethod: EPaymentMethod, totalPrice: number, status: EPaymentStatus, txHash?: string | null, codTransactionId?: string | null, createdAt: number, updatedAt: number, userInfo: { __typename?: 'TUserInfoSnapshot', name?: string | null, address: string, phoneNumber: string, email: string }, items: Array<{ __typename?: 'TOrderItem', name: string, amount: number, price: number, note?: string | null, discountPercent?: number | null, selectedOptions?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null } | null>, paypalTransaction?: { __typename?: 'TPaypalPayment', paypalPayerEmail: string, paypalCaptureId: string, payerId: string, rawResponse?: {[key: string]: unknown} | null } | null } };
+export type PaymentHistoryQuery = { __typename?: 'Query', paymentHistory: { __typename?: 'TPaymentResponse', paymentId: string, orderId: string, paymentMethod: EPaymentMethod, totalPrice: number, status: EPaymentStatus, txHash?: string | null, codTransactionId?: string | null, createdAt: number, updatedAt: number, userInfo: { __typename?: 'TUserInfoSnapshot', name?: string | null, address: string, phoneNumber: string, email: string }, items: Array<{ __typename?: 'TOrderItem', name: string, amount: number, price: number, note?: string | null, discountPercent?: number | null, selectedOptions: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> } | null>, paypalTransaction?: { __typename?: 'TPaypalPayment', paypalPayerEmail: string, paypalCaptureId: string, payerId: string, rawResponse?: {[key: string]: unknown} | null } | null } };
 
 export type UserInfoQueryVariables = Exact<{ [key: string]: never; }>;
 

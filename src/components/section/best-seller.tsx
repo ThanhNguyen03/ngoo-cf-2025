@@ -1,122 +1,15 @@
 'use client'
 
 import titleBackground from '@/assets/images/title-background.jpg'
-import { liptonTea } from '@/assets/products'
 import { ItemCard, Slider } from '@/components/ui'
 import { ItemDetailModal } from '@/components/ui/modal'
 import { useParallaxLayer } from '@/hooks'
+import { TItemResponse } from '@/lib/graphql/generated/graphql'
 import useCartStore from '@/store/cart-store'
 import { TItem } from '@/types'
 import { cn } from '@/utils'
 import { forwardRef, useMemo, useState } from 'react'
 import { FenceCloud } from '../icons'
-
-const MOCKED_ITEMS_DATA: TItem[] = [
-  {
-    image: liptonTea,
-    title: 'Lipton Xi Muoi 1',
-    price: 12,
-    amount: 0,
-    description: 'The richest flavor with long-standing family recipe',
-  },
-  {
-    image: liptonTea,
-    title: 'Lipton Xi Muoi 2',
-    price: 12,
-    amount: 0,
-    description: 'The richest flavor with long-standing family recipe',
-    discountPercent: 10,
-  },
-  {
-    image: liptonTea,
-    title: 'Olong Milk Tea',
-    price: 12,
-    amount: 0,
-    description: 'The richest flavor with long-standing family recipe',
-    additionalOption: [
-      {
-        group: 'topping',
-        name: 'Black Bubbles',
-        extraPrice: 0.5,
-      },
-      {
-        group: 'topping',
-        name: 'White Bubbles',
-        extraPrice: 0.5,
-      },
-      {
-        group: 'topping',
-        name: 'Olong Tea Bubbles',
-        extraPrice: 0.7,
-      },
-      {
-        group: 'topping',
-        name: 'Flan Cake',
-        extraPrice: 0.7,
-      },
-    ],
-  },
-  {
-    image: liptonTea,
-    title: 'Lipton Xi Muoi 3',
-    price: 12,
-    amount: 0,
-    description: 'The richest flavor with long-standing family recipe',
-    discountPercent: 10,
-  },
-  {
-    image: liptonTea,
-    title: 'XaiGon Coffee',
-    price: 12,
-    amount: 0,
-    description: 'The richest flavor with long-standing family recipe',
-    discountPercent: 8,
-    additionalOption: [
-      {
-        group: 'extra',
-        name: '+1 Coffee Shot',
-        extraPrice: 0.5,
-      },
-    ],
-  },
-  {
-    image: liptonTea,
-    title: 'Lipton Xi Muoi 4',
-    price: 12,
-    amount: 0,
-    description: 'The richest flavor with long-standing family recipe',
-  },
-  {
-    image: liptonTea,
-    title: 'Lipton Xi Muoi 5',
-    price: 12,
-    amount: 0,
-    description: 'The richest flavor with long-standing family recipe',
-  },
-  {
-    image: liptonTea,
-    title: 'Lipton Xi Muoi 6',
-    price: 12,
-    amount: 0,
-    description: 'The richest flavor with long-standing family recipe',
-    discountPercent: 5,
-  },
-  {
-    image: liptonTea,
-    title: 'Lipton Xi Muoi 7',
-    price: 12,
-    amount: 0,
-    description: 'The richest flavor with long-standing family recipe',
-  },
-  {
-    image: liptonTea,
-    title: 'Lipton Xi Muoi 8',
-    price: 12,
-    amount: 0,
-    description: 'The richest flavor with long-standing family recipe',
-    discountPercent: 9,
-  },
-]
 
 const ProductPosition = () => {
   return (
@@ -142,7 +35,7 @@ export const BestSeller = forwardRef<HTMLElement, TBestSellerProps>(
       },
     )
     const { listCartItem } = useCartStore()
-    const [selectedItem, setSelectedItem] = useState<TItem>()
+    const [selectedItem, setSelectedItem] = useState<TItemResponse>()
 
     const displayedItems = useMemo(() => {
       return MOCKED_ITEMS_DATA.map((mock) => {

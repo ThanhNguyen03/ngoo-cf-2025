@@ -1,4 +1,5 @@
 import { Button, SkeletonLoader } from '@/components/ui'
+import { ItemDetailModal } from '@/components/ui/modal'
 import { DEFAULT_PAGINATION } from '@/constants'
 import { client } from '@/lib/apollo-client'
 import {
@@ -6,6 +7,7 @@ import {
   TCategory,
   TItemResponse,
 } from '@/lib/graphql/generated/graphql'
+import useCartStore from '@/store/cart-store'
 import { apolloWrapper, cn } from '@/utils'
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr'
 import React, { FC, useEffect, useRef, useState } from 'react'
@@ -35,6 +37,8 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
   const bottomRef = useRef<HTMLDivElement | null>(null)
 
   const [loading, setLoading] = useState<boolean>(false)
+  const [selectedItem, setSelectedItem] = useState<TItemResponse>()
+  const { listCartItem } = useCartStore()
 
   const getListItem = apolloWrapper(
     async () => {
@@ -146,58 +150,83 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
         ) : (
           <>
             {itemData.list.length > 0 ? (
-              itemData.list.map((item, index) => (
-                <div
-                  key={item.name}
-                  className={cn(
-                    'flex w-full items-start gap-4 xl:w-[calc(50%-16px)]',
-                    index > 1 && 'border-dark-600/7 border-b',
-                    index % 2 === 0 && 'xl:mr-2',
-                  )}
-                >
-                  {/* <Image
+              itemData.list.map((item, index) => {
+                const cartItem = listCartItem.find((c) => c.name === item.name)
+
+                return (
+                  <button
+                    key={item.name}
+                    className={cn(
+                      'flex w-full cursor-pointer items-start gap-4 xl:w-[calc(50%-16px)]',
+                      index > 1 && 'border-dark-600/7 border-b',
+                      index % 2 === 0 && 'xl:mr-2',
+                    )}
+                    onClick={() => setSelectedItem(item)}
+                  >
+                    {/* <Image
               alt={item.name}
               src={item.image}
               width={200}
               height={200}
               className='rounded-6 aspect-square size-50 object-cover object-center'
             /> */}
-                  <div className='flex h-50 w-full flex-col items-end justify-between'>
-                    <div className='flex flex-col items-start gap-1 text-left'>
-                      <h5 className='text-18 mb-2 font-semibold'>
-                        {item.name}
-                      </h5>
-                      <p className='text-14 text-dark-600/70'>
-                        {item.description}
-                      </p>
-                      <div className='flex items-end justify-center gap-2'>
-                        {item.discountPercent && (
-                          <p className='text-16! font-semibold'>
-                            {item.price -
-                              (item.price * item.discountPercent) / 100}
-                            $
-                          </p>
-                        )}
-                        <p
-                          className={cn(
-                            'text-16 font-semibold',
-                            item.discountPercent &&
-                              'text-dark-600/50 text-[13px] font-normal line-through',
-                          )}
-                        >
-                          {item.price}$
+                    <div className='flex h-50 w-full flex-col items-end justify-between'>
+                      <div className='flex flex-col items-start gap-1 text-left'>
+                        <h5 className='text-18 mb-2 font-semibold'>
+                          {item.name}
+                        </h5>
+                        <p className='text-14 text-dark-600/70'>
+                          {item.description}
                         </p>
+                        <div className='flex items-end justify-center gap-2'>
+                          {item.discountPercent && (
+                            <p className='text-16! font-semibold'>
+                              {item.price -
+                                (item.price * item.discountPercent) / 100}
+                              $
+                            </p>
+                          )}
+                          <p
+                            className={cn(
+                              'text-16 font-semibold',
+                              item.discountPercent &&
+                                'text-dark-600/50 text-[13px] font-normal line-through',
+                            )}
+                          >
+                            {item.price}$
+                          </p>
+                        </div>
                       </div>
-                    </div>
+                      {cartItem ? (
+                        <button
+                          onClick={() => setSelectedItem(item)}
+                          className='text-16! cursor-pointer rounded-full border border-green-500 bg-white px-2.5 py-1'
+                        >
+                          {cartItem.amount}
+                        </button>
+                      ) : (
+                        <Button
+                          className='text-16! gap-0 rounded-full bg-green-500 p-1.75'
+                          icon={
+                            <PlusIcon size={16} className='text-beige-50' />
+                          }
+                          disableAnimation
+                          onClick={() => setSelectedItem(item)}
+                        />
+                      )}
 
-                    <Button
-                      className='text-16! gap-0 rounded-full bg-green-500 p-1.75'
-                      icon={<PlusIcon size={16} className='text-beige-50' />}
-                      disableAnimation
-                    />
-                  </div>
-                </div>
-              ))
+                      {selectedItem && (
+                        <ItemDetailModal
+                          isOpen={!!selectedItem}
+                          onClose={() => setSelectedItem(undefined)}
+                          data={selectedItem}
+                          cartItem={cartItem}
+                        />
+                      )}
+                    </div>
+                  </button>
+                )
+              })
             ) : (
               <p>Empty</p>
             )}

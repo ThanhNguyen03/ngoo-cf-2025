@@ -1,42 +1,17 @@
 import { AmountCounter, Button, Checkbox } from '@/components/ui'
-import { DEBOUNCE_DURATION, SIZE_OPTION } from '@/constants'
+import { DEBOUNCE_DURATION } from '@/constants'
+import {
+  TItemOption,
+  TItemResponse,
+  TOrderItem,
+} from '@/lib/graphql/generated/graphql'
 import useCartStore, { calculateItemPrice } from '@/store/cart-store'
-import { TGroupOption, TItem, TItemOption, TModalProps } from '@/types'
+import { TModalProps } from '@/types'
 import { cn } from '@/utils'
 import { TagIcon, TrashIcon, XIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
 import { FC, useEffect, useMemo, useState } from 'react'
 import { Modal } from './Modal'
-
-const LIST_REQUIRED_OPTION_GROUP = ['size', 'sweet', 'ice']
-
-const LIST_DEFAULT_OPTION: TItemOption[] = [
-  ...SIZE_OPTION,
-  {
-    group: 'sweet',
-    name: 'Less Sweet',
-  },
-  {
-    group: 'sweet',
-    name: 'Default Sweet',
-  },
-  {
-    group: 'sweet',
-    name: 'More Sweet',
-  },
-  {
-    group: 'ice',
-    name: 'Less Ices',
-  },
-  {
-    group: 'ice',
-    name: 'Default Ices',
-  },
-  {
-    group: 'ice',
-    name: 'More Ices',
-  },
-]
 
 type TItemOptionProps = {
   title: string
@@ -55,20 +30,21 @@ const ItemOption: FC<TItemOptionProps> = ({
   onChange,
   selectedOptions,
 }) => {
-  const isSelected = (option: TItemOption) =>
-    selectedOptions.some(
-      (c) => c.group === option.group && c.name === option.name,
-    )
+  const isSelected = (opt: TItemOption) =>
+    selectedOptions.some((s) => s.name === opt.name)
 
-  const handleCheckboxChange = (option: TItemOption) => {
+  const handleCheckboxChange = (opt: TItemOption) => {
+    // required only check 1
     if (isRequired) {
-      onChange([option])
+      onChange([opt])
     } else {
-      onChange(
-        isSelected(option)
-          ? selectedOptions.filter((v) => v.name !== option.name)
-          : [...selectedOptions, option],
-      )
+      // optional
+      const exists = isSelected(opt)
+      if (exists) {
+        onChange(selectedOptions.filter((s) => s.name !== opt.name))
+      } else {
+        onChange([...selectedOptions, opt])
+      }
     }
   }
 
@@ -136,55 +112,29 @@ const ItemOption: FC<TItemOptionProps> = ({
   )
 }
 
-export const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
-  isOpen,
-  onClose,
-  data,
-}) => {
-  const { addToCart, removeFromCart, updateCartItem, listCartItem } =
-    useCartStore()
+export const ItemDetailModal: FC<
+  TModalProps & { data: TItemResponse; cartItem?: TOrderItem }
+> = ({ isOpen, onClose, data, cartItem }) => {
+  const { addToCart, removeFromCart, updateCartItem } = useCartStore()
 
   const [totalPrice, setTotalPrice] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(false)
 
   const [itemAmount, setItemAmount] = useState<number>(
-    data.amount > 0 ? data.amount : 1,
+    cartItem && cartItem.amount > 0 ? cartItem.amount : 1,
   )
   const [selectedOptions, setSelectedOptions] = useState<TItemOption[]>(
-    listCartItem.find((i) => i.title === data.title)?.additionalOption || [],
+    cartItem?.selectedOptions || [],
   )
 
-  const listOptions = useMemo(() => {
-    const listAdditionOption = [
-      ...LIST_DEFAULT_OPTION,
-      ...(data.additionalOption || []),
-    ]
-    const grouped: Record<string, TGroupOption & { list: TItemOption[] }> = {}
-
-    for (const option of listAdditionOption) {
-      const isRequired = LIST_REQUIRED_OPTION_GROUP.includes(option.group)
-      if (!grouped[option.group]) {
-        grouped[option.group] = { group: option.group, isRequired, list: [] }
-      }
-      grouped[option.group].list.push({
-        group: option.group,
-        name: option.name,
-        extraPrice: option.extraPrice,
-      })
-    }
-
-    return Object.values(grouped)
-  }, [data.additionalOption])
-
   const isRequiredSelected = useMemo(() => {
-    const requiredTypes = listOptions
-      .filter((group) => group.isRequired)
-      .map((group) => group.group)
-
-    return requiredTypes.every((type) =>
-      selectedOptions.some((o) => o.group === type),
+    if (data.requireOption.length === 0) {
+      return true
+    }
+    return selectedOptions.every((o) =>
+      data.requireOption.some((r) => r.name === o.name),
     )
-  }, [listOptions, selectedOptions])
+  }, [selectedOptions, data.requireOption])
 
   useEffect(() => {
     setLoading(true)
@@ -197,17 +147,19 @@ export const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
 
   const handleSubmit = () => {
     if (itemAmount === 0) {
-      removeFromCart(data.title)
+      removeFromCart(data.name)
       onClose()
       return
     }
-    const newItem: TItem = {
-      ...data,
+    const newItem: TOrderItem = {
+      price: data.price,
       amount: itemAmount,
-      additionalOption: selectedOptions,
+      selectedOptions: selectedOptions,
+      discountPercent: data.discountPercent,
+      name: data.name,
+      // note: itemData.note, TODO: Add note
     }
-    const existed = listCartItem.some((i) => i.title === data.title)
-    if (existed) {
+    if (cartItem) {
       updateCartItem(newItem)
     } else {
       addToCart(newItem)
@@ -232,7 +184,7 @@ export const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
           <XIcon size={16} className='text-dark-600' />
         </Button>
         <Image
-          alt={`image-${data.title}`}
+          alt={`image-${data.name}`}
           src={data.image}
           width={240}
           height={240}
@@ -242,7 +194,7 @@ export const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
           {/* main detail */}
           <div className='border-dark-600/10 flex flex-col gap-0.25 border-b p-2 pb-4 md:p-4 md:pb-6'>
             <div className='flex w-full items-start justify-between'>
-              <h3 className='text-18 mt-1 leading-5 font-bold'>{data.title}</h3>
+              <h3 className='text-18 mt-1 leading-5 font-bold'>{data.name}</h3>
               <div className='flex items-start justify-center gap-2'>
                 <p
                   className={cn(
@@ -275,28 +227,41 @@ export const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
 
           {/* Optional */}
           <div className='border-dark-600/10 border-b px-2 md:px-4'>
-            {listOptions.map((add, i) => (
-              <ItemOption
-                key={`${add.group}-${i}`}
-                isRequired={LIST_REQUIRED_OPTION_GROUP.includes(add.group)}
-                title={add.group}
-                listOption={add.list}
-                className={cn(
-                  data.additionalOption &&
-                    i === data.additionalOption.length - 1 &&
-                    'border-0',
-                )}
-                selectedOptions={selectedOptions.filter(
-                  (o) => o.group === add.group,
-                )}
-                onChange={(next) => {
-                  setSelectedOptions((prev) => [
-                    ...prev.filter((o) => o.group !== add.group),
-                    ...next,
-                  ])
-                }}
-              />
-            ))}
+            {/* REQUIRED OPTIONS */}
+            <ItemOption
+              title='Required options'
+              isRequired
+              listOption={data.requireOption}
+              selectedOptions={selectedOptions.filter((o) =>
+                data.requireOption.some((r) => r.name === o.name),
+              )}
+              onChange={(next) => {
+                setSelectedOptions((prev) => {
+                  const filtered = prev.filter(
+                    (o) => !data.requireOption.some((r) => r.name === o.name),
+                  )
+                  return [...filtered, ...next]
+                })
+              }}
+            />
+
+            {/* ADDITIONAL OPTIONS */}
+            <ItemOption
+              title='Additional options'
+              listOption={data.additionalOption}
+              selectedOptions={selectedOptions.filter((o) =>
+                data.additionalOption.some((a) => a.name === o.name),
+              )}
+              onChange={(next) => {
+                setSelectedOptions((prev) => {
+                  const filtered = prev.filter(
+                    (o) =>
+                      !data.additionalOption.some((a) => a.name === o.name),
+                  )
+                  return [...filtered, ...next]
+                })
+              }}
+            />
           </div>
 
           {/* Noted */}
@@ -320,7 +285,7 @@ export const ItemDetailModal: FC<TModalProps & { data: TItem }> = ({
             className='mb-14 flex w-full items-center justify-center gap-4 p-2 md:gap-6 md:p-4'
             isInputAmount
             onChange={setItemAmount}
-            amount={data.amount > 1 ? data.amount : 1}
+            amount={itemAmount}
           />
         </div>
         {/* Submit button */}
