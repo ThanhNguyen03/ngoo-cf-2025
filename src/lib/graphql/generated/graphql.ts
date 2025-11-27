@@ -379,7 +379,7 @@ export type TListItemResponse = {
   limit: Scalars['Int']['output'];
   offset: Scalars['Int']['output'];
   query: Array<Maybe<TQueryBy>>;
-  records: Array<Maybe<TItemResponse>>;
+  records: Array<TItemResponse>;
   total: Scalars['Int']['output'];
 };
 
@@ -577,7 +577,7 @@ export type ItemByCategoryQueryVariables = Exact<{
 }>;
 
 
-export type ItemByCategoryQuery = { __typename?: 'Query', itemByCategory: { __typename?: 'TListItemResponse', offset: number, limit: number, total: number, query: Array<{ __typename?: 'TQueryBy', column?: string | null, sort?: ESort | null } | null>, records: Array<{ __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null, additionalOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null } | null> } };
+export type ItemByCategoryQuery = { __typename?: 'Query', itemByCategory: { __typename?: 'TListItemResponse', offset: number, limit: number, total: number, query: Array<{ __typename?: 'TQueryBy', column?: string | null, sort?: ESort | null } | null>, records: Array<{ __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null, additionalOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null }> } };
 
 export type ItemByIdQueryVariables = Exact<{
   itemId: Scalars['String']['input'];
@@ -593,7 +593,7 @@ export type ListItemQueryVariables = Exact<{
 }>;
 
 
-export type ListItemQuery = { __typename?: 'Query', listItem: { __typename?: 'TListItemResponse', offset: number, limit: number, total: number, query: Array<{ __typename?: 'TQueryBy', column?: string | null, sort?: ESort | null } | null>, records: Array<{ __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null, additionalOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null } | null> } };
+export type ListItemQuery = { __typename?: 'Query', listItem: { __typename?: 'TListItemResponse', offset: number, limit: number, total: number, query: Array<{ __typename?: 'TQueryBy', column?: string | null, sort?: ESort | null } | null>, records: Array<{ __typename?: 'TItemResponse', itemId: string, name: string, image: string, price: number, description?: string | null, discountPercent?: number | null, status?: Array<EItemStatus | null> | null, categoryName: string, createdAt: number, updatedAt: number, requireOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null, additionalOption?: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null } | null> | null }> } };
 
 export type GetOrderQueryVariables = Exact<{
   orderId: Scalars['String']['input'];

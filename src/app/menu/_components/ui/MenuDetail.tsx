@@ -1,37 +1,23 @@
-import { MOCKED_ITEMS_DATA } from '@/components/section'
 import { Button } from '@/components/ui'
-import { TItem } from '@/types'
-import { cn } from '@/utils'
+import { DEFAULT_PAGINATION } from '@/constants'
+import { client } from '@/lib/apollo-client'
+import {
+  ItemByCategoryDocument,
+  TItemResponse,
+} from '@/lib/graphql/generated/graphql'
+import { apolloWrapper, cn } from '@/utils'
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
-import React, { FC } from 'react'
-
-const MOCKUP_DATA: TItemByCategoryProps[] = [
-  {
-    categoryName: 'For you',
-    listTtem: MOCKED_ITEMS_DATA,
-  },
-  {
-    categoryName: 'Best Sellers',
-    listTtem: MOCKED_ITEMS_DATA,
-  },
-  {
-    categoryName: 'Coffee',
-    listTtem: MOCKED_ITEMS_DATA,
-  },
-  {
-    categoryName: 'Milk Tea',
-    listTtem: MOCKED_ITEMS_DATA,
-  },
-]
+import React, { FC, useEffect, useState } from 'react'
+import { INIT_CATEGORY } from '../Menu'
 
 type TItemByCategoryProps = {
   categoryName: string
-  listTtem: TItem[]
+  listItem: TItemResponse[]
 }
 const ItemByCategory: FC<TItemByCategoryProps> = ({
   categoryName,
-  listTtem,
+  listItem,
 }) => {
   return (
     <div className='text-dark-600 flex w-full flex-col gap-4 lining-nums md:gap-4'>
@@ -39,8 +25,8 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
         {categoryName}
       </h4>
       <div className='flex w-full max-w-[560px] flex-col items-start gap-4 xl:max-w-none xl:flex-row xl:flex-wrap'>
-        {listTtem.map((item, index) => (
-          <React.Fragment key={item.title}>
+        {listItem.map((item, index) => (
+          <React.Fragment key={item.name}>
             <div
               className={cn(
                 'flex w-full items-start gap-4 pt-4 xl:w-[calc(50%-16px)]',
@@ -49,7 +35,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
               )}
             >
               <Image
-                alt={item.title}
+                alt={item.name}
                 src={item.image}
                 width={200}
                 height={200}
@@ -57,7 +43,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
               />
               <div className='flex h-50 w-full flex-col items-end justify-between'>
                 <div className='flex flex-col items-start gap-1 text-left'>
-                  <h5 className='text-18 mb-2 font-semibold'>{item.title}</h5>
+                  <h5 className='text-18 mb-2 font-semibold'>{item.name}</h5>
                   <p className='text-14 text-dark-600/70'>{item.description}</p>
                   <div className='flex items-end justify-center gap-2'>
                     {item.discountPercent && (
@@ -94,26 +80,65 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
 
 type TMenuDetailProps = {
   sectionRef: React.RefObject<Map<string, HTMLDivElement | null>>
+  selectedCategory: string
 }
-export const MenuDetail: FC<TMenuDetailProps> = ({ sectionRef }) => {
+
+export const MenuDetail: FC<TMenuDetailProps> = ({
+  sectionRef,
+  selectedCategory,
+}) => {
+  const id = selectedCategory.toLowerCase().replace(/\s+/g, '-')
+  const [listItem, setListItem] = useState<TItemResponse[]>()
+
+  useEffect(() => {
+    const getListItem = apolloWrapper(
+      async () => {
+        if (selectedCategory === INIT_CATEGORY.name) {
+          return
+        }
+
+        const { data, error } = await client.query({
+          query: ItemByCategoryDocument,
+          variables: {
+            categoryName: selectedCategory,
+            limit: DEFAULT_PAGINATION.limit,
+            offset: DEFAULT_PAGINATION.offset,
+          },
+        })
+        if (error) {
+          throw error
+        }
+
+        if (data) {
+          setListItem(data.itemByCategory.records)
+          console.log('asdasdads', data)
+        }
+      },
+      {
+        errorMessage: 'Failed to fetch list category',
+      },
+    )
+
+    getListItem()
+  }, [selectedCategory])
+
   return (
     <div className='flex w-full flex-col gap-6 md:gap-10'>
-      {MOCKUP_DATA.map((data) => {
-        const id = data.categoryName.toLowerCase().replace(/\s+/g, '-')
-
-        return (
-          <div
-            key={id}
-            id={id}
-            ref={(el) => {
-              sectionRef.current.set(id, el)
-            }}
-            className='w-full'
-          >
-            <ItemByCategory {...data} />
-          </div>
-        )
-      })}
+      <div
+        key={id}
+        id={id}
+        ref={(el) => {
+          sectionRef.current.set(id, el)
+          // if (el) {
+          //   observeCategory(el, id)
+          // }
+        }}
+        className='w-full'
+      >
+        {listItem && listItem.length > 0 && (
+          <ItemByCategory categoryName={selectedCategory} listItem={listItem} />
+        )}
+      </div>
     </div>
   )
 }

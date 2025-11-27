@@ -2,6 +2,7 @@ import { TCategory } from '@/lib/graphql/generated/graphql'
 import { cn } from '@/utils'
 import {
   CaretUpIcon,
+  CheckIcon,
   MagnifyingGlassIcon,
   XIcon,
 } from '@phosphor-icons/react/dist/ssr'
@@ -12,24 +13,25 @@ type TMenuSearchProps = {
   disabled?: boolean
   sectionRef: React.RefObject<Map<string, HTMLDivElement | null>>
   listCategory: TCategory[]
+  selectedCategory: string
+  selectCategory: (category: string) => void
 }
 export const MenuSearch: FC<TMenuSearchProps> = ({
   disabled,
   sectionRef,
   listCategory,
+  selectedCategory,
+  selectCategory,
 }) => {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false)
   const [openSearchBar, setOpenSearchBar] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
-  const [selectedCategory, setSelectedCategory] = useState<string>(
-    listCategory[0].name,
-  )
 
   const containerRef = useRef<HTMLDivElement>(null)
   const isScrollingRef = useRef<boolean>(false)
 
   const handleSelectCategory = (value: string) => {
-    setSelectedCategory(value)
+    selectCategory(value)
     setOpenDropdown(false)
   }
 
@@ -46,7 +48,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
               (c) => c.name.toLowerCase().replace(/\s+/g, '-') === categoryId,
             )
             if (matched) {
-              setSelectedCategory(matched.name)
+              selectCategory(matched.name)
             }
           }
         })
@@ -64,6 +66,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
     })
 
     return () => observer.disconnect()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sectionRef, listCategory])
 
   // handle click outside to close
@@ -106,7 +109,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
               openDropdown && 'border-primary-500 rounded-b-none border-b-0',
             )}
           >
-            <p className='text-14! text-secondary-500 w-full text-left leading-[160%] font-semibold text-nowrap duration-700'>
+            <p className='text-14! text-primary-500 w-full text-left leading-[160%] font-semibold text-nowrap duration-700'>
               {selectedCategory}
             </p>
             <CaretUpIcon
@@ -156,12 +159,17 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
                   return () => clearTimeout(scroll)
                 }}
                 className={cn(
-                  'text-14! text-dark-600/70 hover:bg-dark-600/10 w-full cursor-pointer p-2 text-left leading-[160%] text-nowrap',
-                  category.name === selectedCategory && 'hidden',
+                  'text-14! text-dark-600/70 hover:bg-dark-600/10 flex w-full cursor-pointer items-center justify-between p-2 text-left leading-[160%] text-nowrap',
                 )}
                 key={category.name}
               >
                 {category.name}
+                <CheckIcon
+                  className={cn(
+                    'text-dark-600',
+                    category.name !== selectedCategory && 'hidden',
+                  )}
+                />
               </Link>
             ))}
           </div>
