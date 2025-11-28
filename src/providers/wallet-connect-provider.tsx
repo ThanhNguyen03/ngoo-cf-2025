@@ -3,6 +3,7 @@
 import Loading from '@/app/loading'
 import { ShoppingCart } from '@/components/layout/shopping-cart'
 import { Toaster } from '@/components/ui'
+import { useIsHydrated } from '@/hooks'
 import { useAutoRefresh } from '@/hooks/use-auto-refresh'
 import { wagmiConfig } from '@/lib/wagmi-config'
 import useAuthStore from '@/store/auth-store'
@@ -21,13 +22,16 @@ export const WalletConnectProvider = ({ children }: PropsWithChildren) => {
   const [queryClient] = useState(() => new QueryClient())
   const [config] = useState(() => wagmiConfig)
   const { loading } = useAuthStore()
+  const isHydrated = useIsHydrated()
 
   useAutoRefresh()
 
   return (
     <WagmiProvider config={config}>
       <QueryClientProvider client={queryClient}>
-        {loading ? (
+        {!isHydrated ? (
+          <Loading />
+        ) : loading ? (
           <Loading className='from-primary-50/30 to-secondary-50/30 text-beige-50 backdrop-blur-md' />
         ) : (
           children

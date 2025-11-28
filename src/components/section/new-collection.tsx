@@ -147,7 +147,14 @@ export const NewCollection = forwardRef<HTMLDivElement, TNewCollectionProps>(
           )}
         >
           <div className='relative mx-auto flex w-full max-w-[1200px] flex-col items-center justify-center gap-2 md:gap-6'>
-            <h2 className='text-44 md:text-55 font-lobster text-shadow-dark-600 mx-auto w-fit bg-[radial-gradient(ellipse_at_center,hsla(46,100%,61%)_0%,hsl(32,99%,60%)_80%)] bg-clip-text font-black text-transparent drop-shadow-2xl'>
+            <h2
+              className={cn(
+                'text-44 md:text-55 font-lobster text-shadow-stroke-white-2 mx-auto w-fit font-black duration-700',
+                inCollectionView && selectedProduct
+                  ? selectedProduct.textClassName
+                  : 'text-dark-600',
+              )}
+            >
               New Collection
             </h2>
             <div className='relative z-10 mx-auto flex h-[220px] w-full md:h-[320px]'>
@@ -262,10 +269,10 @@ export const NewCollection = forwardRef<HTMLDivElement, TNewCollectionProps>(
               <Link
                 href='/menu'
                 className={cn(
-                  'text-16 flex items-center justify-center gap-2 rounded-[10px] px-4 py-2 font-semibold text-neutral-900 duration-700',
-                  selectedProduct
-                    ? 'bg-[radial-gradient(ellipse_at_center,hsla(46,100%,61%)_0%,hsl(32,99%,60%)_80%)] text-white'
-                    : 'bg-linear-to-b from-white to-blue-200 hover:to-blue-300',
+                  'text-16 flex items-center justify-center gap-2 rounded-[10px] px-4 py-2 font-semibold duration-700',
+                  inCollectionView && selectedProduct
+                    ? [selectedProduct.buttonClassName, 'text-white']
+                    : 'bg-linear-to-b from-white to-blue-200 text-neutral-900 hover:to-blue-300',
                 )}
               >
                 More detail

@@ -41,6 +41,8 @@ export type TCollectionData = {
   title: string
   img: string | StaticImageData
   bgClassName?: string
+  textClassName?: string
+  buttonClassName?: string
 }
 
 export enum ENewProduct {
