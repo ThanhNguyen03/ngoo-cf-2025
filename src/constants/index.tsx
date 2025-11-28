@@ -60,25 +60,25 @@ export const LIST_CHAIN_ICON: Record<number, string> = {
 export const LIST_HEADER_NAVIGATION: TNavigationItem[] = [
   {
     name: 'Overview',
-    icon: <HouseIcon weight='fill' size={18} className='text-primary-600' />,
+    icon: <HouseIcon weight='fill' size={18} className='text-secondary-500' />,
     href: '/',
   },
   {
     name: 'Menu',
     icon: (
-      <SquaresFourIcon weight='fill' size={18} className='text-primary-600' />
+      <SquaresFourIcon weight='fill' size={18} className='text-secondary-500' />
     ),
     href: '/menu',
   },
   {
     name: 'Faucet',
-    icon: <VaultIcon weight='fill' size={18} className='text-primary-600' />,
+    icon: <VaultIcon weight='fill' size={18} className='text-secondary-500' />,
     href: '#', // TODO: faucet page ex: u2u, ftm, monad,...
   },
   {
     name: 'Contact',
     icon: (
-      <ChatsCircleIcon weight='fill' size={18} className='text-primary-600' />
+      <ChatsCircleIcon weight='fill' size={18} className='text-secondary-500' />
     ),
     href: 'https://thanhng-portfolio-2024.vercel.app/',
     openInNewTab: true,
@@ -155,24 +155,32 @@ export const LIST_NEW_PRODUCT: TCollectionData[] = [
     img: cherryJuiceBottle,
     bgClassName:
       'bg-[radial-gradient(ellipse_at_center,hsl(335,75%,30%)_0%,hsla(345,7%,10%,1)_70%)]',
+    textClassName: 'text-cherry-300',
+    buttonClassName: 'bg-linear-to-br to-cherry-500 from-white/10',
   },
   {
     title: ENewProduct.Kiwi,
     img: kiwiJuiceBottole,
     bgClassName:
       'bg-[radial-gradient(ellipse_at_center,hsl(68,76%,41%)_0%,hsla(345,7%,10%,1)_70%)]',
+    textClassName: 'text-kiwi-300',
+    buttonClassName: 'bg-linear-to-br to-kiwi-500 from-white/10',
   },
   {
     title: ENewProduct.Orange,
     img: orangeJuiceBottle,
     bgClassName:
       'bg-[radial-gradient(ellipse_at_center,hsl(32,99%,52%)_0%,hsla(345,7%,10%,1)_70%)]',
+    textClassName: 'text-orange-300',
+    buttonClassName: 'bg-linear-to-br to-orange-500 from-white/10',
   },
   {
     title: ENewProduct.Strawberry,
     img: strawberryJuiceBottle,
     bgClassName:
       'bg-[radial-gradient(ellipse_at_center,hsl(0,96%,42%)_0%,hsla(345,7%,10%,1)_70%)]',
+    textClassName: 'text-strawberry-300',
+    buttonClassName: 'bg-linear-to-br to-strawberry-500 from-white/10',
   },
 ]
 

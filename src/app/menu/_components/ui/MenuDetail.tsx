@@ -1,3 +1,4 @@
+import { emptyBoxIcon } from '@/assets/icons'
 import { Button, SkeletonLoader } from '@/components/ui'
 import { ItemDetailModal } from '@/components/ui/modal'
 import { DEFAULT_PAGINATION } from '@/constants'
@@ -144,7 +145,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
             <SkeletonLoader
               key={index}
               loading={loading}
-              className='flex h-20 w-full items-start gap-4 xl:w-[calc(50%-16px)]'
+              className='flex h-40 w-full items-start gap-4 xl:w-[calc(50%-16px)]'
             />
           ))
         ) : (
@@ -157,8 +158,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
                   <div
                     key={item.name}
                     className={cn(
-                      'flex w-full cursor-pointer items-start gap-4 xl:w-[calc(50%-16px)]',
-                      index > 1 && 'border-dark-600/7 border-b',
+                      'hover:shadow-container rounded-4 md:rounded-6 flex w-full cursor-pointer items-start duration-300 xl:w-[calc(50%-16px)]',
                       index % 2 === 0 && 'xl:mr-2',
                     )}
                     onClick={() => setSelectedItem(item)}
@@ -168,9 +168,9 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
                       src={item.image}
                       width={200}
                       height={200}
-                      className='rounded-6 aspect-square size-50 object-cover object-center'
+                      className='rounded-4 md:rounded-6 aspect-square size-50 object-cover object-center'
                     />
-                    <div className='flex h-50 w-full flex-col items-end justify-between'>
+                    <div className='flex h-50 w-full flex-col items-end justify-between p-4'>
                       <div className='flex flex-col items-start gap-1 text-left'>
                         <h5 className='text-18 mb-2 font-semibold'>
                           {item.name}
@@ -228,7 +228,15 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
                 )
               })
             ) : (
-              <p>Empty</p>
+              <div className='center h-40 w-full flex-col p-4 text-center'>
+                <Image
+                  alt='empty box'
+                  src={emptyBoxIcon}
+                  width={200}
+                  height={200}
+                  className='size-50'
+                />
+              </div>
             )}
           </>
         )}

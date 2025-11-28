@@ -8,20 +8,20 @@ export const ContactForWork = () => {
   const { position, onMouseMove } = useSpotlightCursor()
   return (
     <section
-      className='relative overflow-hidden bg-linear-to-br from-neutral-900 via-blue-700 to-blue-900'
+      className='relative overflow-hidden bg-gradient-to-br from-[hsla(30,59%,57%,1)] to-[hsla(28,66%,40%,1)]'
       onMouseMove={onMouseMove}
     >
       {/* pattern */}
-      <div className='from-dark-600/30 absolute h-[480px] w-screen overflow-hidden bg-radial-[130.34%_100%_at_13.96%_0%] to-black/10'>
+      <div className='absolute h-[480px] w-screen overflow-hidden bg-[radial-gradient(circle_at_13.96%_0%,hsla(345,7%,10%,1)_0%,hsla(345,10%,85%,1)_100%)]'>
         <LinePattern
-          id='hero-banner'
+          id='line-pattern'
           position={position}
           cursorRadius={125}
-          opacity={0.1}
-          highlightColor='#df73ff'
-          secondHighlightColor='hsl(32,99%,45%)'
-          spotlightColor='hsl(335,75%,85%,0.3)'
-          spotlightOpacity={0.5}
+          opacity={0.15}
+          highlightColor='#f25202'
+          secondHighlightColor='hsla(30, 65%, 63%, 1)'
+          spotlightColor='#f25202'
+          spotlightOpacity={0.3}
           className='absolute inset-0 w-full min-w-[1440px] mix-blend-color-dodge select-none'
         />
       </div>
@@ -48,7 +48,7 @@ export const ContactForWork = () => {
               target='_blank'
               className='rounded-3! flex w-fit gap-2 border-0'
               href='https://thanhng-portfolio-2024.vercel.app/'
-              variant='pink'
+              variant='gray'
             >
               Explore more
               <ArrowRightIcon />
