@@ -27,7 +27,7 @@ export const ContactForWork = () => {
       </div>
       <div className='relative z-10 px-2 py-6 md:px-6 md:py-10 lg:px-10 lg:py-20'>
         <div className='mx-auto flex w-full max-w-[1200px] flex-col gap-4 md:gap-6 lg:gap-10'>
-          <div className='flex items-start justify-between gap-4 md:gap-6'>
+          <div className='flex flex-col items-start justify-between gap-4 md:flex-row md:gap-6'>
             <div className='text-16 text-beige-50 max-w-[640px]'>
               This website is created and maintained solely as a personal
               project. It is not intended for commercial use or profit-making

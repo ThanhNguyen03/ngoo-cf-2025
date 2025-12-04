@@ -9,14 +9,16 @@ export const Footer = () => {
         {/* list */}
         <div className='flex w-full flex-col gap-10 pb-10 md:flex-row md:justify-between'>
           {/* left */}
-          <div className='flex w-full min-w-70 flex-col gap-6 md:max-w-100 md:items-start'>
-            {/* logo */}
-            <NgOoLogo />
-            {/* description */}
-            <p className='text-14! leading-[160%] text-neutral-900/70 md:text-left'>
-              The <b>NgOo Coffee</b> by{' '}
-              <span className='underline'>thanhf.ng_</span>
-            </p>
+          <div className='flex w-full min-w-70 flex-col items-start gap-4 md:max-w-100 md:gap-6'>
+            <div className='flex flex-col items-start'>
+              {/* logo */}
+              <NgOoLogo />
+              {/* description */}
+              <p className='text-14! leading-[160%] text-neutral-900/70 md:text-left'>
+                The <b>NgOo Coffee</b> by{' '}
+                <span className='underline'>thanhf.ng_</span>
+              </p>
+            </div>
             {/* social */}
             <div className='flex items-center gap-6'>
               {LIST_SOCIAL_BUTTON.map((link) => (

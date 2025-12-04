@@ -62,7 +62,9 @@ export const formatNumber = (
 
   // Handle number and string
   const num = typeof value === 'number' ? value : parseFloat(value)
-  if (isNaN(num)) return '0'
+  if (isNaN(num)) {
+    return '0'
+  }
 
   // For Infinity maximumFractionDigits, manually format to preserve all decimals
   if (maximumFractionDigits === Infinity) {

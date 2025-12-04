@@ -48,7 +48,9 @@ export const Modal: FC<PropsWithChildren & TModalProps> = ({
               onClick={onClose}
             />
           )}
-          <div className='size-full overflow-auto'>{children}</div>
+          <div className='scrollbar-none size-full overflow-auto'>
+            {children}
+          </div>
         </div>
       </div>,
       document.body,

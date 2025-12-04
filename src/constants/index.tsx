@@ -60,25 +60,45 @@ export const LIST_CHAIN_ICON: Record<number, string> = {
 export const LIST_HEADER_NAVIGATION: TNavigationItem[] = [
   {
     name: 'Overview',
-    icon: <HouseIcon weight='fill' size={18} className='text-secondary-500' />,
+    icon: (
+      <HouseIcon
+        weight='fill'
+        size={18}
+        className='data group-data-[active=true]:text-secondary-500 md:text-secondary-500 size-6 md:size-[18px]'
+      />
+    ),
     href: '/',
   },
   {
     name: 'Menu',
     icon: (
-      <SquaresFourIcon weight='fill' size={18} className='text-secondary-500' />
+      <SquaresFourIcon
+        weight='fill'
+        size={18}
+        className='data group-data-[active=true]:text-secondary-500 md:text-secondary-500 size-6 md:size-[18px]'
+      />
     ),
     href: '/menu',
   },
   {
     name: 'Faucet',
-    icon: <VaultIcon weight='fill' size={18} className='text-secondary-500' />,
+    icon: (
+      <VaultIcon
+        weight='fill'
+        size={18}
+        className='data group-data-[active=true]:text-secondary-500 md:text-secondary-500 size-6 md:size-[18px]'
+      />
+    ),
     href: '#', // TODO: faucet page ex: u2u, ftm, monad,...
   },
   {
     name: 'Contact',
     icon: (
-      <ChatsCircleIcon weight='fill' size={18} className='text-secondary-500' />
+      <ChatsCircleIcon
+        weight='fill'
+        size={18}
+        className='data group-data-[active=true]:text-secondary-500 md:text-secondary-500 size-6 md:size-[18px]'
+      />
     ),
     href: 'https://thanhng-portfolio-2024.vercel.app/',
     openInNewTab: true,
