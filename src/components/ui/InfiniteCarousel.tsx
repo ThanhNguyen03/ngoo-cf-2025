@@ -19,9 +19,9 @@ export const InfiniteCarousel: FC<TInfiniteCarousel> = ({
   animation = 'reversed',
 }) => {
   const variantAnimation = {
-    reversed: '-animate-return-horizontal-scroll',
+    reversed: 'animate-return-horizontal-scroll-reverse',
     leftToRight: 'animate-infinite-horizontal-scroll',
-    rightToLeft: '-animate-infinite-horizontal-scroll',
+    rightToLeft: 'animate-infinite-horizontal-scroll-reverse',
   }
   const containerRef = useRef<HTMLDivElement>(null)
 

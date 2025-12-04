@@ -224,6 +224,28 @@ const config: Config = {
         },
         paper: 'hsla(20,16%,96%,1)',
       },
+      boxShadow: {
+        section: '0px 8px 0px 0px #09090B30',
+        container: '0px 8px 40px -12px rgba(9,9,11,0.10)',
+        box: '0px 4px 12px 0px rgba(9,9,11,0.10)',
+      },
+      textShadow: {
+        sm: '0px 2px 0px rgba(9,9,11,0.7)',
+        DEFAULT: '0px 4px 0px rgba(9,9,11,0.7)',
+        lg: '0px 8px 0px rgba(9,9,11,0.7)',
+        1: '1px 1px 0 rgba(9,9,11,0.7), -1px 1px 0 rgba(9,9,11,0.7), 1px -1px 0 rgba(9,9,11,0.7), -1px -1px 0 rgba(9,9,11,0.7), 0px 1px 0 rgba(9,9,11,0.7), 0px -1px 0 rgba(9,9,11,0.7), 1px 0px 0 rgba(9,9,11,0.7), -1px 0px 0 rgba(9,9,11,0.7)',
+        2: '2px 2px 0 rgba(9,9,11,0.7), -2px 2px 0 rgba(9,9,11,0.7), 2px -2px 0 rgba(9,9,11,0.7), -2px -2px 0 rgba(9,9,11,0.7), 0px 2px 0 rgba(9,9,11,0.7), 0px -2px 0 rgba(9,9,11,0.7), 2px 0px 0 rgba(9,9,11,0.7), -2px 0px 0 rgba(9,9,11,0.7)',
+        'stroke-1':
+          '1px 1px 0 rgba(9,9,11,0.7), -1px 1px 0 rgba(9,9,11,0.7), 1px -1px 0 rgba(9,9,11,0.7), -1px -1px 0 rgba(9,9,11,0.7), 0px 1px 0 rgba(9,9,11,0.7), 0px -1px 0 rgba(9,9,11,0.7), 1px 0px 0 rgba(9,9,11,0.7), -1px 0px 0 rgba(9,9,11,0.7), 0px 6px 0px rgba(9,9,11,0.7)',
+        'stroke-2':
+          '2px 2px 0 rgba(9,9,11,0.7), -2px 2px 0 rgba(9,9,11,0.7), 2px -2px 0 rgba(9,9,11,0.7), -2px -2px 0 rgba(9,9,11,0.7), 0px 2px 0 rgba(9,9,11,0.7), 0px -2px 0 rgba(9,9,11,0.7), 2px 0px 0 rgba(9,9,11,0.7), -2px 0px 0 rgba(9,9,11,0.7), 0px 6px 0px rgba(9,9,11,0.7), 1.5px 6px 0px rgba(9,9,11,0.7), -1.5px 6px 0px rgba(9,9,11,0.7)',
+        'stroke-white-1':
+          '1px 1px 0 #FFF, -1px 1px 0 #FFF, 1px -1px 0 #FFF, -1px -1px 0 #FFF, 0px 1px 0 #FFF, 0px -1px 0 #FFF, 1px 0px 0 #FFF, -1px 0px 0 #FFF, 0px 2px 0px rgba(9,9,11,0.3)',
+        'stroke-white-2':
+          '2px 2px 0 #FFF, -2px 2px 0 #FFF, 2px -2px 0 #FFF, -2px -2px 0 #FFF, 0px 2px 0 #FFF, 0px -2px 0 #FFF, 2px 0px 0 #FFF, -2px 0px 0 #FFF, 0px 4px 0px rgba(9,9,11,0.3), 1.5px 4px 0px rgba(9,9,11,0.3), -1.5px 4px 0px rgba(9,9,11,0.3)',
+        'stroke-white-3':
+          '2.5px 2.5px 0 #FFF, -2.5px 2.5px 0 #FFF, 2.5px -2.5px 0 #FFF, -2.5px -2.5px 0 #FFF, 0px 3px 0 #FFF, 0px -3px 0 #FFF, 3px 0px 0 #FFF, -2.5px 0px 0 #FFF, 0px 6px 0px rgba(9,9,11,0.3), 2px 6px 1px rgba(9,9,11,0.3), -2px 6px 1px rgba(9,9,11,0.3)',
+      },
     },
   },
   plugins: [
