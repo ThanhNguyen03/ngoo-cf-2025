@@ -124,7 +124,8 @@ const ItemOption: FC<TItemOptionProps> = ({
 export const ItemDetailModal: FC<
   TModalProps & { data: TItemResponse; cartItem?: TOrderItem }
 > = ({ isOpen, onClose, data, cartItem }) => {
-  const { addToCart, removeFromCart, updateCartItem } = useCartStore()
+  const { addToCart, removeFromCart, updateCartItem, listCartItem } =
+    useCartStore()
 
   const [totalPrice, setTotalPrice] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(false)
@@ -177,25 +178,30 @@ export const ItemDetailModal: FC<
     return () => clearTimeout(handler)
   }, [itemAmount, data, selectedOptions])
 
+  const cartIndex = useMemo(() => {
+    if (!cartItem) {
+      return -1
+    }
+    return listCartItem.findIndex((c) => c.itemId === data.itemId)
+  }, [cartItem, listCartItem, data.itemId])
+
   const handleSubmit = () => {
-    if (itemAmount === 0) {
-      removeFromCart(data.name)
+    if (itemAmount === 0 && cartIndex !== -1) {
+      removeFromCart(cartIndex)
       onClose()
       return
     }
-    const newItem: TOrderItem = {
-      price: data.price,
-      amount: itemAmount,
-      selectedOptions: selectedOptions,
-      discountPercent: data.discountPercent,
-      name: data.name,
-      // note: itemData.note, TODO: Add note
-    }
-    if (cartItem) {
-      updateCartItem(newItem)
+
+    if (cartIndex !== -1) {
+      updateCartItem(cartIndex, {
+        amount: itemAmount,
+        selectedOptions: selectedOptions,
+        // note: add note sau
+      })
     } else {
-      addToCart(newItem)
+      addToCart(data, selectedOptions, itemAmount)
     }
+
     onClose()
   }
 

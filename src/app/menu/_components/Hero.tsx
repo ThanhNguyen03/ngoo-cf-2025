@@ -9,7 +9,6 @@ import {
   NEW_PRODUCT_DATA,
   SIZE_OPTION,
 } from '@/constants'
-import { TOrderItem } from '@/lib/graphql/generated/graphql'
 import useCartStore, { calculateItemPrice } from '@/store/cart-store'
 import { ENewProduct } from '@/types'
 import { cn } from '@/utils'
@@ -48,30 +47,27 @@ export const Hero = () => {
   }
 
   const handleSubmit = () => {
-    if (itemAmount === 0) {
-      removeFromCart(NEW_PRODUCT_DATA[selectedProduct].title)
+    const itemData = CART_NEW_DATA[selectedProduct] // full TItemResponse
+    const selectedOptions = SIZE_OPTION.filter(
+      (opt) => opt.name === selectedSize,
+    )
+    const cartIndex = listCartItem.findIndex(
+      (i) => i.itemId === itemData.itemId,
+    )
+
+    if (itemAmount === 0 && cartIndex !== -1) {
+      removeFromCart(cartIndex)
       return
     }
-    const data = {
-      image: NEW_PRODUCT_DATA[selectedProduct].image,
-      name: NEW_PRODUCT_DATA[selectedProduct].title,
-      price: NEW_PRODUCT_DATA[selectedProduct].price,
-      discountPercent: NEW_PRODUCT_DATA[selectedProduct].discountPercent,
-    }
-    const newItem: TOrderItem = {
-      discountPercent: data.discountPercent,
-      price: data.price,
-      name: data.name,
-      amount: itemAmount,
-      selectedOptions: SIZE_OPTION.filter((opt) => opt.name === selectedSize),
-    }
-    const existed = listCartItem.some(
-      (i) => i.name === NEW_PRODUCT_DATA[selectedProduct].title,
-    )
-    if (existed) {
-      updateCartItem(newItem)
+
+    if (cartIndex !== -1) {
+      updateCartItem(cartIndex, {
+        amount: itemAmount,
+        selectedOptions: selectedOptions,
+      })
     } else {
-      addToCart(newItem)
+      // add new
+      addToCart(itemData, selectedOptions, itemAmount)
     }
   }
 
@@ -124,7 +120,7 @@ export const Hero = () => {
           'bg-[length:200%_100%] bg-left lg:bg-[length:100%_100%] lg:bg-center',
         )}
       />
-      <div className='relative mx-auto flex h-[calc(100dvh-200px)] max-h-[885px] w-full max-w-[1200px] justify-center md:gap-4'>
+      <div className='relative mx-auto flex h-[calc(100dvh-200px)] max-h-[580px] w-full max-w-[1200px] justify-center md:h-[calc(100dvh-300px)] md:max-h-[885px] md:gap-4'>
         {/* Left column */}
         <div className='mt-8 flex h-full w-[30%] flex-col items-start gap-10 md:justify-between'>
           <div className='absolute flex flex-col items-start gap-2 md:relative'>
@@ -233,7 +229,7 @@ export const Hero = () => {
               onClick={handleSubmit}
               disabled={
                 !listCartItem.some(
-                  (i) => i.name === NEW_PRODUCT_DATA[selectedProduct].title,
+                  (i) => i.itemId === CART_NEW_DATA[selectedProduct].itemId,
                 ) && itemAmount === 0
               }
               className={cn(
@@ -252,7 +248,7 @@ export const Hero = () => {
             isRotate={animation}
             glbUrl={NEW_PRODUCT_DATA[selectedProduct].model}
             className={cn(
-              'absolute top-20 -left-25 z-10 min-[620px]:-left-10 sm:-left-20 lg:left-0 xl:size-[500px]',
+              'absolute top-20 -left-25 z-10 min-[620px]:-left-10 sm:-left-20 md:top-auto lg:left-0 xl:size-[500px]',
               animation
                 ? 'animate-translate-vertical-in'
                 : 'animate-translate-vertical-out',
@@ -350,7 +346,7 @@ export const Hero = () => {
               onClick={handleSubmit}
               disabled={
                 !listCartItem.some(
-                  (i) => i.name === NEW_PRODUCT_DATA[selectedProduct].title,
+                  (i) => i.itemId === CART_NEW_DATA[selectedProduct].itemId,
                 ) && itemAmount === 0
               }
               className={cn(

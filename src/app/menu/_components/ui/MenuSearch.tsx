@@ -15,6 +15,7 @@ type TMenuSearchProps = {
   listCategory: TCategory[]
   selectedCategory: TCategory
   selectCategory: (category: TCategory) => void
+  className?: string
 }
 export const MenuSearch: FC<TMenuSearchProps> = ({
   disabled,
@@ -22,6 +23,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
   listCategory,
   selectedCategory,
   selectCategory,
+  className,
 }) => {
   const [openDropdown, setOpenDropdown] = useState<boolean>(false)
   const [openSearchBar, setOpenSearchBar] = useState<boolean>(false)
@@ -90,7 +92,12 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
   }, [openDropdown])
 
   return (
-    <div className='sticky top-12 flex w-full flex-col items-start gap-2 bg-white py-4 md:top-20 md:w-[25%] md:gap-4 md:py-0'>
+    <div
+      className={cn(
+        'sticky top-12 flex w-full flex-col items-start gap-2 bg-white px-2 py-4 md:top-20 md:w-[25%] md:gap-4 md:p-0',
+        className,
+      )}
+    >
       <div className='flex w-full items-center gap-2'>
         {/* select dropdown */}
         <div

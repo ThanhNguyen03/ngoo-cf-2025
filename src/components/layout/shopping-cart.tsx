@@ -1,16 +1,23 @@
 import useCartStore from '@/store/cart-store'
+import { cn } from '@/utils'
 import { BasketIcon } from '@phosphor-icons/react/dist/ssr'
 
 export const ShoppingCart = () => {
-  const { listCartItem } = useCartStore()
+  const { cartAmount } = useCartStore()
+
   return (
     <>
-      {listCartItem.length > 0 && (
+      {cartAmount > 0 && (
         <div className='sticky bottom-20 z-50 mx-auto max-w-[1200px]'>
           <div className='relative ml-auto size-fit'>
-            <div className='bg-secondary-500 center absolute -top-1 -right-1 flex rounded-full px-1 py-0.5'>
+            <div
+              className={cn(
+                'bg-secondary-500 center absolute -top-1 -right-1 flex rounded-full px-2 py-0.5',
+                cartAmount > 9 && 'px-1',
+              )}
+            >
               <p className='center text-12 mt-0.25 text-center text-white'>
-                {listCartItem.length > 9 ? '9+' : listCartItem.length}
+                {cartAmount > 9 ? '9+' : cartAmount}
               </p>
             </div>
             <button
