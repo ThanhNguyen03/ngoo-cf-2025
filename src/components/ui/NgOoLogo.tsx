@@ -13,11 +13,11 @@ export const NgOoLogo: FC<TNgOoLogoProps> = ({ isDark }) => {
       {/* logo */}
       <div
         className={cn(
-          'rounded-1 border-dark-600/10 border p-0.75 shadow',
+          'rounded-1 border-dark-600/10 border p-1 shadow',
           isDark ? 'bg-white' : 'bg-beige-100',
         )}
       >
-        <CowIcon size={24} weight='fill' className='text-primary-600' />
+        <CowIcon size={30} weight='fill' className='text-primary-600' />
       </div>
       <h1 className='text-18 flex flex-col items-start leading-5 font-bold text-red-500'>
         <span className='flex items-center'>

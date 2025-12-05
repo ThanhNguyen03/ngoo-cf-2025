@@ -90,7 +90,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
   }, [openDropdown])
 
   return (
-    <div className='sticky top-20 flex w-[25%] flex-col items-start gap-2 md:gap-4'>
+    <div className='sticky top-12 flex w-full flex-col items-start gap-2 bg-white py-4 md:top-20 md:w-[25%] md:gap-4 md:py-0'>
       <div className='flex w-full items-center gap-2'>
         {/* select dropdown */}
         <div
@@ -141,7 +141,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
                     return
                   }
 
-                  const yOffset = -80 // header height
+                  const yOffset = -120 // header height
                   const y =
                     element.getBoundingClientRect().top +
                     window.scrollY +

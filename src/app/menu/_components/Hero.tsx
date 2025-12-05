@@ -124,7 +124,7 @@ export const Hero = () => {
           'bg-[length:200%_100%] bg-left lg:bg-[length:100%_100%] lg:bg-center',
         )}
       />
-      <div className='relative mx-auto flex h-[calc(100dvh-300px)] max-h-[885px] w-full max-w-[1200px] justify-center md:gap-4'>
+      <div className='relative mx-auto flex h-[calc(100dvh-200px)] max-h-[885px] w-full max-w-[1200px] justify-center md:gap-4'>
         {/* Left column */}
         <div className='mt-8 flex h-full w-[30%] flex-col items-start gap-10 md:justify-between'>
           <div className='absolute flex flex-col items-start gap-2 md:relative'>
@@ -247,12 +247,12 @@ export const Hero = () => {
         </div>
 
         {/* Center column */}
-        <div className='relative flex h-full min-h-70 w-3/5 flex-col items-center justify-center md:w-[40%]'>
+        <div className='relative flex h-full w-3/5 flex-col items-center justify-center md:min-h-70 md:w-[40%]'>
           <Bottle3D
             isRotate={animation}
             glbUrl={NEW_PRODUCT_DATA[selectedProduct].model}
             className={cn(
-              'absolute -left-25 z-10 min-[620px]:-left-10 sm:-left-20 lg:left-0 xl:size-[500px]',
+              'absolute top-20 -left-25 z-10 min-[620px]:-left-10 sm:-left-20 lg:left-0 xl:size-[500px]',
               animation
                 ? 'animate-translate-vertical-in'
                 : 'animate-translate-vertical-out',

@@ -36,7 +36,7 @@ export default async function RootLayout({
         />
       </head>
 
-      <body className='font-raleway scroll-smooth bg-white lining-nums antialiased'>
+      <body className='font-raleway scrollbar-none scroll-smooth bg-white lining-nums antialiased'>
         <ApolloProvider session={session}>
           <WalletConnectProvider>
             <Header />

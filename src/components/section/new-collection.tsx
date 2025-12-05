@@ -13,7 +13,7 @@ import { useParallaxLayer } from '@/hooks'
 import { ENewProduct, TCollectionData } from '@/types'
 import { cn } from '@/utils'
 import { ArrowRightIcon } from '@phosphor-icons/react/dist/ssr'
-import { easeInOut, motion } from 'framer-motion'
+import { motion } from 'framer-motion'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -33,8 +33,7 @@ const collectionVariants = {
     scale: 2,
     opacity: 1,
     transition: {
-      duration: 1,
-      ease: easeInOut,
+      duration: 1.5,
     },
   },
   middle: (pos: TPosition) => ({
@@ -44,7 +43,6 @@ const collectionVariants = {
     scale: pos.s,
     transition: {
       duration: 1.5,
-      ease: easeInOut,
     },
   }),
   end: {
@@ -54,8 +52,7 @@ const collectionVariants = {
     scale: 2,
     opacity: 1,
     transition: {
-      duration: 2,
-      ease: easeInOut,
+      duration: 1.5,
     },
   },
 }
@@ -140,16 +137,16 @@ export const NewCollection = forwardRef<HTMLDivElement, TNewCollectionProps>(
       >
         <div
           className={cn(
-            'flex size-full flex-col px-2 py-10 duration-1000 md:px-6 md:py-20 lg:px-20 lg:py-40',
+            'flex size-full flex-col px-2 pt-10 pb-20 duration-1000 md:px-6 md:pt-20 md:pb-30 lg:px-20 lg:py-40',
             inCollectionView && selectedProduct
               ? selectedProduct.bgClassName
               : 'from-sky-blue-100 bg-linear-to-b to-white/30 to-20%',
           )}
         >
-          <div className='relative mx-auto flex w-full max-w-[1200px] flex-col items-center justify-center gap-2 md:gap-6'>
+          <div className='relative mx-auto flex w-full max-w-[1200px] flex-col items-center justify-center gap-6'>
             <h2
               className={cn(
-                'text-44 md:text-55 font-lobster text-shadow-stroke-white-2 mx-auto w-fit font-black duration-700',
+                'text-44! md:text-55 font-lobster text-shadow-stroke-white-2 mx-auto w-fit font-black duration-700',
                 inCollectionView && selectedProduct
                   ? selectedProduct.textClassName
                   : 'text-dark-600',
@@ -166,7 +163,7 @@ export const NewCollection = forwardRef<HTMLDivElement, TNewCollectionProps>(
                 width={200}
                 height={200}
                 className={cn(
-                  'pointer-events-none absolute -top-20 left-230 size-30 duration-[1400ms]',
+                  'pointer-events-none absolute -top-20 left-230 hidden size-30 duration-[1400ms] md:flex',
                   (!inCollectionView || selectedProduct) && '-left-[200dvw]',
                 )}
               />
@@ -177,7 +174,7 @@ export const NewCollection = forwardRef<HTMLDivElement, TNewCollectionProps>(
                 width={200}
                 height={151}
                 className={cn(
-                  'pointer-events-none absolute top-70 right-30 h-22 w-30 duration-700',
+                  'pointer-events-none absolute top-70 right-30 hidden h-22 w-30 duration-700 md:flex',
                   (!inCollectionView || selectedProduct) && '-right-[100dvw]',
                 )}
               />
@@ -188,7 +185,7 @@ export const NewCollection = forwardRef<HTMLDivElement, TNewCollectionProps>(
                 width={200}
                 height={186}
                 className={cn(
-                  'pointer-events-none absolute top-0 right-250 h-28 w-30 duration-1000',
+                  'pointer-events-none absolute top-0 right-250 hidden h-28 w-30 duration-1000 md:flex',
                   (!inCollectionView || selectedProduct) && '-right-[200dvw]',
                 )}
               />
@@ -199,7 +196,7 @@ export const NewCollection = forwardRef<HTMLDivElement, TNewCollectionProps>(
                 width={51}
                 height={60}
                 className={cn(
-                  'pointer-events-none absolute -top-50 right-200 h-15 w-12 duration-[1200ms]',
+                  'pointer-events-none absolute -top-50 right-200 hidden h-15 w-12 duration-[1200ms] md:flex',
                   (!inCollectionView || selectedProduct) && '-right-[200dvw]',
                 )}
               />

@@ -45,15 +45,15 @@ export const Menu = () => {
   }, [])
 
   return (
-    <section className='from-paper/10 to-paper/2 relative bg-linear-to-b px-2 py-10 md:px-6 md:py-20 lg:px-10 lg:py-30'>
+    <section className='from-paper/10 to-paper/2 bg-linear-to-b px-2 py-10 md:px-6 md:py-20 lg:px-10 lg:py-30'>
       <div className='mx-auto flex size-full max-w-[1200px] flex-col items-start gap-4 md:gap-6'>
         <h2 className='text-32! text-secondary-500 font-lobster font-medium duration-700'>
           Menu Search
         </h2>
-        <div className='relative flex size-full items-start gap-3 md:gap-6'>
+        <div className='flex size-full flex-col items-start gap-3 md:flex-row md:gap-6'>
           <SkeletonLoader
             loading={!listCategory || listCategory.length === 0}
-            className='relative h-full max-h-none min-h-40 w-[25%]'
+            className='h-full max-h-none min-h-40 w-full md:w-[25%]'
           />
           {listCategory && listCategory.length > 0 && (
             <MenuSearch
@@ -63,10 +63,10 @@ export const Menu = () => {
               selectCategory={setSelectedCategory}
             />
           )}
-          <div className='from-primary-500 to-dark-600/10 sticky top-20 h-80 w-0.25 bg-gradient-to-b' />
+          <div className='from-primary-500 to-dark-600/10 sticky top-20 hidden h-80 w-0.25 bg-gradient-to-b md:inline' />
           <SkeletonLoader
             loading={!listCategory || listCategory.length === 0}
-            className='min-h-40 w-[75%]'
+            className='min-h-40 w-full md:w-[75%]'
           >
             {listCategory && listCategory.length > 0 && (
               <MenuDetail

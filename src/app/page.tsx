@@ -89,7 +89,7 @@ export default function Home() {
         </InfiniteCarousel>
         <BestSeller
           ref={sellerContainerRef}
-          data={bestSellerItem}
+          data={[...bestSellerItem, ...bestSellerItem]}
           isInview={inSellerView && !!selectedProduct}
         />
       </div>

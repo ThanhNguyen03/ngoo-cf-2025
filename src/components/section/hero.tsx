@@ -36,7 +36,7 @@ export const Hero = () => {
         <Image
           alt='banner'
           src={coffeeShop}
-          className='size-full object-fill opacity-20 duration-300'
+          className='size-full object-cover object-[40%_50%] opacity-20 duration-300 md:object-fill md:object-center'
           width={1920}
           height={1080}
           unoptimized
@@ -44,49 +44,52 @@ export const Hero = () => {
       </div>
 
       {/* Main Content */}
-      <div className='relative z-10 mx-auto flex h-[calc(100dvh-322px)] w-full max-w-[1200px] grow items-center gap-10 overflow-hidden'>
+      <div className='relative z-10 mx-auto flex h-[480px] w-full max-w-[1200px] grow items-center gap-4 overflow-hidden md:gap-6 lg:h-[calc(100dvh-322px)] lg:gap-10'>
         <div
           className={cn(
-            'z-10 flex w-full translate-x-0 flex-col items-start gap-2 duration-1000 md:gap-6',
+            'z-10 flex w-full translate-x-0 flex-col items-center gap-2 duration-1000 md:items-start md:gap-6',
             animationEnded
               ? 'translate-x-0 opacity-100'
               : '-translate-x-full opacity-0',
           )}
         >
-          <h1 className='text-28! md:text-35! lg:text-44! text-beige-300 font-bold'>
-            Everything <br /> is better with
+          <h1 className='text-28! md:text-35! lg:text-44! text-beige-300 w-full text-center font-bold md:w-fit md:text-left'>
+            Everything <br className='hidden md:inline' /> is better with
             <br />
-            <span className='text-secondary-500 flex w-fit items-center'>
+            <span className='text-secondary-500 flex w-full items-center justify-center md:w-fit md:justify-normal'>
               Ng
               <CowIcon className='text-secondary-400 size-10' weight='fill' />
               o&nbsp;<span className='text-beige-300'>Coffee</span>
             </span>
           </h1>
-          <p className='text-beige-50 text-18!'>
-            NgOo Coffee is the missing piece that makes everyday complete, a
-            simple yet delicious joy in life
+          <p className='text-beige-50 text-18! px-4 text-center md:max-w-none md:text-left'>
+            NgOo Coffee is the missing piece that makes everyday complete,
+            <br className='md:hidden' />a simple yet delicious joy in life
           </p>
-          <div className='from-beige-100 h-0.25 w-full bg-linear-to-r to-transparent' />
-          <div className='flex w-fit items-center justify-center gap-2 text-lg md:gap-4'>
+          <div className='from-beige-100 hidden h-0.25 w-full bg-linear-to-r to-transparent md:inline' />
+          <div className='flex w-full max-w-[320px] flex-col items-center justify-center gap-2 px-4 text-lg md:w-fit md:max-w-none md:flex-row md:gap-4'>
             <Button
-              className='bg-secondary-500'
+              className='bg-secondary-500 w-full border border-white/10 md:w-fit'
               icon={<ArrowRightIcon size={16} />}
             >
               Order Now
             </Button>
-            <Button className='text-white' disableAnimation>
+            <Button
+              className='w-full border border-white/10 bg-neutral-900 text-white md:w-fit'
+              disableAnimation
+            >
               Learn more
             </Button>
           </div>
         </div>
 
-        <div className='relative min-h-60 w-full'>
+        <div className='relative hidden min-h-60 w-full md:flex'>
           <Image
             alt='main-herobanner'
             src={ngooCfText}
             width={3287}
             height={1641}
-            className='absolute -top-10 left-17 size-full min-h-70 object-fill'
+            className='absolute -top-10 size-full object-fill lg:left-17 lg:min-h-70'
             priority
           />
         </div>
