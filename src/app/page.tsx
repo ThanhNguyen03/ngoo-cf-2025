@@ -25,6 +25,8 @@ import { useEffect, useRef, useState } from 'react'
 export default function Home() {
   const collectionContainerRef = useRef<HTMLDivElement>(null)
   const sellerContainerRef = useRef<HTMLDivElement>(null)
+
+  const [loading, setLoading] = useState<boolean>(true)
   const [selectedProduct, setSelectedProduct] = useState<TCollectionData>()
   const [bestSellerItem, setBestSellerItem] = useState<TItemResponse[]>([])
 
@@ -36,22 +38,26 @@ export default function Home() {
   })
 
   useEffect(() => {
-    const getBestSeller = apolloWrapper(async () => {
-      const { data, error } = await client.query({
-        query: ListItemByStatusDocument,
-        variables: {
-          status: [EItemStatus.Seller],
-        },
-      })
+    const getBestSeller = apolloWrapper(
+      async () => {
+        setLoading(true)
+        const { data, error } = await client.query({
+          query: ListItemByStatusDocument,
+          variables: {
+            status: [EItemStatus.Seller],
+          },
+        })
 
-      if (error) {
-        throw error
-      }
+        if (error) {
+          throw error
+        }
 
-      if (data) {
-        setBestSellerItem(data.listItemByStatus.records)
-      }
-    })
+        if (data) {
+          setBestSellerItem(data.listItemByStatus.records)
+        }
+      },
+      { onFinally: () => setLoading(false) },
+    )
 
     getBestSeller()
   }, [])
@@ -89,6 +95,7 @@ export default function Home() {
         </InfiniteCarousel>
         <BestSeller
           ref={sellerContainerRef}
+          isLoading={loading}
           data={[...bestSellerItem, ...bestSellerItem]}
           isInview={inSellerView && !!selectedProduct}
         />

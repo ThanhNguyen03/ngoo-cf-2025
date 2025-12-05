@@ -1,11 +1,11 @@
 'use client'
 
-import { ItemCard, Slider } from '@/components/ui'
+import { ItemCard, SkeletonLoader, Slider } from '@/components/ui'
 import { ItemDetailModal } from '@/components/ui/modal'
 import { useParallaxLayer } from '@/hooks'
 import { TItemResponse } from '@/lib/graphql/generated/graphql'
 import { cn } from '@/utils'
-import { forwardRef, useState } from 'react'
+import React, { forwardRef, useState } from 'react'
 import { FenceCloud } from '../icons'
 
 const ProductPosition = () => {
@@ -25,10 +25,11 @@ const ProductPosition = () => {
 type TBestSellerProps = {
   data: TItemResponse[]
   isInview: boolean
+  isLoading?: boolean
 }
 
 export const BestSeller = forwardRef<HTMLElement, TBestSellerProps>(
-  ({ isInview, data }, ref) => {
+  ({ isInview, data, isLoading }, ref) => {
     const cloudFenceRef = useParallaxLayer<SVGSVGElement>(
       ref as React.RefObject<HTMLElement | null>,
       {
@@ -45,25 +46,31 @@ export const BestSeller = forwardRef<HTMLElement, TBestSellerProps>(
       >
         <ProductPosition />
         <div className='z-30 mb-20 px-2 py-10 md:px-6 md:py-20 lg:px-10 lg:pt-30 lg:pb-50'>
-          <div className='relative mx-auto flex w-full max-w-[1200px] flex-col gap-6'>
-            <h2 className='text-44 md:text-55 text-shadow-stroke-2 font-lobster mx-auto w-fit text-center font-black text-white'>
+          <div className='center relative mx-auto flex w-full max-w-[1200px] flex-col gap-6'>
+            <h2 className='text-44 md:text-55 text-shadow-stroke-2 font-lobster w-fit text-center font-black text-white'>
               Best Seller
             </h2>
-
-            <Slider
-              numsItemsPerSlice={3}
-              dotButton
-              isPause={!!selectedItem}
-              className='z-10 w-full [--webkit-mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)] [mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)]'
-            >
-              {data.map((item) => (
-                <ItemCard
-                  key={item.itemId}
-                  data={item}
-                  setSelectedItem={setSelectedItem}
-                />
-              ))}
-            </Slider>
+            {isLoading ? (
+              <SkeletonLoader
+                loading={isLoading}
+                className='min-h-100 w-full max-w-100'
+              />
+            ) : (
+              <Slider
+                numsItemsPerSlice={3}
+                dotButton
+                isPause={!!selectedItem}
+                className='z-10 w-full [--webkit-mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)] [mask:linear-gradient(to_right,#0000,#000_20%,#000_80%,#0000)]'
+              >
+                {data.map((item) => (
+                  <ItemCard
+                    key={item.itemId}
+                    data={item}
+                    setSelectedItem={setSelectedItem}
+                  />
+                ))}
+              </Slider>
+            )}
           </div>
         </div>
         <div className='absolute bottom-0 -left-2 z-0 flex h-fit w-[101dvw] items-center justify-center'>
