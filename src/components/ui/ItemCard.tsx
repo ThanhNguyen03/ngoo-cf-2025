@@ -14,7 +14,8 @@ type TItemCardProps = {
 
 export const ItemCard: FC<TItemCardProps> = ({ data, setSelectedItem }) => {
   const { listCartItem } = useCartStore()
-  const cartItem = listCartItem.find((c) => c.name === data.name)
+  const cartItem = listCartItem.find((c) => c.itemId === data.itemId)
+
   return (
     <>
       <div

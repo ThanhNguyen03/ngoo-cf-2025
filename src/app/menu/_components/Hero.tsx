@@ -9,7 +9,10 @@ import {
   NEW_PRODUCT_DATA,
   SIZE_OPTION,
 } from '@/constants'
-import useCartStore, { calculateItemPrice } from '@/store/cart-store'
+import useCartStore, {
+  calculateItemPrice,
+  getCartKey,
+} from '@/store/cart-store'
 import { ENewProduct } from '@/types'
 import { cn } from '@/utils'
 import Image from 'next/image'
@@ -19,7 +22,7 @@ import { Bottle3D } from './ui/Bottle3D'
 const ANIMATION_DURATION = 700 // ms
 
 export const Hero = () => {
-  const { addToCart, removeFromCart, updateCartItem, listCartItem } =
+  const { addToCart, removeFromCart, listCartItem, updateCartItem } =
     useCartStore()
   const [selectedProduct, setSelectedProduct] = useState<ENewProduct>(
     ENewProduct.Cherry,
@@ -47,33 +50,56 @@ export const Hero = () => {
   }
 
   const handleSubmit = () => {
-    const itemData = CART_NEW_DATA[selectedProduct] // full TItemResponse
+    const itemData = CART_NEW_DATA[selectedProduct]
     const selectedOptions = SIZE_OPTION.filter(
       (opt) => opt.name === selectedSize,
     )
-    const cartIndex = listCartItem.findIndex(
-      (i) => i.itemId === itemData.itemId,
-    )
 
-    if (itemAmount === 0 && cartIndex !== -1) {
-      removeFromCart(cartIndex)
+    if (itemAmount === 0) {
+      removeFromCart(itemData.itemId, selectedOptions)
+      setItemAmount(1)
       return
     }
 
-    if (cartIndex !== -1) {
-      updateCartItem(cartIndex, {
-        amount: itemAmount,
-        selectedOptions: selectedOptions,
-      })
+    const existingItem = listCartItem.find(
+      (i) =>
+        getCartKey(i.itemId, i.selectedOptions || []) ===
+        getCartKey(itemData.itemId, selectedOptions),
+    )
+
+    if (existingItem) {
+      updateCartItem(itemData.itemId, selectedOptions, { amount: itemAmount })
     } else {
-      // add new
       addToCart(itemData, selectedOptions, itemAmount)
     }
   }
 
   useEffect(() => {
+    const itemData = CART_NEW_DATA[selectedProduct]
+    const selectedOptions = SIZE_OPTION.filter(
+      (opt) => opt.name === selectedSize,
+    )
+    const existingItem = listCartItem.find(
+      (i) =>
+        getCartKey(i.itemId, i.selectedOptions || []) ===
+        getCartKey(itemData.itemId, selectedOptions),
+    )
+    if (existingItem) {
+      setItemAmount(existingItem.amount)
+      setTotalPrice(
+        calculateItemPrice(
+          existingItem.itemInfo,
+          existingItem.selectedOptions || [],
+          existingItem.amount,
+        ),
+      )
+    }
+  }, [selectedProduct, listCartItem, selectedSize])
+
+  useEffect(() => {
     setAnimation(false)
     const timeout = setTimeout(() => setAnimation(true), ANIMATION_DURATION)
+
     return () => clearTimeout(timeout)
   }, [selectedSize])
 
@@ -315,7 +341,10 @@ export const Hero = () => {
                 (option) => (
                   <button
                     key={option.name}
-                    onClick={() => setSelectedSize(option.name)}
+                    onClick={() => {
+                      setItemAmount(1)
+                      setSelectedSize(option.name)
+                    }}
                     className={cn(
                       'rounded-2 size-fit cursor-pointer border border-white/30 bg-linear-to-br from-white/50 to-white/10 p-1 font-semibold text-white shadow backdrop-blur-3xl duration-700',
                       animation ? 'opacity-100' : 'opacity-0',

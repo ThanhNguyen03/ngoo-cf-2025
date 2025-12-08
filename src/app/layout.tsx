@@ -22,7 +22,7 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions)
 
   return (
-    <html lang='en' className='scroll-smooth'>
+    <html lang='en' className='scroll-smooth' data-scroll-behavior='smooth'>
       <head>
         <link
           rel='icon'

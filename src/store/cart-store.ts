@@ -1,8 +1,10 @@
 import {
+  ItemOptionInput,
   OrderItemInput,
   TItemOption,
   TItemResponse,
 } from '@/lib/graphql/generated/graphql'
+import { TCartItem } from '@/types'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
@@ -20,9 +22,17 @@ export const calculateItemPrice = (
   return (basePrice + extra) * amount
 }
 
-type TCartItem = OrderItemInput & {
-  itemInfo: TItemResponse
-}
+export const getCartKey = (itemId: string, options: TItemOption[]) =>
+  `${itemId}|${normalizeOptions(options)}`
+
+const normalizeOptions = (options: TItemOption[]) =>
+  options
+    .slice()
+    .sort(
+      (a, b) => a.group.localeCompare(b.group) || a.name.localeCompare(b.name),
+    )
+    .map((o) => `${o.group}:${o.name}:${o.extraPrice ?? 0}`)
+    .join('|')
 
 type TCartStoreState = {
   listCartItem: TCartItem[]
@@ -32,13 +42,14 @@ type TCartStoreState = {
 type TCartStoreAction = {
   addToCart: (
     item: TItemResponse,
-    selectedOptions: TItemOption[],
+    selectedOptions: ItemOptionInput[],
     amount: number,
     note?: string,
   ) => void
-  removeFromCart: (index: number) => void
+  removeFromCart: (itemId: string, selectedOptions?: ItemOptionInput[]) => void
   updateCartItem: (
-    index: number,
+    itemId: string,
+    selectedOptions: ItemOptionInput[],
     payload: Partial<Omit<OrderItemInput, 'itemId'>>,
   ) => void
   clearCart: () => void
@@ -58,39 +69,24 @@ const useCartStore = create<TCartStoreState & TCartStoreAction>()(
         note?: string,
       ) => {
         set((state) => {
-          const normalizedOptions = selectedOptions.map((o) => ({
-            group: o.group,
-            name: o.name,
-            extraPrice: o.extraPrice,
-          }))
-
-          const existingIndex = state.listCartItem.findIndex((c) => {
-            if (c.itemId !== item.itemId) {
-              return false
-            }
-
-            const addOption = c.selectedOptions || []
-
-            return (
-              addOption.length === normalizedOptions.length &&
-              addOption.every(
-                (add, i) =>
-                  add?.group === normalizedOptions[i]?.group &&
-                  add?.extraPrice === normalizedOptions[i]?.extraPrice,
-              )
-            )
-          })
-
+          const key = getCartKey(item.itemId, selectedOptions)
           const newList = [...state.listCartItem]
+
+          const existingIndex = newList.findIndex(
+            (c) => getCartKey(c.itemId, c.selectedOptions || []) === key,
+          )
 
           if (existingIndex !== -1) {
             newList[existingIndex].amount += amount
+            if (note) {
+              newList[existingIndex].note = note
+            }
           } else {
             newList.push({
               itemId: item.itemId,
+              selectedOptions,
               amount,
               note,
-              selectedOptions: normalizedOptions,
               itemInfo: item,
             })
           }
@@ -103,29 +99,40 @@ const useCartStore = create<TCartStoreState & TCartStoreAction>()(
       },
 
       /** REMOVE */
-      removeFromCart: (index: number) => {
+      removeFromCart: (itemId: string, selectedOptions?: ItemOptionInput[]) => {
         set((state) => {
-          const newList = state.listCartItem.filter((_, i) => i !== index)
+          const newList = state.listCartItem.filter((c) => {
+            if (!selectedOptions) return c.itemId !== itemId
+            return (
+              getCartKey(c.itemId, c.selectedOptions || []) !==
+              getCartKey(itemId, selectedOptions)
+            )
+          })
+
           return {
             listCartItem: newList,
-            cartAmount: newList.reduce((s, c) => s + c.amount, 0),
+            cartAmount: newList.reduce((sum, cart) => sum + cart.amount, 0),
           }
         })
       },
 
       /** UPDATE ITEM */
       updateCartItem: (
-        index: number,
+        itemId: string,
+        selectedOptions: ItemOptionInput[],
         payload: Partial<Omit<OrderItemInput, 'itemId'>>,
       ) => {
         set((state) => {
-          const newList = state.listCartItem.map((item, i) =>
-            i === index ? { ...item, ...payload } : item,
+          const newList = state.listCartItem.map((c) =>
+            getCartKey(c.itemId, c.selectedOptions || []) ===
+            getCartKey(itemId, selectedOptions)
+              ? { ...c, ...payload }
+              : c,
           )
 
           return {
             listCartItem: newList,
-            cartAmount: newList.reduce((s, c) => s + c.amount, 0),
+            cartAmount: newList.reduce((sum, cart) => sum + cart.amount, 0),
           }
         })
       },
