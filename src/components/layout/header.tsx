@@ -28,7 +28,7 @@ export const Header = () => {
     <header className='sticky top-0 z-50'>
       <div
         className={cn(
-          'bg-beige-50 relative z-10 border-b border-white/[2%] px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] md:px-6 lg:px-10',
+          'bg-beige-50 border-dark-600/2 relative z-10 border-b px-2 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.1)] md:px-6 lg:px-10',
           isDrawerOpen && 'border-dark-600/10',
         )}
       >

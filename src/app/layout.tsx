@@ -1,4 +1,3 @@
-import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
 import { DEV_APP_URL } from '@/constants'
 import authOptions from '@/lib/auth-option'
@@ -41,7 +40,6 @@ export default async function RootLayout({
           <WalletConnectProvider>
             <Header />
             {children}
-            <Footer />
           </WalletConnectProvider>
         </ApolloProvider>
       </body>
