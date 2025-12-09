@@ -1,9 +1,10 @@
 'use client'
 
 import { ItemCard, SkeletonLoader, Slider } from '@/components/ui'
-import { ItemDetailModal } from '@/components/ui/modal'
+import { EItemModalDetailStatus, ItemDetailModal } from '@/components/ui/modal'
 import { useParallaxLayer } from '@/hooks'
 import { TItemResponse } from '@/lib/graphql/generated/graphql'
+import { TCartItem } from '@/types'
 import { cn } from '@/utils'
 import React, { forwardRef, useState } from 'react'
 import { FenceCloud } from '../icons'
@@ -37,6 +38,20 @@ export const BestSeller = forwardRef<HTMLElement, TBestSellerProps>(
       },
     )
     const [selectedItem, setSelectedItem] = useState<TItemResponse>()
+    const [cartItem, setCartItem] = useState<TCartItem>()
+    const [modalStatus, setModalStatus] = useState<EItemModalDetailStatus>(
+      EItemModalDetailStatus.CREATE,
+    )
+
+    const handleSelectItem = (
+      item: TItemResponse,
+      status: EItemModalDetailStatus,
+      cartItem?: TCartItem,
+    ) => {
+      setSelectedItem(item)
+      setModalStatus(status)
+      setCartItem(cartItem)
+    }
 
     return (
       <section
@@ -66,7 +81,7 @@ export const BestSeller = forwardRef<HTMLElement, TBestSellerProps>(
                   <ItemCard
                     key={item.itemId}
                     data={item}
-                    setSelectedItem={setSelectedItem}
+                    handleSelectItem={handleSelectItem}
                   />
                 ))}
               </Slider>
@@ -90,6 +105,8 @@ export const BestSeller = forwardRef<HTMLElement, TBestSellerProps>(
             isOpen={!!selectedItem}
             onClose={() => setSelectedItem(undefined)}
             data={selectedItem}
+            status={modalStatus}
+            cartItem={cartItem}
           />
         )}
       </section>

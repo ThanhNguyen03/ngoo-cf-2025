@@ -1,25 +1,31 @@
 import { polygon } from '@/assets/icons'
 import { TItemResponse } from '@/lib/graphql/generated/graphql'
 import useCartStore from '@/store/cart-store'
+import { TCartItem } from '@/types'
 import { cn } from '@/utils'
 import { PlusIcon, TagIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
-import { Dispatch, FC, SetStateAction } from 'react'
+import { FC } from 'react'
 import { Button } from './Button'
+import { EItemModalDetailStatus } from './modal'
 
 type TItemCardProps = {
   data: TItemResponse
-  setSelectedItem: Dispatch<SetStateAction<TItemResponse | undefined>>
+  handleSelectItem: (
+    item: TItemResponse,
+    status: EItemModalDetailStatus,
+    cartItem?: TCartItem,
+  ) => void
 }
 
-export const ItemCard: FC<TItemCardProps> = ({ data, setSelectedItem }) => {
+export const ItemCard: FC<TItemCardProps> = ({ data, handleSelectItem }) => {
   const { listCartItem } = useCartStore()
   const cartItem = listCartItem.find((c) => c.itemId === data.itemId)
 
   return (
     <>
       <div
-        onClick={() => setSelectedItem(data)}
+        onClick={() => handleSelectItem(data, EItemModalDetailStatus.CREATE)}
         className='border-dark-600/10 rounded-2 bg-beige-50 relative max-w-60 cursor-pointer border'
       >
         {/* sale tag */}
@@ -62,15 +68,28 @@ export const ItemCard: FC<TItemCardProps> = ({ data, setSelectedItem }) => {
               </div>
             </div>
             {cartItem ? (
-              <div className='text-14 rounded-full border border-green-500 bg-white px-2.5 py-1'>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleSelectItem(
+                    data,
+                    EItemModalDetailStatus.UPDATE,
+                    cartItem,
+                  )
+                }}
+                className='text-14 cursor-pointer rounded-full border border-green-500 bg-white px-2.5 py-1'
+              >
                 {cartItem.amount}
-              </div>
+              </button>
             ) : (
               <Button
                 className='text-16! gap-0 rounded-full bg-green-500 p-1.25'
                 icon={<PlusIcon size={12} className='text-beige-50' />}
                 disableAnimation
-                onClick={() => setSelectedItem(data)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleSelectItem(data, EItemModalDetailStatus.CREATE)
+                }}
               />
             )}
           </div>

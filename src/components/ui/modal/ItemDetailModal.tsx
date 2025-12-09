@@ -1,3 +1,5 @@
+'use client'
+
 import { AmountCounter, Button, Checkbox } from '@/components/ui'
 import { DEBOUNCE_DURATION } from '@/constants'
 import {
