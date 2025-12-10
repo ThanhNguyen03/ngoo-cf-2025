@@ -1,10 +1,12 @@
 import { emptyBoxIcon } from '@/assets/icons'
 import { Button, SkeletonLoader } from '@/components/ui'
-import { ItemDetailModal } from '@/components/ui/modal'
+import { EItemModalDetailStatus, ItemDetailModal } from '@/components/ui/modal'
 import { DEFAULT_PAGINATION } from '@/constants'
 import { client } from '@/lib/apollo-client'
 import {
+  EItemStatus,
   ListItemByCategoryDocument,
+  ListItemByStatusDocument,
   TCategory,
   TItemResponse,
 } from '@/lib/graphql/generated/graphql'
@@ -39,17 +41,41 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
   const bottomRef = useRef<HTMLDivElement | null>(null)
 
   const [loading, setLoading] = useState<boolean>(false)
+  const [modalStatus, setModalStatus] = useState<EItemModalDetailStatus>(
+    EItemModalDetailStatus.CREATE,
+  )
   const [selectedItem, setSelectedItem] = useState<TItemResponse>()
   const { listCartItem } = useCartStore()
 
   const getListItem = apolloWrapper(
     async () => {
-      // best seller handle sau
-      if (selectedCategory.name === INIT_CATEGORY.name) {
-        return
-      }
       setLoading(true)
       const { list, offset } = itemData
+      if (selectedCategory.name === INIT_CATEGORY.name) {
+        const { data, error } = await client.query({
+          query: ListItemByStatusDocument,
+          variables: {
+            status: [EItemStatus.Seller],
+          },
+        })
+
+        if (error) {
+          throw error
+        }
+
+        if (data) {
+          handleUpdateData(selectedCategory.categoryId, {
+            list:
+              offset === 0
+                ? data.listItemByStatus.records
+                : [...list, ...data.listItemByStatus.records],
+            total: data.listItemByStatus.total,
+            fetched: true,
+          })
+        }
+        return
+      }
+
       const { data, error } = await client.query({
         query: ListItemByCategoryDocument,
         variables: {
@@ -134,6 +160,16 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [inViewport, itemData])
 
+  const openCreate = (item: TItemResponse) => {
+    setSelectedItem(item)
+    setModalStatus(EItemModalDetailStatus.CREATE)
+  }
+
+  const openUpdate = (item: TItemResponse) => {
+    setSelectedItem(item)
+    setModalStatus(EItemModalDetailStatus.UPDATE)
+  }
+
   return (
     <div className='text-dark-600 flex w-full flex-col gap-4 lining-nums md:gap-4'>
       <h4 className='text-28 font-small-caps text-secondary-500 font-bold'>
@@ -152,7 +188,9 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
           <>
             {itemData.list.length > 0 ? (
               itemData.list.map((item, index) => {
-                const cartItem = listCartItem.find((c) => c.name === item.name)
+                const cartItem = listCartItem.find(
+                  (c) => c.itemId === item.itemId,
+                )
 
                 return (
                   <div
@@ -161,7 +199,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
                       'hover:shadow-container rounded-4 md:rounded-6 flex w-full cursor-pointer items-start duration-300 xl:w-[calc(50%-16px)]',
                       index % 2 === 0 && 'xl:mr-2',
                     )}
-                    onClick={() => setSelectedItem(item)}
+                    onClick={() => openCreate(item)}
                   >
                     <Image
                       alt={item.name}
@@ -199,10 +237,16 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
                       </div>
                       {cartItem ? (
                         <button
-                          onClick={() => setSelectedItem(item)}
-                          className='text-16! cursor-pointer rounded-full border border-green-500 bg-white px-2.5 py-1'
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            openUpdate(item)
+                          }}
+                          className={cn(
+                            'text-14! cursor-pointer rounded-full border border-green-500 bg-white px-2.5 py-1',
+                            cartItem.amount > 9 && 'px-1.5 py-1',
+                          )}
                         >
-                          {cartItem.amount}
+                          {cartItem.amount > 9 ? '9+' : cartItem.amount}
                         </button>
                       ) : (
                         <Button
@@ -211,16 +255,10 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
                             <PlusIcon size={16} className='text-beige-50' />
                           }
                           disableAnimation
-                          onClick={() => setSelectedItem(item)}
-                        />
-                      )}
-
-                      {selectedItem && (
-                        <ItemDetailModal
-                          isOpen={!!selectedItem}
-                          onClose={() => setSelectedItem(undefined)}
-                          data={selectedItem}
-                          cartItem={cartItem}
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            openCreate(item)
+                          }}
                         />
                       )}
                     </div>
@@ -237,6 +275,17 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
                   className='size-50'
                 />
               </div>
+            )}
+            {selectedItem && (
+              <ItemDetailModal
+                isOpen={!!selectedItem}
+                onClose={() => setSelectedItem(undefined)}
+                data={selectedItem}
+                cartItem={listCartItem.find(
+                  (c) => c.itemId === selectedItem.itemId,
+                )}
+                status={modalStatus}
+              />
             )}
           </>
         )}
@@ -277,10 +326,6 @@ export const MenuDetail: FC<TMenuDetailProps> = ({
 
   useEffect(() => {
     const categoryId = selectedCategory.categoryId
-    // TODO
-    if (selectedCategory.name === INIT_CATEGORY.name) {
-      return
-    }
     const exist = cache[categoryId] // If dont have cache data → fetch data
     if (!exist) {
       handleUpdateCache(categoryId, {

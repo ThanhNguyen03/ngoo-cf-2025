@@ -1,16 +1,15 @@
-import { Metadata } from 'next'
+import { Footer } from '@/components/layout/footer'
 import { Hero } from './_components/Hero'
 import { Menu } from './_components/Menu'
 
-export const metadata: Metadata = {
-  title: 'Land of Prosperity',
-}
-
 export default function MenuPage() {
   return (
-    <main>
-      <Hero />
-      <Menu />
-    </main>
+    <>
+      <main>
+        <Hero />
+        <Menu />
+      </main>
+      <Footer />
+    </>
   )
 }

@@ -13,10 +13,12 @@ type TService = {
 }
 const ServiceCard: FC<TService> = ({ icon, description, title }) => {
   return (
-    <div className='flex min-h-50 w-full max-w-60 flex-col items-center gap-2 text-center lining-nums md:gap-3'>
+    <div className='flex w-full gap-6 lining-nums md:min-h-50 md:max-w-60 md:flex-col md:items-center md:gap-3 md:text-center'>
       {icon}
-      <p className='text-16 text-dark-600 font-semibold'>{title}</p>
-      <p className='text-14 text-dark-600/50'>{description}</p>
+      <div className='flex flex-col justify-center py-4 md:p-0'>
+        <p className='text-16 font-semibold text-violet-700'>{title}</p>
+        <p className='text-14 text-dark-600'>{description}</p>
+      </div>
     </div>
   )
 }
@@ -60,7 +62,7 @@ export const Services: FC<TServicesProps> = ({ isHover }) => {
   return (
     <section
       className={cn(
-        'relative overflow-hidden px-2 pt-10 pb-6 md:px-6 md:pt-20 md:pb-10 lg:px-10 lg:pt-40 lg:pb-20',
+        'relative overflow-hidden px-2 pt-20 pb-10 md:px-6 md:pt-30 md:pb-20 lg:px-10 lg:pt-40 lg:pb-30',
         isHover
           ? 'from-dark-600 bg-linear-to-b to-white to-20%'
           : 'bg-linear-to-b from-[#dfd7be] to-white to-20%',
@@ -75,7 +77,7 @@ export const Services: FC<TServicesProps> = ({ isHover }) => {
             We offer the best services
           </p>
         </div>
-        <div className='flex items-center justify-between gap-6 md:gap-10'>
+        <div className='flex flex-col justify-between gap-6 md:flex-row md:items-center md:gap-10'>
           {LIST_SERVICE_DATA.map((data) => (
             <ServiceCard key={data.title} {...data} />
           ))}

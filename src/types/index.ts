@@ -1,3 +1,4 @@
+import { OrderItemInput, TItemResponse } from '@/lib/graphql/generated/graphql'
 import { StaticImageData } from 'next/image'
 import { SVGProps } from 'react'
 
@@ -35,6 +36,10 @@ export type TPagination = {
   limit: number
   offset: number
   query?: TPaginationQuery[]
+}
+
+export type TCartItem = OrderItemInput & {
+  itemInfo: TItemResponse
 }
 
 export type TCollectionData = {

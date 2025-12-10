@@ -28,7 +28,7 @@ export const Button: FC<TButtonProps> = ({
       )}
     >
       {children}
-      <div>{icon}</div>
+      {icon && <div>{icon}</div>}
     </button>
   )
 }

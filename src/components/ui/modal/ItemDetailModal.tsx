@@ -1,12 +1,14 @@
+'use client'
+
 import { AmountCounter, Button, Checkbox } from '@/components/ui'
 import { DEBOUNCE_DURATION } from '@/constants'
 import {
+  ItemOptionInput,
   TItemOption,
   TItemResponse,
-  TOrderItem,
 } from '@/lib/graphql/generated/graphql'
 import useCartStore, { calculateItemPrice } from '@/store/cart-store'
-import { TModalProps } from '@/types'
+import { TCartItem, TModalProps } from '@/types'
 import { cn } from '@/utils'
 import { TagIcon, TrashIcon, XIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
@@ -18,7 +20,7 @@ type TItemOptionProps = {
   isRequired?: boolean
   className?: string
   onChange: (selected: TItemOption[]) => void
-  selectedOptions: TItemOption[]
+  selectedOptions: ItemOptionInput[]
   listOption: TItemOption[]
 }
 
@@ -65,11 +67,12 @@ const ItemOption: FC<TItemOptionProps> = ({
       )}
     >
       <div className='flex items-center justify-between'>
-        <h3 className='font-small-caps text-18 font-semibold'>{title}</h3>
+        <h3 className='font-small-caps text-20 font-semibold'>{title}</h3>
         <p
           className={cn(
-            'rounded-2 bg-shade-700/10 text-dark-600/70 !text-12 px-2 py-0.75',
-            selectedOptions.length > 0 && 'bg-green-100 text-green-600',
+            'rounded-2 bg-shade-700/10 text-dark-600/70 !text-12 px-2 py-0.75 font-medium',
+            selectedOptions.length > 0 &&
+              'bg-green-100 font-semibold text-green-600',
           )}
         >
           {selectedOptions.length > 0
@@ -109,7 +112,7 @@ const ItemOption: FC<TItemOptionProps> = ({
                 />
               </div>
               {option.extraPrice && (
-                <p className='rounded-2 bg-shade-700/10 text-dark-600/70 text-10 min-w-10 px-1 py-0.75 text-center'>
+                <p className='rounded-2 bg-shade-700/10 text-dark-600 text-12 min-w-10 px-1 py-0.75 text-center'>
                   +{option.extraPrice}$
                 </p>
               )}
@@ -121,20 +124,35 @@ const ItemOption: FC<TItemOptionProps> = ({
   )
 }
 
-export const ItemDetailModal: FC<
-  TModalProps & { data: TItemResponse; cartItem?: TOrderItem }
-> = ({ isOpen, onClose, data, cartItem }) => {
+export enum EItemModalDetailStatus {
+  UPDATE = 'update',
+  CREATE = 'create',
+}
+
+type TItemDetailModalProps = TModalProps & {
+  data: TItemResponse
+  cartItem?: TCartItem
+  status: EItemModalDetailStatus
+}
+export const ItemDetailModal: FC<TItemDetailModalProps> = ({
+  isOpen,
+  onClose,
+  data,
+  cartItem,
+  status,
+}) => {
   const { addToCart, removeFromCart, updateCartItem } = useCartStore()
 
-  const [totalPrice, setTotalPrice] = useState<number>(0)
-  const [loading, setLoading] = useState<boolean>(false)
-
   const [itemAmount, setItemAmount] = useState<number>(
-    cartItem && cartItem.amount > 0 ? cartItem.amount : 1,
+    status === EItemModalDetailStatus.UPDATE ? cartItem?.amount || 1 : 1,
   )
-  const [selectedOptions, setSelectedOptions] = useState<TItemOption[]>(
-    cartItem?.selectedOptions || [],
+  const [selectedOptions, setSelectedOptions] = useState<ItemOptionInput[]>(
+    status === EItemModalDetailStatus.UPDATE
+      ? cartItem?.selectedOptions || []
+      : [],
   )
+  const [loading, setLoading] = useState<boolean>(false)
+  const [totalPrice, setTotalPrice] = useState<number>(0)
 
   const requiredGroups: TItemOptionGroup[] = useMemo(() => {
     const map = new Map<string, TItemOption[]>()
@@ -153,7 +171,9 @@ export const ItemDetailModal: FC<
     }
     const map = new Map<string, TItemOption[]>()
     for (const opt of data.additionalOption) {
-      if (!map.has(opt.group)) map.set(opt.group, [])
+      if (!map.has(opt.group)) {
+        map.set(opt.group, [])
+      }
       map.get(opt.group)!.push(opt)
     }
     return Array.from(map.entries()).map(([group, list]) => ({ group, list }))
@@ -179,35 +199,51 @@ export const ItemDetailModal: FC<
 
   const handleSubmit = () => {
     if (itemAmount === 0) {
-      removeFromCart(data.name)
+      removeFromCart(data.itemId, selectedOptions)
       onClose()
       return
     }
-    const newItem: TOrderItem = {
-      price: data.price,
-      amount: itemAmount,
-      selectedOptions: selectedOptions,
-      discountPercent: data.discountPercent,
-      name: data.name,
-      // note: itemData.note, TODO: Add note
+
+    // UPDATE
+    if (status === EItemModalDetailStatus.UPDATE && cartItem) {
+      updateCartItem(data.itemId, cartItem.selectedOptions || [], {
+        amount: itemAmount,
+        selectedOptions,
+      })
+      onClose()
+      return
     }
-    if (cartItem) {
-      updateCartItem(newItem)
-    } else {
-      addToCart(newItem)
-    }
+
+    // CREATE
+    addToCart(data, selectedOptions, itemAmount)
     onClose()
   }
+
+  useEffect(() => {
+    if (!cartItem) {
+      setItemAmount(1)
+      setSelectedOptions([])
+      return
+    }
+    if (status === EItemModalDetailStatus.UPDATE) {
+      setItemAmount(cartItem.amount)
+      setSelectedOptions(cartItem.selectedOptions || [])
+    } else {
+      setItemAmount(1)
+      setSelectedOptions([])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data.itemId, status])
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className='bg-beige-50 max-h-[80%] w-80 md:w-[420px]'
+      className='rounded-4 max-h-[80%] w-80 overflow-hidden md:w-[420px]'
       closable={false}
       closeOnOutsideClick
     >
-      <div className='relative flex size-full flex-col'>
+      <div className='rounded-4 relative flex size-full flex-col overflow-hidden'>
         <Button
           onClick={onClose}
           disableAnimation
@@ -218,15 +254,25 @@ export const ItemDetailModal: FC<
         <Image
           alt={`image-${data.name}`}
           src={data.image}
-          width={240}
-          height={240}
-          className='rounded-t-2 h-60 w-full object-cover'
+          width={200}
+          height={200}
+          className='rounded-t-4 h-60 w-full object-cover'
         />
-        <div className='flex w-full flex-col'>
+        <div className='mb-8 flex w-full flex-col bg-white'>
           {/* main detail */}
           <div className='border-dark-600/10 flex flex-col gap-0.25 border-b p-2 pb-4 md:p-4 md:pb-6'>
+            {data.discountPercent && (
+              <div className='flex items-start gap-1'>
+                <TagIcon size={14} className='text-secondary-500 rotate-90' />
+                <p className='text-12! text-dark-600'>
+                  Sale {data.discountPercent}%
+                </p>
+              </div>
+            )}
             <div className='flex w-full items-start justify-between'>
-              <h3 className='text-18 mt-1 leading-5 font-bold'>{data.name}</h3>
+              <h3 className='text-18 from-primary-500 to-secondary-300 mt-1 bg-linear-to-r bg-clip-text font-bold text-transparent'>
+                {data.name}
+              </h3>
               <div className='flex items-start justify-center gap-2'>
                 <p
                   className={cn(
@@ -244,15 +290,7 @@ export const ItemDetailModal: FC<
                 )}
               </div>
             </div>
-            {data.discountPercent && (
-              <div className='flex items-start gap-1'>
-                <TagIcon size={14} className='text-secondary-500 rotate-90' />
-                <p className='text-12! text-dark-600/70'>
-                  Sale {data.discountPercent}%
-                </p>
-              </div>
-            )}
-            <p className='text-12 text-dark-600/50 pt-2.75'>
+            <p className='text-14 text-dark-600 pt-2.75 font-medium'>
               {data.description}
             </p>
           </div>
@@ -279,7 +317,7 @@ export const ItemDetailModal: FC<
               />
             ))}
             {/* ADDITIONAL OPTIONS */}
-            {additionalGroups.map((g) => (
+            {additionalGroups.map((g, i) => (
               <ItemOption
                 key={`add-${g.group}`}
                 title={g.group}
@@ -293,6 +331,9 @@ export const ItemDetailModal: FC<
                     ...next,
                   ])
                 }}
+                className={cn(
+                  i === additionalGroups.length - 1 && 'border-b-0',
+                )}
               />
             ))}
           </div>
@@ -315,18 +356,22 @@ export const ItemDetailModal: FC<
 
           {/* Amounts */}
           <AmountCounter
-            className='mb-14 flex w-full items-center justify-center gap-4 p-2 md:gap-6 md:p-4'
+            className='mb-14 flex w-full items-center justify-center gap-4 px-2 md:gap-6 md:px-4'
             isInputAmount
             onChange={setItemAmount}
             amount={itemAmount}
           />
         </div>
         {/* Submit button */}
-        <div className='bg-beige-50 fixed bottom-0 flex w-full justify-center p-2 md:p-4'>
+        <div className='bg-beige-50 border-dark-600/10 fixed bottom-0 flex w-full justify-center border-t p-2 md:p-4'>
           <Button
             disableAnimation
             onClick={handleSubmit}
-            disabled={(!isRequiredSelected && itemAmount !== 0) || loading}
+            disabled={
+              (!isRequiredSelected && itemAmount !== 0) ||
+              loading ||
+              (status === EItemModalDetailStatus.CREATE && itemAmount === 0)
+            }
             className={cn(
               'rounded-3 w-full px-4 py-2 text-white duration-200',
               itemAmount === 0 ? 'bg-red-500' : 'bg-green-500',
@@ -338,7 +383,12 @@ export const ItemDetailModal: FC<
                 Delete Order
               </>
             ) : (
-              <>Add to cart {totalPrice.toFixed(2)}$</>
+              <>
+                {status === EItemModalDetailStatus.UPDATE
+                  ? 'Update item'
+                  : 'Add to cart'}{' '}
+                {totalPrice.toFixed(2)}$
+              </>
             )}
           </Button>
         </div>

@@ -10,6 +10,8 @@ type TAmountCounter = {
   amountClassName?: string
   amount?: number
   onChange: (amount: number) => void
+  min?: number
+  max?: number
 }
 
 export const AmountCounter: FC<TAmountCounter> = ({
@@ -19,6 +21,8 @@ export const AmountCounter: FC<TAmountCounter> = ({
   onChange,
   buttonClassName,
   amountClassName,
+  min = 0,
+  max,
 }) => {
   const onChangeAmount = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value
@@ -40,8 +44,8 @@ export const AmountCounter: FC<TAmountCounter> = ({
       )}
     >
       <Button
-        onClick={() => handleUpdateAmount(amount - 1)}
-        disabled={amount < 1}
+        onClick={() => handleUpdateAmount(amount - min)}
+        disabled={amount < min + 1}
         className={cn('rounded-full bg-green-500 p-1.5', buttonClassName)}
         disableAnimation
         icon={<MinusIcon className='text-white' size={14} weight='bold' />}
@@ -70,6 +74,7 @@ export const AmountCounter: FC<TAmountCounter> = ({
       )}
       <Button
         onClick={() => handleUpdateAmount(amount + 1)}
+        disabled={amount === max}
         className={cn('rounded-full bg-green-500 p-1.5', buttonClassName)}
         disableAnimation
         icon={<PlusIcon className='text-white' size={14} weight='bold' />}

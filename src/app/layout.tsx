@@ -1,4 +1,3 @@
-import { Footer } from '@/components/layout/footer'
 import { Header } from '@/components/layout/header'
 import { DEV_APP_URL } from '@/constants'
 import authOptions from '@/lib/auth-option'
@@ -22,7 +21,7 @@ export default async function RootLayout({
   const session = await getServerSession(authOptions)
 
   return (
-    <html lang='en' className='scroll-smooth'>
+    <html lang='en' className='scroll-smooth' data-scroll-behavior='smooth'>
       <head>
         <link
           rel='icon'
@@ -36,12 +35,11 @@ export default async function RootLayout({
         />
       </head>
 
-      <body className='font-raleway scroll-smooth bg-white lining-nums antialiased'>
+      <body className='font-raleway scrollbar-none scroll-smooth bg-white lining-nums antialiased'>
         <ApolloProvider session={session}>
           <WalletConnectProvider>
             <Header />
             {children}
-            <Footer />
           </WalletConnectProvider>
         </ApolloProvider>
       </body>

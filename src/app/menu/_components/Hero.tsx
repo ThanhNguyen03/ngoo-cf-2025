@@ -9,8 +9,10 @@ import {
   NEW_PRODUCT_DATA,
   SIZE_OPTION,
 } from '@/constants'
-import { TOrderItem } from '@/lib/graphql/generated/graphql'
-import useCartStore, { calculateItemPrice } from '@/store/cart-store'
+import useCartStore, {
+  calculateItemPrice,
+  getCartKey,
+} from '@/store/cart-store'
 import { ENewProduct } from '@/types'
 import { cn } from '@/utils'
 import Image from 'next/image'
@@ -20,7 +22,7 @@ import { Bottle3D } from './ui/Bottle3D'
 const ANIMATION_DURATION = 700 // ms
 
 export const Hero = () => {
-  const { addToCart, removeFromCart, updateCartItem, listCartItem } =
+  const { addToCart, removeFromCart, listCartItem, updateCartItem } =
     useCartStore()
   const [selectedProduct, setSelectedProduct] = useState<ENewProduct>(
     ENewProduct.Cherry,
@@ -48,36 +50,56 @@ export const Hero = () => {
   }
 
   const handleSubmit = () => {
+    const itemData = CART_NEW_DATA[selectedProduct]
+    const selectedOptions = SIZE_OPTION.filter(
+      (opt) => opt.name === selectedSize,
+    )
+
     if (itemAmount === 0) {
-      removeFromCart(NEW_PRODUCT_DATA[selectedProduct].title)
+      removeFromCart(itemData.itemId, selectedOptions)
+      setItemAmount(1)
       return
     }
-    const data = {
-      image: NEW_PRODUCT_DATA[selectedProduct].image,
-      name: NEW_PRODUCT_DATA[selectedProduct].title,
-      price: NEW_PRODUCT_DATA[selectedProduct].price,
-      discountPercent: NEW_PRODUCT_DATA[selectedProduct].discountPercent,
-    }
-    const newItem: TOrderItem = {
-      discountPercent: data.discountPercent,
-      price: data.price,
-      name: data.name,
-      amount: itemAmount,
-      selectedOptions: SIZE_OPTION.filter((opt) => opt.name === selectedSize),
-    }
-    const existed = listCartItem.some(
-      (i) => i.name === NEW_PRODUCT_DATA[selectedProduct].title,
+
+    const existingItem = listCartItem.find(
+      (i) =>
+        getCartKey(i.itemId, i.selectedOptions || []) ===
+        getCartKey(itemData.itemId, selectedOptions),
     )
-    if (existed) {
-      updateCartItem(newItem)
+
+    if (existingItem) {
+      updateCartItem(itemData.itemId, selectedOptions, { amount: itemAmount })
     } else {
-      addToCart(newItem)
+      addToCart(itemData, selectedOptions, itemAmount)
     }
   }
 
   useEffect(() => {
+    const itemData = CART_NEW_DATA[selectedProduct]
+    const selectedOptions = SIZE_OPTION.filter(
+      (opt) => opt.name === selectedSize,
+    )
+    const existingItem = listCartItem.find(
+      (i) =>
+        getCartKey(i.itemId, i.selectedOptions || []) ===
+        getCartKey(itemData.itemId, selectedOptions),
+    )
+    if (existingItem) {
+      setItemAmount(existingItem.amount)
+      setTotalPrice(
+        calculateItemPrice(
+          existingItem.itemInfo,
+          existingItem.selectedOptions || [],
+          existingItem.amount,
+        ),
+      )
+    }
+  }, [selectedProduct, listCartItem, selectedSize])
+
+  useEffect(() => {
     setAnimation(false)
     const timeout = setTimeout(() => setAnimation(true), ANIMATION_DURATION)
+
     return () => clearTimeout(timeout)
   }, [selectedSize])
 
@@ -124,7 +146,7 @@ export const Hero = () => {
           'bg-[length:200%_100%] bg-left lg:bg-[length:100%_100%] lg:bg-center',
         )}
       />
-      <div className='relative mx-auto flex h-[calc(100dvh-300px)] max-h-[885px] w-full max-w-[1200px] justify-center md:gap-4'>
+      <div className='relative mx-auto flex h-[calc(100dvh-200px)] max-h-[580px] w-full max-w-[1200px] justify-center md:h-[calc(100dvh-300px)] md:max-h-[885px] md:gap-4'>
         {/* Left column */}
         <div className='mt-8 flex h-full w-[30%] flex-col items-start gap-10 md:justify-between'>
           <div className='absolute flex flex-col items-start gap-2 md:relative'>
@@ -233,7 +255,7 @@ export const Hero = () => {
               onClick={handleSubmit}
               disabled={
                 !listCartItem.some(
-                  (i) => i.name === NEW_PRODUCT_DATA[selectedProduct].title,
+                  (i) => i.itemId === CART_NEW_DATA[selectedProduct].itemId,
                 ) && itemAmount === 0
               }
               className={cn(
@@ -247,12 +269,12 @@ export const Hero = () => {
         </div>
 
         {/* Center column */}
-        <div className='relative flex h-full min-h-70 w-3/5 flex-col items-center justify-center md:w-[40%]'>
+        <div className='relative flex h-full w-3/5 flex-col items-center justify-center md:min-h-70 md:w-[40%]'>
           <Bottle3D
             isRotate={animation}
             glbUrl={NEW_PRODUCT_DATA[selectedProduct].model}
             className={cn(
-              'absolute -left-25 z-10 min-[620px]:-left-10 sm:-left-20 lg:left-0 xl:size-[500px]',
+              'absolute top-20 -left-25 z-10 min-[620px]:-left-10 sm:-left-20 md:top-auto lg:left-0 xl:size-[500px]',
               animation
                 ? 'animate-translate-vertical-in'
                 : 'animate-translate-vertical-out',
@@ -319,7 +341,10 @@ export const Hero = () => {
                 (option) => (
                   <button
                     key={option.name}
-                    onClick={() => setSelectedSize(option.name)}
+                    onClick={() => {
+                      setItemAmount(1)
+                      setSelectedSize(option.name)
+                    }}
                     className={cn(
                       'rounded-2 size-fit cursor-pointer border border-white/30 bg-linear-to-br from-white/50 to-white/10 p-1 font-semibold text-white shadow backdrop-blur-3xl duration-700',
                       animation ? 'opacity-100' : 'opacity-0',
@@ -350,7 +375,7 @@ export const Hero = () => {
               onClick={handleSubmit}
               disabled={
                 !listCartItem.some(
-                  (i) => i.name === NEW_PRODUCT_DATA[selectedProduct].title,
+                  (i) => i.itemId === CART_NEW_DATA[selectedProduct].itemId,
                 ) && itemAmount === 0
               }
               className={cn(
