@@ -1,7 +1,7 @@
+import { SelectDropdown } from '@/components/ui/SelectDropdown'
 import { TCategory } from '@/lib/graphql/generated/graphql'
 import { cn } from '@/utils'
 import {
-  CaretUpIcon,
   CheckIcon,
   MagnifyingGlassIcon,
   XIcon,
@@ -98,87 +98,53 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
         className,
       )}
     >
-      <div className='flex w-full items-center gap-2'>
+      <div className='flex w-full items-start gap-2'>
         {/* select dropdown */}
-        <div
-          className={cn(
-            'relative flex w-full flex-col items-start duration-700',
-            openSearchBar || searchTerm
-              ? 'absolute max-w-0 opacity-0'
-              : 'max-w-full opacity-100',
-          )}
+        <SelectDropdown
           ref={containerRef}
+          openDropdown={openDropdown}
+          onChange={() => setOpenDropdown(!openDropdown)}
+          defaultValue={selectedCategory.name}
         >
-          <button
-            onClick={() => setOpenDropdown(!openDropdown)}
-            className={cn(
-              'group border-dark-600/10 rounded-3 hover:border-primary-500 z-20 flex w-full cursor-pointer items-center gap-2 border p-2',
-              openDropdown && 'border-primary-500 rounded-b-none border-b-0',
-            )}
-          >
-            <p className='text-14! text-primary-500 w-full text-left leading-[160%] font-semibold text-nowrap duration-700'>
-              {selectedCategory.name}
-            </p>
-            <CaretUpIcon
-              size={20}
+          {listCategory.map((category) => (
+            <Link
+              href={`#${category.categoryId}`}
+              onClick={(e) => {
+                e.preventDefault()
+                isScrollingRef.current = true
+                const element = sectionRef.current.get(category.categoryId)
+                if (!element) {
+                  return
+                }
+
+                const yOffset = -120 // header height
+                const y =
+                  element.getBoundingClientRect().top + window.scrollY + yOffset
+
+                window.scrollTo({ top: y, behavior: 'smooth' })
+                handleSelectCategory(category)
+
+                const scroll = setTimeout(() => {
+                  isScrollingRef.current = false
+                }, 400)
+
+                return () => clearTimeout(scroll)
+              }}
               className={cn(
-                'group-hover:text-primary-500 text-dark-600/50 w-fit',
-                openDropdown && 'rotate-180 duration-300',
+                'text-14! text-dark-600/70 hover:bg-dark-600/10 flex w-full cursor-pointer items-center justify-between p-2 text-left leading-[160%] text-nowrap',
               )}
-            />
-          </button>
-
-          {/* dropdown */}
-          <div
-            className={cn(
-              'border-primary-500 rounded-3 absolute z-10 flex min-h-20 w-full flex-col items-start gap-2 rounded-t-none border border-t-0 bg-white pt-2 shadow-md',
-              openDropdown
-                ? 'top-10 translate-y-0 opacity-100'
-                : 'pointer-events-none -translate-y-[100%] opacity-0',
-            )}
-          >
-            {listCategory.map((category) => (
-              <Link
-                href={`#${category.categoryId}`}
-                onClick={(e) => {
-                  e.preventDefault()
-                  isScrollingRef.current = true
-                  const element = sectionRef.current.get(category.categoryId)
-                  if (!element) {
-                    return
-                  }
-
-                  const yOffset = -120 // header height
-                  const y =
-                    element.getBoundingClientRect().top +
-                    window.scrollY +
-                    yOffset
-
-                  window.scrollTo({ top: y, behavior: 'smooth' })
-                  handleSelectCategory(category)
-
-                  const scroll = setTimeout(() => {
-                    isScrollingRef.current = false
-                  }, 400)
-
-                  return () => clearTimeout(scroll)
-                }}
+              key={category.name}
+            >
+              {category.name}
+              <CheckIcon
                 className={cn(
-                  'text-14! text-dark-600/70 hover:bg-dark-600/10 flex w-full cursor-pointer items-center justify-between p-2 text-left leading-[160%] text-nowrap',
+                  'text-dark-600',
+                  category !== selectedCategory && 'hidden',
                 )}
-                key={category.name}
-              >
-                {category.name}
-                <CheckIcon
-                  className={cn(
-                    'text-dark-600',
-                    category !== selectedCategory && 'hidden',
-                  )}
-                />
-              </Link>
-            ))}
-          </div>
-        </div>
+              />
+            </Link>
+          ))}
+        </SelectDropdown>
 
         {/* search bar */}
         <label

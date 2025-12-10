@@ -93,23 +93,29 @@ const ItemCheckout: FC<TItemCheckoutProps> = ({ data }) => {
     </>
   )
 }
-
-export const CheckoutDetails = () => {
+type TCheckoutDetailProps = {
+  setTotalCartPrice: (total: number) => void
+}
+export const CheckoutDetails: FC<TCheckoutDetailProps> = ({
+  setTotalCartPrice,
+}) => {
   const listCartItem = useCartStore((state) => state.listCartItem)
 
   const totalCartPrice = useMemo(() => {
-    return listCartItem
-      .reduce((total, item) => {
-        return (
-          total +
-          calculateItemPrice(
-            item.itemInfo,
-            item.selectedOptions || [],
-            item.amount,
-          )
+    const total = listCartItem.reduce((total, item) => {
+      return (
+        total +
+        calculateItemPrice(
+          item.itemInfo,
+          item.selectedOptions || [],
+          item.amount,
         )
-      }, 0)
-      .toFixed(2)
+      )
+    }, 0)
+
+    setTotalCartPrice(total)
+    return total.toFixed(2)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [listCartItem])
 
   return (

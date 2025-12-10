@@ -7,6 +7,7 @@ import { forwardRef, InputHTMLAttributes } from 'react'
 type TCheckboxProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {
   label?: string
   labelClassName?: string
+  checkedRadioClassName?: string
   type: 'checkbox' | 'radio'
 }
 
@@ -21,6 +22,7 @@ export const Checkbox = forwardRef<HTMLInputElement, TCheckboxProps>(
       disabled,
       className,
       labelClassName,
+      checkedRadioClassName,
       ...props
     },
     ref,
@@ -67,6 +69,7 @@ export const Checkbox = forwardRef<HTMLInputElement, TCheckboxProps>(
                   className={cn(
                     'bg-primary-500 size-full rounded-full',
                     disabled && 'bg-neutral-900 opacity-30',
+                    checkedRadioClassName,
                   )}
                 />
               )}
