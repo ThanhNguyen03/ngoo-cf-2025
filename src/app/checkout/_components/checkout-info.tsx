@@ -6,6 +6,7 @@ import {
   EPaymentMethod,
   TUserInfoSnapshot,
 } from '@/lib/graphql/generated/graphql'
+import useCartStore from '@/store/cart-store'
 import { cn } from '@/utils'
 import {
   ArrowRightIcon,
@@ -20,6 +21,8 @@ type TCheckoutInfo = {
   totalCartPrice: number
 }
 export const CheckoutInfo: FC<TCheckoutInfo> = ({ totalCartPrice }) => {
+  const listCartItem = useCartStore((state) => state.listCartItem)
+
   const [userInfoSnapshot, setUserInfoSnapshot] = useState<TUserInfoSnapshot>()
   const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>()
   const listPaymentMethod = Object.values(EPaymentMethod)
@@ -45,7 +48,7 @@ export const CheckoutInfo: FC<TCheckoutInfo> = ({ totalCartPrice }) => {
       <div className='flex w-full flex-col items-start gap-4'>
         {/* customer info */}
         <SelectDropdown
-          openDropdown={!userInfoSnapshot}
+          openDropdown={!userInfoSnapshot && listCartItem.length > 0}
           defaultValue={
             <div className='center w-full justify-between'>
               <h4 className='text-18 font-small-caps text-cherry-800 font-bold'>
@@ -67,7 +70,7 @@ export const CheckoutInfo: FC<TCheckoutInfo> = ({ totalCartPrice }) => {
             </div>
           }
           selectButtonClassName='p-2 md:px-4'
-          disabled={!!userInfoSnapshot}
+          disabled={!!userInfoSnapshot || listCartItem.length === 0}
         >
           <form
             onSubmit={handleSubmit((data) => setUserInfoSnapshot(data))}
@@ -206,6 +209,7 @@ export const CheckoutInfo: FC<TCheckoutInfo> = ({ totalCartPrice }) => {
                         ? 'checked:border-green-600 checked:group-hover:border-green-600 checked:hover:border-green-600'
                         : 'checked:border-[#022475] checked:group-hover:border-[#022475] checked:hover:border-[#022475]',
                     )}
+                    onChange={() => setPaymentMethod(method)}
                     labelClassName={cn(
                       paymentMethod && paymentMethod !== method && 'opacity-30',
                     )}

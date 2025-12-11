@@ -170,7 +170,7 @@ export const CheckoutDetails: FC<TCheckoutDetailProps> = ({
               ))
             ) : (
               <tr>
-                <td>
+                <td className='py-10'>
                   <div className='center h-40 w-full flex-col p-4 text-center'>
                     <Image
                       alt='empty box'
@@ -193,23 +193,25 @@ export const CheckoutDetails: FC<TCheckoutDetailProps> = ({
             <CaretLeftIcon size={20} />
             <p>Continue shopping</p>
           </Link>
-          <div className='flex flex-col gap-3'>
-            <div className='center font-shantell text-14 gap-10 px-4 md:px-6'>
-              <p className='text-dark-600/70'>Subtotal:</p>
-              <p className='font-semibold'>{totalCartPrice}$</p>
-            </div>
-            <div className='center font-shantell text-14 gap-10 px-4 md:px-6'>
-              <p className='text-dark-600/70'>Shipping:</p>
-              <p className='font-semibold'>Free</p>
-            </div>
+          {listCartItem.length > 0 && (
+            <div className='flex flex-col gap-3'>
+              <div className='center font-shantell text-14 gap-10 px-4 md:px-6'>
+                <p className='text-dark-600/70'>Subtotal:</p>
+                <p className='font-semibold'>{totalCartPrice}$</p>
+              </div>
+              <div className='center font-shantell text-14 gap-10 px-4 md:px-6'>
+                <p className='text-dark-600/70'>Shipping:</p>
+                <p className='font-semibold'>Free</p>
+              </div>
 
-            <div className='bg-dark-600/10 h-0.5 w-full' />
+              <div className='bg-dark-600/10 h-0.5 w-full' />
 
-            <div className='center text-16 gap-10 pl-4 font-semibold md:pl-6'>
-              <p>Total:</p>
-              <p>{totalCartPrice}$</p>
+              <div className='center text-16 gap-10 pl-4 font-semibold md:pl-6'>
+                <p>Total:</p>
+                <p>{totalCartPrice}$</p>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>
