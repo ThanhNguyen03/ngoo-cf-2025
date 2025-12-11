@@ -1,5 +1,6 @@
 import { emptyBoxIcon } from '@/assets/icons'
 import { AmountCounter } from '@/components/ui'
+import { ConfirmModal } from '@/components/ui/modal/ConfirmModal'
 import useCartStore, { calculateItemPrice } from '@/store/cart-store'
 import { TCartItem } from '@/types'
 import { cn } from '@/utils'
@@ -19,6 +20,7 @@ type TItemCheckoutProps = {
 const ItemCheckout: FC<TItemCheckoutProps> = ({ data }) => {
   const [itemAmount, setItemAmount] = useState<number>(data.amount)
   const updateCartItem = useCartStore((state) => state.updateCartItem)
+  const removeFromCart = useCartStore((state) => state.removeFromCart)
 
   const handleChangeAmount = (newAmount: number) => {
     setItemAmount(newAmount)
@@ -85,7 +87,12 @@ const ItemCheckout: FC<TItemCheckoutProps> = ({ data }) => {
           <button className='rounded-2 cursor-pointer bg-blue-50 from-blue-200 to-blue-50 p-2 duration-300 hover:bg-linear-to-br'>
             <PencilIcon className='text-blue-500' size={20} />
           </button>
-          <button className='from-secondary-100 to-secondary-50 rounded-2 bg-secondary-50 cursor-pointer p-2 duration-300 hover:bg-linear-to-br'>
+          <button
+            onClick={() =>
+              removeFromCart(data.itemId, data.selectedOptions || [])
+            }
+            className='from-secondary-100 to-secondary-50 rounded-2 bg-secondary-50 cursor-pointer p-2 duration-300 hover:bg-linear-to-br'
+          >
             <TrashIcon className='text-secondary-500' size={20} />
           </button>
         </div>
@@ -97,6 +104,8 @@ const ItemCheckout: FC<TItemCheckoutProps> = ({ data }) => {
 export const CheckoutDetails = () => {
   const listCartItem = useCartStore((state) => state.listCartItem)
   const getTotalCartPrice = useCartStore((state) => state.getTotalCartPrice)
+
+  const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false)
 
   return (
     <div className='relative flex size-full max-w-[65%] flex-col items-start gap-4 overflow-hidden md:gap-6'>
@@ -196,6 +205,8 @@ export const CheckoutDetails = () => {
           )}
         </div>
       </div>
+
+      <ConfirmModal isOpen={true} onClose={() => setOpenConfirmModal(false)} />
     </div>
   )
 }

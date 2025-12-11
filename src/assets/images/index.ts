@@ -1,5 +1,6 @@
 export { default as coffeeShop } from './coffee-shop.png'
 export { default as collectionBanner } from './collection-banner.png'
+export { default as confuseCow } from './confuse-cow.png'
 export { default as defaultAvatar } from './default-avt.png'
 export { default as heroBanner } from './hero-banner.svg'
 export { default as loginBg } from './login-bg.png'
