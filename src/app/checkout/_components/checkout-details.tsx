@@ -11,7 +11,7 @@ import {
 } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
 import Link from 'next/link'
-import { FC, useMemo, useState } from 'react'
+import { FC, useState } from 'react'
 
 type TItemCheckoutProps = {
   data: TCartItem
@@ -93,30 +93,10 @@ const ItemCheckout: FC<TItemCheckoutProps> = ({ data }) => {
     </>
   )
 }
-type TCheckoutDetailProps = {
-  setTotalCartPrice: (total: number) => void
-}
-export const CheckoutDetails: FC<TCheckoutDetailProps> = ({
-  setTotalCartPrice,
-}) => {
+
+export const CheckoutDetails = () => {
   const listCartItem = useCartStore((state) => state.listCartItem)
-
-  const totalCartPrice = useMemo(() => {
-    const total = listCartItem.reduce((total, item) => {
-      return (
-        total +
-        calculateItemPrice(
-          item.itemInfo,
-          item.selectedOptions || [],
-          item.amount,
-        )
-      )
-    }, 0)
-
-    setTotalCartPrice(total)
-    return total.toFixed(2)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [listCartItem])
+  const getTotalCartPrice = useCartStore((state) => state.getTotalCartPrice)
 
   return (
     <div className='relative flex size-full max-w-[65%] flex-col items-start gap-4 overflow-hidden md:gap-6'>
@@ -197,7 +177,9 @@ export const CheckoutDetails: FC<TCheckoutDetailProps> = ({
             <div className='flex flex-col gap-3'>
               <div className='center font-shantell text-14 gap-10 px-4 md:px-6'>
                 <p className='text-dark-600/70'>Subtotal:</p>
-                <p className='font-semibold'>{totalCartPrice}$</p>
+                <p className='font-semibold'>
+                  {getTotalCartPrice().toFixed(2)}$
+                </p>
               </div>
               <div className='center font-shantell text-14 gap-10 px-4 md:px-6'>
                 <p className='text-dark-600/70'>Shipping:</p>
@@ -208,7 +190,7 @@ export const CheckoutDetails: FC<TCheckoutDetailProps> = ({
 
               <div className='center text-16 gap-10 pl-4 font-semibold md:pl-6'>
                 <p>Total:</p>
-                <p>{totalCartPrice}$</p>
+                <p>{getTotalCartPrice().toFixed(2)}$</p>
               </div>
             </div>
           )}

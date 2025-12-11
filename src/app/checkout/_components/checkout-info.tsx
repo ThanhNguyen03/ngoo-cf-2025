@@ -15,13 +15,11 @@ import {
   PaypalLogoIcon,
   XCircleIcon,
 } from '@phosphor-icons/react/dist/ssr'
-import { FC, useState } from 'react'
+import { useState } from 'react'
 
-type TCheckoutInfo = {
-  totalCartPrice: number
-}
-export const CheckoutInfo: FC<TCheckoutInfo> = ({ totalCartPrice }) => {
+export const CheckoutInfo = () => {
   const listCartItem = useCartStore((state) => state.listCartItem)
+  const getTotalCartPrice = useCartStore((state) => state.getTotalCartPrice)
 
   const [userInfoSnapshot, setUserInfoSnapshot] = useState<TUserInfoSnapshot>()
   const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>()
@@ -270,7 +268,7 @@ export const CheckoutInfo: FC<TCheckoutInfo> = ({ totalCartPrice }) => {
         disableAnimation
         disabled={!userInfoSnapshot || !paymentMethod}
       >
-        Check Out {totalCartPrice}$
+        Check Out {getTotalCartPrice().toFixed(2)}$
       </Button>
     </div>
   )
