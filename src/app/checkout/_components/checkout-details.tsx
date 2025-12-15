@@ -1,5 +1,6 @@
 import { emptyBoxIcon } from '@/assets/icons'
 import { AmountCounter } from '@/components/ui'
+import { EItemModalDetailStatus, ItemDetailModal } from '@/components/ui/modal'
 import { ConfirmModal } from '@/components/ui/modal/ConfirmModal'
 import useCartStore, { calculateItemPrice } from '@/store/cart-store'
 import { TCartItem } from '@/types'
@@ -16,14 +17,17 @@ import { FC, useState } from 'react'
 
 type TItemCheckoutProps = {
   data: TCartItem
+  handleSelectDeleteItem: (item: TCartItem) => void
+  handleSelectUpdateItem: (item: TCartItem) => void
 }
-const ItemCheckout: FC<TItemCheckoutProps> = ({ data }) => {
-  const [itemAmount, setItemAmount] = useState<number>(data.amount)
+const ItemCheckout: FC<TItemCheckoutProps> = ({
+  data,
+  handleSelectDeleteItem,
+  handleSelectUpdateItem,
+}) => {
   const updateCartItem = useCartStore((state) => state.updateCartItem)
-  const removeFromCart = useCartStore((state) => state.removeFromCart)
 
   const handleChangeAmount = (newAmount: number) => {
-    setItemAmount(newAmount)
     updateCartItem(data.itemId, data.selectedOptions || [], {
       amount: newAmount,
     })
@@ -76,7 +80,7 @@ const ItemCheckout: FC<TItemCheckoutProps> = ({ data }) => {
           className='flex w-full items-center justify-center gap-4 px-2 md:gap-6 md:px-4'
           isInputAmount
           onChange={handleChangeAmount}
-          amount={itemAmount}
+          amount={data.amount}
           min={1}
         />
       </td>
@@ -84,13 +88,14 @@ const ItemCheckout: FC<TItemCheckoutProps> = ({ data }) => {
       {/* option */}
       <td className='size-full py-4'>
         <div className='center size-full gap-2'>
-          <button className='rounded-2 cursor-pointer bg-blue-50 from-blue-200 to-blue-50 p-2 duration-300 hover:bg-linear-to-br'>
+          <button
+            onClick={() => handleSelectUpdateItem(data)}
+            className='rounded-2 cursor-pointer bg-blue-50 from-blue-200 to-blue-50 p-2 duration-300 hover:bg-linear-to-br'
+          >
             <PencilIcon className='text-blue-500' size={20} />
           </button>
           <button
-            onClick={() =>
-              removeFromCart(data.itemId, data.selectedOptions || [])
-            }
+            onClick={() => handleSelectDeleteItem(data)}
             className='from-secondary-100 to-secondary-50 rounded-2 bg-secondary-50 cursor-pointer p-2 duration-300 hover:bg-linear-to-br'
           >
             <TrashIcon className='text-secondary-500' size={20} />
@@ -104,8 +109,10 @@ const ItemCheckout: FC<TItemCheckoutProps> = ({ data }) => {
 export const CheckoutDetails = () => {
   const listCartItem = useCartStore((state) => state.listCartItem)
   const getTotalCartPrice = useCartStore((state) => state.getTotalCartPrice)
+  const removeFromCart = useCartStore((state) => state.removeFromCart)
 
-  const [openConfirmModal, setOpenConfirmModal] = useState<boolean>(false)
+  const [selectedDeleteItem, setSelectedDeleteItem] = useState<TCartItem>()
+  const [selectedUpdateItem, setSelectedUpdateItem] = useState<TCartItem>()
 
   return (
     <div className='relative flex size-full max-w-[65%] flex-col items-start gap-4 overflow-hidden md:gap-6'>
@@ -152,9 +159,13 @@ export const CheckoutDetails = () => {
           </thead>
           <tbody>
             {listCartItem.length > 0 ? (
-              listCartItem.map((item) => (
-                <tr className='relative' key={item.itemId}>
-                  <ItemCheckout data={item} />
+              listCartItem.map((item, i) => (
+                <tr className='relative' key={`${item.itemId}-${i}`}>
+                  <ItemCheckout
+                    handleSelectDeleteItem={setSelectedDeleteItem}
+                    handleSelectUpdateItem={setSelectedUpdateItem}
+                    data={item}
+                  />
                 </tr>
               ))
             ) : (
@@ -184,29 +195,50 @@ export const CheckoutDetails = () => {
           </Link>
           {listCartItem.length > 0 && (
             <div className='flex flex-col gap-3'>
-              <div className='center font-shantell text-14 gap-10 px-4 md:px-6'>
+              <div className='center font-shantell text-14 justify-between gap-10 px-4 md:px-6'>
                 <p className='text-dark-600/70'>Subtotal:</p>
                 <p className='font-semibold'>
                   {getTotalCartPrice().toFixed(2)}$
                 </p>
               </div>
-              <div className='center font-shantell text-14 gap-10 px-4 md:px-6'>
+              <div className='center font-shantell text-14 justify-between gap-10 pr-4 pl-3.75 md:pr-6 md:pl-5.75'>
                 <p className='text-dark-600/70'>Shipping:</p>
                 <p className='font-semibold'>Free</p>
               </div>
 
               <div className='bg-dark-600/10 h-0.5 w-full' />
 
-              <div className='center text-16 gap-10 pl-4 font-semibold md:pl-6'>
-                <p>Total:</p>
+              <div className='center text-16 justify-between gap-10 pr-4 pl-7.5 font-semibold md:pr-6 md:pl-9.5'>
+                <p className='font-small-caps text-18 font-bold'>Total:</p>
                 <p>{getTotalCartPrice().toFixed(2)}$</p>
               </div>
             </div>
           )}
         </div>
       </div>
+      {selectedDeleteItem && (
+        <ConfirmModal
+          isOpen={!!selectedDeleteItem}
+          onClose={() => setSelectedDeleteItem(undefined)}
+          message={`Delete ${selectedDeleteItem.itemInfo.name}?`}
+          onConfirm={() =>
+            removeFromCart(
+              selectedDeleteItem.itemId,
+              selectedDeleteItem?.selectedOptions || [],
+            )
+          }
+        />
+      )}
 
-      <ConfirmModal isOpen={true} onClose={() => setOpenConfirmModal(false)} />
+      {selectedUpdateItem && (
+        <ItemDetailModal
+          isOpen={!!selectedUpdateItem}
+          onClose={() => setSelectedUpdateItem(undefined)}
+          data={selectedUpdateItem.itemInfo}
+          cartItem={selectedUpdateItem}
+          status={EItemModalDetailStatus.UPDATE}
+        />
+      )}
     </div>
   )
 }

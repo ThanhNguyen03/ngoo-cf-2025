@@ -264,7 +264,7 @@ export const CheckoutInfo = () => {
       </div>
 
       <Button
-        className='w-full bg-green-500 px-6 py-3 font-bold uppercase'
+        className='rounded-3 w-full bg-green-500 px-6 py-3 font-bold uppercase'
         disableAnimation
         disabled={!userInfoSnapshot || !paymentMethod}
       >
