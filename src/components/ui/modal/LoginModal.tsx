@@ -63,6 +63,7 @@ export const LoginModal: FC<TModalProps> = ({ isOpen, onClose }) => {
   const login = useAuthStore((state) => state.login)
 
   const [isLogin, setIsLogin] = useState<boolean>(true)
+  const [startAnimation, setStartAnimation] = useState<boolean>(false)
   const [showPassword, setShowPassword] = useState<boolean>(false)
   const [emailInput, setEmailInput] = useState<string>('')
   const [passwordInput, setPasswordInput] = useState<string>('')
@@ -100,29 +101,33 @@ export const LoginModal: FC<TModalProps> = ({ isOpen, onClose }) => {
     setEmailInput('')
     setPasswordInput('')
     setErrorMessage({ email: '', password: '' })
+    setStartAnimation(true)
   }
 
   return (
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      className='rounded-4 bg-dark-600 border-secondary-500/10! w-80 border-2 md:h-[500px] md:w-[560px] lg:w-[680px]'
+      className='rounded-4 w-80 border-0 md:h-[500px] md:w-[560px] lg:w-[680px]'
       closable={false}
       closeOnOutsideClick
     >
-      <div className='bg-beige-50 rounded-4 relative flex size-full'>
+      <div className='bg-beige-50 rounded-4 relative flex size-full overflow-hidden'>
         <Button
           onClick={onClose}
           disableAnimation
-          className='bg-beige-50/60 fixed top-4 right-4 z-10 flex items-center justify-center gap-0 rounded-full border border-neutral-900/10 p-1 backdrop-blur-2xl'
+          className='bg-beige-50/60 center absolute top-4 right-4 z-10 gap-0 rounded-full border border-neutral-900/10 p-1 backdrop-blur-2xl'
         >
           <XIcon size={16} className='text-dark-600' />
         </Button>
 
         <div
           className={cn(
-            'z-10 h-full w-1/2 duration-500 ease-in-out',
-            !isLogin && 'translate-x-full',
+            'bg-dark-600 absolute left-0 z-10 h-full w-1/2',
+            startAnimation &&
+              (isLogin
+                ? 'animate-login-moving-reverse'
+                : 'animate-login-moving'),
           )}
         >
           <Image
@@ -131,15 +136,15 @@ export const LoginModal: FC<TModalProps> = ({ isOpen, onClose }) => {
             width={500}
             height={500}
             className={cn(
-              'size-full object-cover duration-500',
+              'z-10 size-full max-w-40 object-cover duration-500 md:max-w-[280px] lg:max-w-[340px]',
               isLogin ? 'rounded-l-3.5' : 'rounded-r-3.5',
             )}
           />
         </div>
         <div
           className={cn(
-            'flex h-full w-1/2 flex-col items-center justify-center gap-6 px-4 py-20 duration-500 ease-in-out md:gap-10 md:px-10',
-            !isLogin && '-translate-x-full',
+            'flex h-full w-1/2 flex-col items-center justify-center gap-6 px-4 py-20 duration-700 ease-in md:gap-10 md:px-10',
+            isLogin && 'translate-x-full',
           )}
         >
           <h1 className='font-lobster text-secondary-500 text-center text-4xl font-semibold'>

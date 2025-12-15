@@ -53,11 +53,12 @@ type TCartStoreAction = {
     payload: Partial<Omit<OrderItemInput, 'itemId'>>,
   ) => void
   clearCart: () => void
+  getTotalCartPrice: () => number
 }
 
 const useCartStore = create<TCartStoreState & TCartStoreAction>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       listCartItem: [],
       cartAmount: 0,
 
@@ -143,6 +144,19 @@ const useCartStore = create<TCartStoreState & TCartStoreAction>()(
           listCartItem: [],
           cartAmount: 0,
         })
+      },
+
+      getTotalCartPrice: () => {
+        return get().listCartItem.reduce((total, item) => {
+          return (
+            total +
+            calculateItemPrice(
+              item.itemInfo,
+              item.selectedOptions || [],
+              item.amount,
+            )
+          )
+        }, 0)
       },
     }),
     {

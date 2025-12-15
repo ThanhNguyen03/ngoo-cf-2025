@@ -32,7 +32,7 @@ export const AmountCounter: FC<TAmountCounter> = ({
   }
 
   const handleUpdateAmount = (amount: number) => {
-    const safeValue = Math.max(0, amount)
+    const safeValue = Math.max(min, amount)
     onChange(safeValue)
   }
 
@@ -44,9 +44,12 @@ export const AmountCounter: FC<TAmountCounter> = ({
       )}
     >
       <Button
-        onClick={() => handleUpdateAmount(amount - min)}
+        onClick={() => handleUpdateAmount(amount - 1)}
         disabled={amount < min + 1}
-        className={cn('rounded-full bg-green-500 p-1.5', buttonClassName)}
+        className={cn(
+          'rounded-full bg-green-500 p-1.5 disabled:cursor-not-allowed disabled:opacity-30',
+          buttonClassName,
+        )}
         disableAnimation
         icon={<MinusIcon className='text-white' size={14} weight='bold' />}
       />
@@ -75,7 +78,10 @@ export const AmountCounter: FC<TAmountCounter> = ({
       <Button
         onClick={() => handleUpdateAmount(amount + 1)}
         disabled={amount === max}
-        className={cn('rounded-full bg-green-500 p-1.5', buttonClassName)}
+        className={cn(
+          'rounded-full bg-green-500 p-1.5 disabled:cursor-not-allowed disabled:opacity-30',
+          buttonClassName,
+        )}
         disableAnimation
         icon={<PlusIcon className='text-white' size={14} weight='bold' />}
       />
