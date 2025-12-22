@@ -1,7 +1,7 @@
-query GetOrder($orderId: String!) {
-  getOrder(orderId: $orderId) {
+query GetUserOrder($orderId: String!) {
+  getUserOrder(orderId: $orderId) {
     orderId
-    paypalOrderId
+    transactionId
     userInfoSnapshot {
       name
       address

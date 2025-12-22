@@ -1,5 +1,5 @@
-query PaymentHistory($paymentId: String!) {
-  paymentHistory(paymentId: $paymentId) {
+query PaymentUserHistory($paymentId: String!) {
+  paymentUserHistory(paymentId: $paymentId) {
     paymentId
     orderId
     paymentMethod
@@ -23,14 +23,7 @@ query PaymentHistory($paymentId: String!) {
         extraPrice
       }
     }
-    txHash
-    paypalTransaction {
-      paypalPayerEmail
-      paypalCaptureId
-      payerId
-      rawResponse
-    }
-    codTransactionId
+    transactionId
     createdAt
     updatedAt
   }

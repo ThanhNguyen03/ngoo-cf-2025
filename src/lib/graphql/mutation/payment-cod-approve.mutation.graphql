@@ -1,0 +1,37 @@
+mutation ApproveCODPayment($paymentInput: ConfirmPaymentInput!) {
+  approveCODPayment(paymentInput: $paymentInput) {
+    paymentId
+    orderId
+    paymentMethod
+    totalPrice
+    status
+    userInfo {
+      name
+      address
+      phoneNumber
+      email
+    }
+    items {
+      name
+      amount
+      price
+      note
+      discountPercent
+      selectedOptions {
+        group
+        name
+        extraPrice
+      }
+    }
+    txHash
+    paypalTransaction {
+      paypalPayerEmail
+      paypalCaptureId
+      payerId
+      rawResponse
+    }
+    codTransactionId
+    createdAt
+    updatedAt
+  }
+}

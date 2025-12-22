@@ -1,0 +1,38 @@
+query GetAllOrder($orderId: String!) {
+  getAllOrder(orderId: $orderId) {
+    offset
+    limit
+    total
+    query {
+      column
+      sort
+    }
+    records {
+      orderId
+      transactionId
+      userInfoSnapshot {
+        name
+        address
+        phoneNumber
+        email
+      }
+      items {
+        name
+        amount
+        price
+        note
+        discountPercent
+        selectedOptions {
+          group
+          name
+          extraPrice
+        }
+      }
+      totalPrice
+      paymentMethod
+      orderStatus
+      createdAt
+      updatedAt
+    }
+  }
+}
