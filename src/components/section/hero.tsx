@@ -53,7 +53,7 @@ export const Hero = () => {
               : '-translate-x-full opacity-0',
           )}
         >
-          <h1 className='text-28! md:text-35! lg:text-44! text-beige-300 w-full text-center font-bold md:w-fit md:text-left'>
+          <h1 className='text-28! md:text-35! lg:text-44! text-beige-300 w-full px-4 text-center font-bold md:w-fit md:text-left'>
             Everything <br className='hidden md:inline' /> is better with
             <br />
             <span className='text-secondary-500 flex w-full items-center justify-center md:w-fit md:justify-normal'>

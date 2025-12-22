@@ -3,6 +3,7 @@
 import { AmountCounter, Button, Checkbox } from '@/components/ui'
 import { DEBOUNCE_DURATION } from '@/constants'
 import {
+  EItemStatus,
   ItemOptionInput,
   TItemOption,
   TItemResponse,
@@ -254,9 +255,12 @@ export const ItemDetailModal: FC<TItemDetailModalProps> = ({
         <Image
           alt={`image-${data.name}`}
           src={data.image}
-          width={200}
-          height={200}
-          className='rounded-t-4 h-60 w-full object-cover'
+          width={500}
+          height={500}
+          className={cn(
+            'rounded-t-4 h-60 w-full object-cover object-center',
+            data.status?.includes(EItemStatus.New) && 'h-80 object-top',
+          )}
         />
         <div className='mb-8 flex w-full flex-col bg-white'>
           {/* main detail */}

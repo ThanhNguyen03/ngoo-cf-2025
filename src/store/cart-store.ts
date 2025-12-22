@@ -25,6 +25,17 @@ export const calculateItemPrice = (
 export const getCartKey = (itemId: string, options: TItemOption[]) =>
   `${itemId}|${normalizeOptions(options)}`
 
+export const convertCartToOrderItems = (
+  cartItems: TCartItem[],
+): OrderItemInput[] => {
+  return cartItems.map(({ amount, itemId, note, selectedOptions }) => ({
+    amount,
+    itemId,
+    note,
+    selectedOptions,
+  }))
+}
+
 const normalizeOptions = (options: TItemOption[]) =>
   options
     .slice()

@@ -2,12 +2,16 @@ import { Button, Checkbox, Tooltip } from '@/components/ui'
 import { SelectDropdown } from '@/components/ui/SelectDropdown'
 import { TextInput } from '@/components/ui/TextInput'
 import { useForm } from '@/hooks/use-form'
+import { client } from '@/lib/apollo-client'
 import {
+  CreateOrderDocument,
+  CreateOrderInput,
   EPaymentMethod,
   TUserInfoSnapshot,
 } from '@/lib/graphql/generated/graphql'
-import useCartStore from '@/store/cart-store'
-import { cn } from '@/utils'
+import useAuthStore from '@/store/auth-store'
+import useCartStore, { convertCartToOrderItems } from '@/store/cart-store'
+import { apolloWrapper, cn } from '@/utils'
 import {
   ArrowRightIcon,
   CheckCircleIcon,
@@ -19,6 +23,7 @@ import { useState } from 'react'
 
 export const CheckoutInfo = () => {
   const listCartItem = useCartStore((state) => state.listCartItem)
+  const userInfo = useAuthStore((state) => state.userInfo)
   const getTotalCartPrice = useCartStore((state) => state.getTotalCartPrice)
 
   const [userInfoSnapshot, setUserInfoSnapshot] = useState<TUserInfoSnapshot>()
@@ -31,12 +36,35 @@ export const CheckoutInfo = () => {
     formState: { errors, isSubmitting, isValid },
   } = useForm<TUserInfoSnapshot>({
     defaultValues: {
-      email: '',
+      email: userInfo?.email || '',
       name: '',
       phoneNumber: '',
       address: '',
     },
     mode: 'onChange',
+  })
+
+  const handleCheckout = apolloWrapper(async () => {
+    if (!listCartItem || listCartItem.length === 0) {
+      throw new Error('Your cart is empty! Check it again')
+    }
+    if (!userInfoSnapshot) {
+      throw new Error('Please fill your information!')
+    }
+    if (!paymentMethod) {
+      throw new Error('Please choose your payment method!')
+    }
+    const input: CreateOrderInput = {
+      items: convertCartToOrderItems(listCartItem),
+      paymentMethod,
+      userInfo: userInfoSnapshot,
+      cancelUrl: '',
+      returnUrl: '',
+    }
+    const { data, error } = await client.mutate({
+      mutation: CreateOrderDocument,
+      variables: { input },
+    })
   })
 
   return (
@@ -79,13 +107,8 @@ export const CheckoutInfo = () => {
               label='Email'
               errorMessage={errors.email}
               isRequired
-              {...register('email', {
-                required: 'Email is required',
-                pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: 'Email is invalid',
-                },
-              })}
+              value={userInfo?.email}
+              disabled={!!userInfo && !!userInfo.email}
               placeholder='Email....'
               className='mb-2'
             />
@@ -267,6 +290,7 @@ export const CheckoutInfo = () => {
         className='rounded-3 w-full bg-green-500 px-6 py-3 font-bold uppercase'
         disableAnimation
         disabled={!userInfoSnapshot || !paymentMethod}
+        onClick={() => {}}
       >
         Check Out {getTotalCartPrice().toFixed(2)}$
       </Button>
