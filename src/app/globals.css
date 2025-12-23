@@ -247,4 +247,14 @@ body {
       transform-origin: left;
     }
   }
+
+  --animate-loading: loading 3s ease-in-out infinite;
+  @keyframes loading {
+    0% {
+      transform: translateX(-200%);
+    }
+    100% {
+      transform: translateX(200%);
+    }
+  }
 }

@@ -1,3 +1,4 @@
+export { default as checkoutLoading } from './checkout-loading.png'
 export { default as coffeeShop } from './coffee-shop.png'
 export { default as collectionBanner } from './collection-banner.png'
 export { default as confuseCow } from './confuse-cow.png'

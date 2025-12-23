@@ -46,7 +46,10 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
         set({ userInfo: data.userInfo, error: null })
       }
     } catch (err) {
-      handleError(err, 'Failed to sign in!')
+      if (err instanceof Error && err.message === 'Missing access token') {
+        await get().logout()
+      }
+      handleError(err, 'Failed to get user info!')
     } finally {
       set({ loading: false })
     }
@@ -71,6 +74,7 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
   logout: async () => {
     set({ userInfo: null })
     await signOut()
+    localStorage.removeItem('cart-storage')
   },
 }))
 
