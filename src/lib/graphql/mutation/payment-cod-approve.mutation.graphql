@@ -1,4 +1,4 @@
-mutation ApproveCODPayment($paymentInput: ConfirmPaymentInput!) {
+mutation Mutation($paymentInput: ConfirmPaymentInput!) {
   approveCODPayment(paymentInput: $paymentInput) {
     paymentId
     orderId
