@@ -1,33 +1,38 @@
 import { TPaymentSocketResponse } from '@/lib/graphql/generated/graphql'
-import useAuthStore from '@/store/auth-store'
-import { useEffect, useRef } from 'react'
-import { io, Socket } from 'socket.io-client'
+import { disconnectSocket, getSocketClient } from '@/lib/socket-client'
+import { useEffect } from 'react'
+import { Socket } from 'socket.io-client'
 
 export const usePaymentSocket = (
-  orderId: string,
+  // orderId: string,
   callback: (data: TPaymentSocketResponse) => void,
 ) => {
-  const userId = useAuthStore((state) => state.userInfo?.uuid)
-  const socketRef = useRef<Socket | undefined>(undefined)
-
   useEffect(() => {
-    if (!userId) {
-      return
+    let socket: Socket
+
+    const init = async () => {
+      socket = await getSocketClient()
+
+      socket.on('paymentStatus', (data: TPaymentSocketResponse) => {
+        // if (data.orderId === orderId) {
+        //   callback(data)
+        // }
+        console.log('socket receive', data)
+      })
     }
 
-    socketRef.current = io(process.env.NEXT_PUBLIC_SOCKET_URL!, {
-      query: { userId },
-    })
-
-    socketRef.current.on('paymentStatus', (data: TPaymentSocketResponse) => {
-      if (data.orderId === orderId) {
-        callback(data)
-      }
-    })
+    init()
 
     return () => {
-      socketRef.current?.disconnect()
+      if (socket) {
+        socket.off('paymentStatus')
+      }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [orderId, userId])
+  }, [callback])
+
+  useEffect(() => {
+    return () => {
+      disconnectSocket()
+    }
+  }, [])
 }
