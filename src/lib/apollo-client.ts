@@ -4,7 +4,7 @@ import { SetContextLink } from '@apollo/client/link/context'
 import { getSession } from 'next-auth/react'
 
 const httpLink = new HttpLink({
-  uri: process.env.NGOO_BACKEND_API,
+  uri: `${process.env.NGOO_BACKEND_API}/graphql`,
   fetchOptions: { cache: 'force-cache' },
 })
 

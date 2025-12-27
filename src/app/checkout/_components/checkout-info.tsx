@@ -3,11 +3,13 @@ import { Button, Checkbox, Tooltip } from '@/components/ui'
 import { SelectDropdown } from '@/components/ui/SelectDropdown'
 import { TextInput } from '@/components/ui/TextInput'
 import { useForm } from '@/hooks/use-form'
+import { usePaymentSocket } from '@/hooks/use-payment-socket'
 import { client } from '@/lib/apollo-client'
 import {
   CreateOrderDocument,
   CreateOrderInput,
   EPaymentMethod,
+  TPaymentSocketResponse,
   TUserInfoSnapshot,
 } from '@/lib/graphql/generated/graphql'
 import useAuthStore from '@/store/auth-store'
@@ -31,6 +33,7 @@ export const CheckoutInfo = () => {
   const [userInfoSnapshot, setUserInfoSnapshot] = useState<TUserInfoSnapshot>()
   const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>()
   const [loading, setLoading] = useState<boolean>(false)
+  const [orderId, setOrderId] = useState<TPaymentSocketResponse>()
 
   const listPaymentMethod = Object.values(EPaymentMethod)
 
@@ -75,10 +78,17 @@ export const CheckoutInfo = () => {
       if (error) {
         throw error
       }
-      console.log('checkout', data)
+      if (data) {
+        // setOrderId(data.createOrder.orderId)
+        console.log('checkout', data)
+      }
     },
     { onFinally: () => setLoading(false) },
   )
+
+  usePaymentSocket((data) => {
+    setOrderId(data)
+  })
 
   useEffect(() => {
     if (loading) {
@@ -88,6 +98,13 @@ export const CheckoutInfo = () => {
     }
     return () => document.body.classList.remove('overflow-hidden!')
   }, [loading])
+
+  useEffect(() => {
+    if (userInfo && orderId) {
+      console.log('first', userInfo?.uuid)
+      console.log('second', orderId)
+    }
+  }, [userInfo, orderId])
 
   return (
     <>

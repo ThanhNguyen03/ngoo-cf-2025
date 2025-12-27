@@ -28,7 +28,7 @@ export const ShoppingCart = () => {
     <>
       {cartAmount > 0 && !pathname.includes('checkout') && (
         <div className='pointer-events-none sticky bottom-20 z-50 px-2 md:px-6 lg:px-10'>
-          <div className='relative z-50 w-full max-w-[1200px]'>
+          <div className='relative z-50 mx-auto w-full max-w-[1200px]'>
             <div
               className={cn(
                 'bg-secondary-500 center absolute -top-1 -right-1 flex rounded-full px-2 py-0.5',
