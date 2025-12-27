@@ -12,7 +12,7 @@ import { getSession, SessionProvider } from 'next-auth/react'
 
 const makeClient = () => {
   const httpLink = new HttpLink({
-    uri: process.env.NGOO_BACKEND_API,
+    uri: `${process.env.NGOO_BACKEND_API}/graphql`,
   })
 
   const authLink = new SetContextLink(async ({ headers }) => {

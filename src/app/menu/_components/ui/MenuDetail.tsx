@@ -206,14 +206,18 @@ const ItemByCategory: FC<TItemByCategoryProps> = ({
                       src={item.image}
                       width={200}
                       height={200}
-                      className='rounded-4 md:rounded-6 aspect-square size-50 object-cover object-center'
+                      className={cn(
+                        'rounded-4 md:rounded-6 aspect-square size-50 object-cover object-center',
+                        item.status?.includes(EItemStatus.New) &&
+                          'bg-beige-400',
+                      )}
                     />
                     <div className='flex h-50 w-full flex-col items-end justify-between p-4'>
                       <div className='flex flex-col items-start gap-1 text-left'>
                         <h5 className='text-18 mb-2 font-semibold'>
                           {item.name}
                         </h5>
-                        <p className='text-14 text-dark-600/70'>
+                        <p className='text-14 text-dark-600/70 line-clamp-2'>
                           {item.description}
                         </p>
                         <div className='flex items-end justify-center gap-2'>

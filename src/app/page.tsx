@@ -96,7 +96,7 @@ export default function Home() {
         <BestSeller
           ref={sellerContainerRef}
           isLoading={loading}
-          data={[...bestSellerItem, ...bestSellerItem]}
+          data={bestSellerItem}
           isInview={inSellerView && !!selectedProduct}
         />
       </div>

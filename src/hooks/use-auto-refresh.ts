@@ -30,7 +30,7 @@ export const useAutoRefresh = () => {
     }
 
     if (session.error === 'RefreshAccessTokenError') {
-      logout() // Force sign in to hopefully resolve error
+      await logout() // Force sign in to hopefully resolve error
       return
     }
 

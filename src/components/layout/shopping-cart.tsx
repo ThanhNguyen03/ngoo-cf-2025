@@ -27,8 +27,8 @@ export const ShoppingCart = () => {
   return (
     <>
       {cartAmount > 0 && !pathname.includes('checkout') && (
-        <div className='pointer-events-none sticky bottom-20 z-50 mx-auto max-w-[1200px]'>
-          <div className='relative z-50 ml-auto size-fit'>
+        <div className='pointer-events-none sticky bottom-20 z-50 px-2 md:px-6 lg:px-10'>
+          <div className='relative z-50 mx-auto w-full max-w-[1200px]'>
             <div
               className={cn(
                 'bg-secondary-500 center absolute -top-1 -right-1 flex rounded-full px-2 py-0.5',
@@ -41,7 +41,7 @@ export const ShoppingCart = () => {
             </div>
             <button
               onClick={handleClickCart}
-              className='center rounded-10 border-primary-500/15 from-primary-500/15 group to-primary-500/2 hover:from-secondary-500/5 hover:to-secondary-500/15 pointer-events-auto flex size-fit cursor-pointer border bg-white bg-linear-to-br p-3 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] duration-700'
+              className='center rounded-10 border-primary-500/15 from-primary-500/15 group to-primary-500/2 hover:from-secondary-500/5 hover:to-secondary-500/15 pointer-events-auto ml-auto flex size-fit cursor-pointer border bg-white bg-linear-to-br p-3 shadow-[0px_4px_12px_0px_rgba(9,9,11,0.02)] duration-700'
             >
               <BasketIcon
                 size={24}

@@ -1,10 +1,8 @@
 mutation CreateOrder($input: CreateOrderInput!) {
   createOrder(input: $input) {
     orderId
-    paypalOrderId
+    transactionId
     paypalApproveUrl
-    cryptoPaymentData
-    codPaymentData
     createdAt
     updatedAt
   }

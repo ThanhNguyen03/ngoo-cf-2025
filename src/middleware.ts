@@ -1,9 +1,23 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { withAuth } from 'next-auth/middleware'
+import { NextResponse } from 'next/server'
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-export function middleware(req: NextRequest) {
-  return NextResponse.next()
-}
+export default withAuth(
+  function middleware(req) {
+    const token = req.nextauth.token
+    if (req.nextUrl.pathname.startsWith('/checkout')) {
+      if (!token) {
+        return NextResponse.rewrite(new URL('/not-found', req.url))
+      }
+    }
+
+    return NextResponse.next()
+  },
+  {
+    callbacks: {
+      authorized: () => true,
+    },
+  },
+)
 
 export const config = {
   matcher: [

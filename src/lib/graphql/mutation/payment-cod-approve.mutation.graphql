@@ -1,5 +1,5 @@
-query PaymentHistory($paymentId: String!) {
-  paymentHistory(paymentId: $paymentId) {
+mutation Mutation($paymentInput: ConfirmPaymentInput!) {
+  approveCODPayment(paymentInput: $paymentInput) {
     paymentId
     orderId
     paymentMethod

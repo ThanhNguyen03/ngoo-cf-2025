@@ -1,5 +1,5 @@
-mutation ConfirmPayment($paymentInput: ConfirmPaymentInput!) {
-  confirmPayment(paymentInput: $paymentInput) {
+query PaymentUserHistory($paymentId: String!) {
+  paymentUserHistory(paymentId: $paymentId) {
     paymentId
     orderId
     paymentMethod
@@ -23,14 +23,7 @@ mutation ConfirmPayment($paymentInput: ConfirmPaymentInput!) {
         extraPrice
       }
     }
-    txHash
-    paypalTransaction {
-      paypalPayerEmail
-      paypalCaptureId
-      payerId
-      rawResponse
-    }
-    codTransactionId
+    transactionId
     createdAt
     updatedAt
   }

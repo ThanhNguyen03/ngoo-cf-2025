@@ -52,7 +52,8 @@ export const TextInput: FC<TTextInputProps> = ({
           {...props}
           type='text'
           id={label}
-          className='placeholder:text-dark-600/30 relative w-full font-medium caret-blue-500 duration-700 focus-within:outline-none focus:ring-0 focus:ring-offset-0'
+          disabled={disabled}
+          className='placeholder:text-dark-600/30 relative w-full font-medium caret-blue-500 duration-700 focus-within:outline-none focus:ring-0 focus:ring-offset-0 disabled:cursor-not-allowed'
         />
       </label>
       {errorMessage && (
