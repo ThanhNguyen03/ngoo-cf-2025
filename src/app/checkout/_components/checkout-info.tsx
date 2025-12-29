@@ -224,7 +224,7 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
                 )}
                 content={
                   <p className='text-14 font-semibold text-white'>
-                    Comming soon!
+                    Coming soon!
                   </p>
                 }
               >
