@@ -1,3 +1,4 @@
+export { default as checkoutCancel } from './checkout-cancel.png'
 export { default as checkoutLoading } from './checkout-loading.png'
 export { default as coffeeShop } from './coffee-shop.png'
 export { default as collectionBanner } from './collection-banner.png'
