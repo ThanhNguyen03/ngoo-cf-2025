@@ -10,6 +10,7 @@ query GetUserOrder($orderId: String!) {
     }
     items {
       name
+      image
       amount
       price
       note
