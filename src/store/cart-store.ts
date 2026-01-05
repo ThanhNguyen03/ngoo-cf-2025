@@ -3,13 +3,14 @@ import {
   OrderItemInput,
   TItemOption,
   TItemResponse,
+  TOrderItem,
 } from '@/lib/graphql/generated/graphql'
 import { TCartItem } from '@/types'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 
 export const calculateItemPrice = (
-  item: TItemResponse,
+  item: TItemResponse | TOrderItem,
   selectedOptions: TItemOption[],
   amount: number,
 ): number => {

@@ -21,6 +21,7 @@ query ListPaymentHistory($offset: Int, $limit: Int, $query: [QueryByInput]) {
       }
       items {
         name
+        image
         amount
         price
         note

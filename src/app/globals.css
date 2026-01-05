@@ -248,10 +248,13 @@ body {
     }
   }
 
-  --animate-loading: loading 3s ease-in-out infinite;
+  --animate-loading: loading 2.2s infinite;
   @keyframes loading {
     0% {
       transform: translateX(-200%);
+    }
+    70% {
+      transform: translateX(100%);
     }
     100% {
       transform: translateX(200%);

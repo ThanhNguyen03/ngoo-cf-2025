@@ -18,6 +18,7 @@ query GetAllOrder($orderId: String!) {
       }
       items {
         name
+        image
         amount
         price
         note

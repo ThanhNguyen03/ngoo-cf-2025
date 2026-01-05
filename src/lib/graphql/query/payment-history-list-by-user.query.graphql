@@ -25,6 +25,7 @@ query ListUserPaymentHistory(
       }
       items {
         name
+        image
         amount
         price
         note

@@ -1,5 +1,6 @@
 import { getSession } from 'next-auth/react'
 import { io, Socket } from 'socket.io-client'
+import { TPaymentSocketResponse } from './graphql/generated/graphql'
 
 let socket: Socket | null = null
 
@@ -27,6 +28,25 @@ export const getSocketClient = async (): Promise<Socket> => {
 }
 
 export const disconnectSocket = () => {
-  socket?.disconnect()
-  socket = null
+  if (socket) {
+    socket.removeAllListeners()
+    socket.disconnect()
+    socket = null
+  }
+}
+
+export const connectPaymentSocket = async (
+  orderId: string,
+  callback: (data: TPaymentSocketResponse) => Promise<void> | void,
+) => {
+  const socketClient = await getSocketClient()
+
+  const handler = async (data: TPaymentSocketResponse) => {
+    if (data.orderId === orderId) {
+      await callback(data)
+      socketClient.off('paymentStatus', handler)
+    }
+  }
+
+  socketClient.on('paymentStatus', handler)
 }
