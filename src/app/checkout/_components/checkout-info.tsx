@@ -9,6 +9,7 @@ import {
   EPaymentMethod,
   TUserInfoSnapshot,
 } from '@/lib/graphql/generated/graphql'
+import { connectPaymentSocket } from '@/lib/socket-client'
 import useAuthStore from '@/store/auth-store'
 import useCartStore, { convertCartToOrderItems } from '@/store/cart-store'
 import { apolloWrapper, cn } from '@/utils'
@@ -31,7 +32,6 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
 
   const [userInfoSnapshot, setUserInfoSnapshot] = useState<TUserInfoSnapshot>()
   const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>()
-  const [orderId, setOrderId] = useState<string>('')
 
   const listPaymentMethod = Object.values(EPaymentMethod)
 
@@ -77,7 +77,14 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
         throw error
       }
       if (data) {
-        setOrderId(data.createOrder.orderId)
+        if (data.createOrder.paypalApproveUrl) {
+          window.open(
+            data.createOrder.paypalApproveUrl,
+            '_blank',
+            'width=993,height=650',
+          )
+          await connectPaymentSocket(data.createOrder.orderId, () => {})
+        }
       }
     },
     { onFinally: () => setLoading(false) },

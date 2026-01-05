@@ -521,7 +521,7 @@ export type TUserInfoSnapshot = {
 export type TUserPaymentResponse = {
   __typename?: 'TUserPaymentResponse';
   createdAt: Scalars['Timestamp']['output'];
-  items: Array<Maybe<TOrderItem>>;
+  items: Array<TOrderItem>;
   orderId: Scalars['String']['output'];
   paymentId: Scalars['String']['output'];
   paymentMethod: EPaymentMethod;
@@ -698,7 +698,7 @@ export type PaymentUserHistoryQueryVariables = Exact<{
 }>;
 
 
-export type PaymentUserHistoryQuery = { __typename?: 'Query', paymentUserHistory: { __typename?: 'TUserPaymentResponse', paymentId: string, orderId: string, paymentMethod: EPaymentMethod, totalPrice: number, status: EPaymentStatus, transactionId?: string | null, createdAt: number, updatedAt: number, userInfo: { __typename?: 'TUserInfoSnapshot', name: string, address: string, phoneNumber: string, email: string }, items: Array<{ __typename?: 'TOrderItem', name: string, image: string, amount: number, price: number, note?: string | null, discountPercent?: number | null, selectedOptions: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> } | null> } };
+export type PaymentUserHistoryQuery = { __typename?: 'Query', paymentUserHistory: { __typename?: 'TUserPaymentResponse', paymentId: string, orderId: string, paymentMethod: EPaymentMethod, totalPrice: number, status: EPaymentStatus, transactionId?: string | null, createdAt: number, updatedAt: number, userInfo: { __typename?: 'TUserInfoSnapshot', name: string, address: string, phoneNumber: string, email: string }, items: Array<{ __typename?: 'TOrderItem', name: string, image: string, amount: number, price: number, note?: string | null, discountPercent?: number | null, selectedOptions: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> }> } };
 
 export type ListPaymentHistoryQueryVariables = Exact<{
   offset?: InputMaybe<Scalars['Int']['input']>;
@@ -716,7 +716,7 @@ export type ListUserPaymentHistoryQueryVariables = Exact<{
 }>;
 
 
-export type ListUserPaymentHistoryQuery = { __typename?: 'Query', listUserPaymentHistory: { __typename?: 'TListPaymentUserResponse', offset: number, limit: number, total: number, query: Array<{ __typename?: 'TQueryBy', column?: string | null, sort?: ESort | null } | null>, records: Array<{ __typename?: 'TUserPaymentResponse', paymentId: string, orderId: string, paymentMethod: EPaymentMethod, totalPrice: number, status: EPaymentStatus, transactionId?: string | null, createdAt: number, updatedAt: number, userInfo: { __typename?: 'TUserInfoSnapshot', name: string, address: string, phoneNumber: string, email: string }, items: Array<{ __typename?: 'TOrderItem', name: string, image: string, amount: number, price: number, note?: string | null, discountPercent?: number | null, selectedOptions: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> } | null> } | null> } };
+export type ListUserPaymentHistoryQuery = { __typename?: 'Query', listUserPaymentHistory: { __typename?: 'TListPaymentUserResponse', offset: number, limit: number, total: number, query: Array<{ __typename?: 'TQueryBy', column?: string | null, sort?: ESort | null } | null>, records: Array<{ __typename?: 'TUserPaymentResponse', paymentId: string, orderId: string, paymentMethod: EPaymentMethod, totalPrice: number, status: EPaymentStatus, transactionId?: string | null, createdAt: number, updatedAt: number, userInfo: { __typename?: 'TUserInfoSnapshot', name: string, address: string, phoneNumber: string, email: string }, items: Array<{ __typename?: 'TOrderItem', name: string, image: string, amount: number, price: number, note?: string | null, discountPercent?: number | null, selectedOptions: Array<{ __typename?: 'TItemOption', group: string, name: string, extraPrice?: number | null }> }> } | null> } };
 
 export type UserInfoQueryVariables = Exact<{ [key: string]: never; }>;
 
