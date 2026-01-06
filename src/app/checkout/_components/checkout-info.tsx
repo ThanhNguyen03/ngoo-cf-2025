@@ -1,4 +1,4 @@
-import { Button, Checkbox, Tooltip } from '@/components/ui'
+import { Button, Checkbox, toast, Tooltip } from '@/components/ui'
 import { SelectDropdown } from '@/components/ui/SelectDropdown'
 import { TextInput } from '@/components/ui/TextInput'
 import { useForm } from '@/hooks/use-form'
@@ -7,6 +7,7 @@ import {
   CreateOrderDocument,
   CreateOrderInput,
   EPaymentMethod,
+  EPaymentStatus,
   TUserInfoSnapshot,
 } from '@/lib/graphql/generated/graphql'
 import { connectPaymentSocket } from '@/lib/socket-client'
@@ -20,6 +21,7 @@ import {
   PaypalLogoIcon,
   XCircleIcon,
 } from '@phosphor-icons/react/dist/ssr'
+import { useRouter } from 'next/router'
 import { FC, useState } from 'react'
 
 type TCheckoutInfoProps = {
@@ -29,6 +31,7 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
   const listCartItem = useCartStore((state) => state.listCartItem)
   const userInfo = useAuthStore((state) => state.userInfo)
   const getTotalCartPrice = useCartStore((state) => state.getTotalCartPrice)
+  const router = useRouter()
 
   const [userInfoSnapshot, setUserInfoSnapshot] = useState<TUserInfoSnapshot>()
   const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>()
@@ -77,13 +80,43 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
         throw error
       }
       if (data) {
+        // handle Paypal
         if (data.createOrder.paypalApproveUrl) {
+          await connectPaymentSocket(
+            data.createOrder.orderId,
+            async (socketData) => {
+              if (socketData.orderId !== data.createOrder.orderId) {
+                return
+              }
+
+              switch (socketData.status) {
+                case EPaymentStatus.Success:
+                  toast.success('Payment successful')
+                  router.replace(`/payment/${socketData.paymentId}`)
+                  break
+                case EPaymentStatus.Failed:
+                  toast.error('Payment failed')
+                  router.replace(`/payment/${socketData.paymentId}`)
+                  break
+                case EPaymentStatus.Cancelled:
+                  toast.error('Payment cancelled')
+                  router.replace('/checkout?status=cancel')
+                  break
+              }
+            },
+          )
           window.open(
             data.createOrder.paypalApproveUrl,
             '_blank',
             'width=993,height=650',
           )
-          await connectPaymentSocket(data.createOrder.orderId, () => {})
+        }
+
+        // handle COD
+        if (data.createOrder.transactionId) {
+          router.replace(
+            `/payment/${data.createOrder.transactionId}?method=COD`,
+          )
         }
       }
     },
@@ -313,7 +346,7 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
         className='rounded-3 w-full bg-green-500 px-6 py-3 font-bold uppercase'
         disableAnimation
         disabled={!userInfoSnapshot || !paymentMethod}
-        onClick={() => setLoading(true)}
+        onClick={handleCheckout}
       >
         Check Out {getTotalCartPrice().toFixed(2)}$
       </Button>
