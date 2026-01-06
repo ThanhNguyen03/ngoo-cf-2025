@@ -260,4 +260,17 @@ body {
       transform: translateX(200%);
     }
   }
+
+  --animate-loading-vertical: loading-vertical 2.2s infinite;
+  @keyframes loading-vertical {
+    0% {
+      transform: translateY(-200%);
+    }
+    70% {
+      transform: translateY(100%);
+    }
+    100% {
+      transform: translateY(200%);
+    }
+  }
 }
