@@ -5,7 +5,7 @@ import {
   SwitchChainButton,
 } from '@/components/ui/wallet-button'
 import { LIST_ACCOUNT_NAVIGATION, LIST_CONNECTOR_ICON } from '@/constants'
-import { TUserInfo } from '@/lib/graphql/generated/graphql'
+import { TUserInfoResponse } from '@/lib/graphql/generated/graphql'
 import useAuthStore from '@/store/auth-store'
 import { TPopoverProps } from '@/types'
 import { cn } from '@/utils'
@@ -21,7 +21,7 @@ import { useAccount, useDisconnect } from 'wagmi'
 
 type TAccountPopoverProps = TPopoverProps &
   ComponentPropsWithRef<'div'> & {
-    userInfo: TUserInfo
+    userInfo: TUserInfoResponse
   }
 
 export const AccountPopover: FC<TAccountPopoverProps> = ({

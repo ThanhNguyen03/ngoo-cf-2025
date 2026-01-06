@@ -19,7 +19,6 @@ import {
 } from '@/types'
 import {
   ChatsCircleIcon,
-  ClockUserIcon,
   FacebookLogoIcon,
   GearSixIcon,
   GithubLogoIcon,
@@ -159,13 +158,6 @@ export const LIST_ACCOUNT_NAVIGATION: TNavigationItem[] = [
     name: 'Faucet',
     icon: <VaultIcon weight='fill' size={24} className='text-primary-400' />,
     href: '#', // TODO: faucet page ex: u2u, ftm, monad,...
-  },
-  {
-    name: 'Activity',
-    icon: (
-      <ClockUserIcon weight='fill' size={24} className='text-primary-400' />
-    ),
-    href: '/activity',
   },
 ]
 

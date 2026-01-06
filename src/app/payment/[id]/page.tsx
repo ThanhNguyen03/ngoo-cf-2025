@@ -11,7 +11,7 @@ import { apolloWrapper, cn } from '@/utils'
 import Image from 'next/image'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { PaymentDetail } from '../_component/payment-detail'
+import { PaymentDetail } from '../_components/payment-detail'
 
 const step = [
   { name: 'Order accepted' },
