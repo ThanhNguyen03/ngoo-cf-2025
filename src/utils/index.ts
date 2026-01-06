@@ -1,5 +1,5 @@
 import { toast } from '@/components/ui'
-import { Maybe } from '@/lib/graphql/generated/graphql'
+import { ERole, Maybe } from '@/lib/graphql/generated/graphql'
 import { twMerge } from 'tailwind-merge'
 import { formatUnits } from 'viem'
 import { ClassValue, clsx } from './clsx'
@@ -186,4 +186,24 @@ export function apolloWrapper<TArgs extends unknown[], TResult>(
       options?.onFinally?.()
     }
   }
+}
+
+type TPayload = {
+  uuid: string
+  role: ERole
+  sid: string
+  iat: number
+  exp: number
+}
+export const decodeJwtPayload = (token: string): TPayload => {
+  const payload = token.split('.')[1]
+  const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
+  const json = decodeURIComponent(
+    atob(base64)
+      .split('')
+      .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+      .join(''),
+  )
+
+  return JSON.parse(json)
 }

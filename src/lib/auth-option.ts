@@ -1,10 +1,12 @@
 import { EXPIRES_IN, REFRESH_GAP } from '@/constants'
+import { decodeJwtPayload } from '@/utils'
 import { ErrorLike } from '@apollo/client'
 import { NextAuthOptions, User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
 import { client } from './apollo-client'
 import {
+  ERole,
   RefreshTokenDocument,
   TUserAuth,
   UserLoginDocument,
@@ -86,9 +88,12 @@ const authOptions: NextAuthOptions = {
             throw error
           }
           if (data) {
+            const decoded = decodeJwtPayload(data.userLogin.accessToken)
+
             token.accessToken = data.userLogin.accessToken
             token.refreshToken = data.userLogin.refreshToken
             token.uuid = data.userLogin.userUuid
+            token.role = decoded.role
             token.accessTokenExpires = Date.now() + EXPIRES_IN
           }
           return token
@@ -98,9 +103,12 @@ const authOptions: NextAuthOptions = {
         }
       }
       if (user) {
+        const decoded = decodeJwtPayload(user.accessToken!)
+
         token.accessToken = user.accessToken
         token.refreshToken = user.refreshToken
         token.uuid = user.uuid
+        token.role = decoded.role
         token.accessTokenExpires = Date.now() + EXPIRES_IN
 
         return token
@@ -152,6 +160,9 @@ const authOptions: NextAuthOptions = {
       session.accessTokenExpires = token.accessTokenExpires
       session.uuid = token.uuid
       session.error = token.error
+      session.user = {
+        role: token.role ?? ERole.User,
+      }
 
       return session
     },
