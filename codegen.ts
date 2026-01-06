@@ -1,7 +1,7 @@
 import type { CodegenConfig } from '@graphql-codegen/cli'
 
 const config: CodegenConfig = {
-  schema: process.env.NEXT_PUBLIC_NGOO_BACKEND_API,
+  schema: `${process.env.NEXT_PUBLIC_NGOO_BACKEND_API}/graphql`,
   documents: ['src/lib/graphql/**/*.graphql'],
   generates: {
     'src/lib/graphql/generated/': {

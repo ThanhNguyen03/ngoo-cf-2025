@@ -4,7 +4,6 @@ query UserInfo {
     email
     name
     walletAddress
-    role
     authMethods
     address
     phoneNumber
