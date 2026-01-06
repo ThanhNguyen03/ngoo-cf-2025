@@ -1,3 +1,4 @@
+import { ERole } from '@/lib/graphql/generated/graphql'
 import 'next-auth'
 
 declare module 'next-auth' {
@@ -6,6 +7,9 @@ declare module 'next-auth' {
     accessTokenExpires?: number
     uuid?: string
     error?: string
+    user: {
+      role: ERole
+    }
   }
   interface User {
     accessToken?: string
@@ -21,5 +25,6 @@ declare module 'next-auth/jwt' {
     uuid?: string
     accessTokenExpires?: number
     error?: string
+    role?: ERole
   }
 }

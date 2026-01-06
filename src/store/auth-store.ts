@@ -4,12 +4,12 @@ import { signIn, signOut } from 'next-auth/react'
 import { create } from 'zustand'
 import {
   MutationUserLoginArgs,
-  TUserInfo,
+  TUserInfoResponse,
   UserInfoDocument,
 } from './../lib/graphql/generated/graphql'
 
 type TAuthState = {
-  userInfo: TUserInfo | null
+  userInfo: TUserInfoResponse | null
   loading: boolean
   error: unknown | null
 }
