@@ -70,7 +70,7 @@ export const PaymentDetail: FC<TPaymentDetailProps> = ({ data }) => {
           <SwitchButton
             className='rounded-3! w-fit font-semibold text-nowrap'
             variant='white'
-            href='/payment'
+            href='/profile/?tab=activity'
           >
             Back to History
           </SwitchButton>

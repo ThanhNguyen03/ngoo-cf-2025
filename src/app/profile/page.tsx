@@ -7,6 +7,7 @@ import {
   SignOutIcon,
   UserIcon,
 } from '@phosphor-icons/react/dist/ssr'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { HistoryTable } from './_components/history-table'
 import { InfoForm } from './_components/info-form'
@@ -41,13 +42,17 @@ const BILLING_TABS: TTab[] = [
 ]
 
 const ProfilePage = () => {
-  const [activeKey, setActiveKey] = useState<string>(BILLING_TABS[0].key)
+  const router = useRouter()
+  const tabId = useSearchParams().get('tab') || BILLING_TABS[0].key
+
+  const [activeKey, setActiveKey] = useState<string>(tabId)
 
   const handleChangeTab = (key: string) => {
     if (key === activeKey) {
       return
     }
     setActiveKey(key)
+    router.replace(`/profile/?tab=${key}`)
   }
 
   return (

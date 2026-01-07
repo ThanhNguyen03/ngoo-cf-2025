@@ -8,7 +8,9 @@ import {
   TUserPaymentResponse,
 } from '@/lib/graphql/generated/graphql'
 import { apolloWrapper, cn } from '@/utils'
+import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
+import Link from 'next/link'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { PaymentDetail } from '../_components/payment-detail'
@@ -79,7 +81,7 @@ const PaymentDetailPage = () => {
         {paymentInfo && (
           <>
             {searchParams ? (
-              <div className='border-dark-600/30 shadow-container mx-auto flex size-full max-w-[1200px] items-start justify-center gap-10 border-x bg-white px-2 py-20 md:px-6 md:py-30 lg:px-10'>
+              <div className='border-dark-600/30 shadow-container relative mx-auto flex size-full max-w-[1200px] items-start justify-center gap-10 border-x bg-white px-2 py-20 md:px-6 md:py-30 lg:px-10'>
                 {/* progress */}
                 <div className='flex h-full w-1/5 flex-col items-start'>
                   {step.map((item, index) => (
@@ -121,7 +123,15 @@ const PaymentDetailPage = () => {
                 </div>
 
                 {/* detail */}
-                <div className='center flex h-full w-3/5 flex-col gap-10'>
+                <div className='center relative flex h-full w-3/5 flex-col gap-10'>
+                  <Link
+                    href='/menu'
+                    className='text-16 text-dark-600 font-shantell center absolute -top-20 right-0 ml-3 gap-3 font-semibold duration-300 hover:translate-x-3'
+                  >
+                    <p>Continue shopping</p>
+                    <CaretRightIcon size={20} />
+                  </Link>
+
                   <div className='center flex size-full flex-col gap-3'>
                     <div className='aspect-[798/313] h-60 w-auto'>
                       <Image
