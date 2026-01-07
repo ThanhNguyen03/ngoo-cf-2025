@@ -4620,6 +4620,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"dayjs@npm:1.11.19":
+  version: 1.11.19
+  resolution: "dayjs@npm:1.11.19"
+  checksum: 10c0/7d8a6074a343f821f81ea284d700bd34ea6c7abbe8d93bce7aba818948957c1b7f56131702e5e890a5622cdfc05dcebe8aed0b8313bdc6838a594d7846b0b000
+  languageName: node
+  linkType: hard
+
 "debounce@npm:^1.2.0":
   version: 1.2.1
   resolution: "debounce@npm:1.2.1"
@@ -7691,6 +7698,7 @@ __metadata:
     "@types/node": "npm:20"
     "@types/react": "npm:19.2.7"
     "@types/react-dom": "npm:19.2.3"
+    dayjs: "npm:1.11.19"
     eslint: "npm:9"
     eslint-config-next: "npm:15.4.10"
     framer-motion: "npm:12.23.12"

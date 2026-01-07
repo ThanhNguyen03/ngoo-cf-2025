@@ -1,4 +1,5 @@
 import { SelectDropdown } from '@/components/ui/SelectDropdown'
+import { useClickOutside } from '@/hooks/use-click-outside'
 import { TCategory } from '@/lib/graphql/generated/graphql'
 import { cn } from '@/utils'
 import {
@@ -29,7 +30,6 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
   const [openSearchBar, setOpenSearchBar] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
 
-  const containerRef = useRef<HTMLDivElement>(null)
   const isScrollingRef = useRef<boolean>(false)
 
   const handleSelectCategory = (value: TCategory) => {
@@ -72,24 +72,11 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
   }, [sectionRef, listCategory])
 
   // handle click outside to close
-  useEffect(() => {
-    if (!containerRef.current) {
-      return
+  const { ref: containerRef } = useClickOutside<HTMLDivElement>(() => {
+    if (openDropdown) {
+      setOpenDropdown(false)
     }
-    const listener = () => {
-      if (openDropdown) {
-        setOpenDropdown(false)
-      }
-    }
-
-    document.addEventListener('click', listener)
-    document.addEventListener('touchstart', listener)
-
-    return () => {
-      document.removeEventListener('click', listener)
-      document.removeEventListener('touchstart', listener)
-    }
-  }, [openDropdown])
+  })
 
   return (
     <div

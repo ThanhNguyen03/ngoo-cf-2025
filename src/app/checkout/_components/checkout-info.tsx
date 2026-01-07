@@ -21,7 +21,7 @@ import {
   PaypalLogoIcon,
   XCircleIcon,
 } from '@phosphor-icons/react/dist/ssr'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
 
 type TCheckoutInfoProps = {
@@ -182,8 +182,8 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
                     message: 'Name must be at least 8 characters',
                   },
                   maxLength: {
-                    value: 50,
-                    message: 'Phone must be under 15 characters',
+                    value: 25,
+                    message: 'Name must be under 25 characters',
                   },
                 })}
                 placeholder='Name....'
@@ -223,10 +223,6 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
                 minLength: {
                   value: 8,
                   message: 'Address must be at least 8 characters',
-                },
-                maxLength: {
-                  value: 250,
-                  message: 'Address must be under 15 characters',
                 },
               })}
               placeholder='Address....'

@@ -1,10 +1,11 @@
 import { LoginModal } from '@/components/ui/modal'
 import { AccountPopover } from '@/components/ui/popover'
+import { useClickOutside } from '@/hooks/use-click-outside'
 import useAuthStore from '@/store/auth-store'
 import { truncateAddress } from '@/utils'
 import { SignInIcon } from '@phosphor-icons/react/dist/ssr'
 import { useSession } from 'next-auth/react'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 export const AuthenButton = () => {
   const { status } = useSession()
@@ -13,33 +14,14 @@ export const AuthenButton = () => {
   const [openLoginModal, setOpenLoginModal] = useState<boolean>(false)
   const [openAccountPopover, setOpenAccountPopover] = useState<boolean>(false)
 
-  const containerRef = useRef<HTMLDivElement>(null)
   const triggerButtonRef = useRef<HTMLButtonElement>(null)
   const popoverRef = useRef<HTMLDivElement>(null)
 
-  useEffect(() => {
-    const listener = (event: MouseEvent | TouchEvent) => {
-      // If the click/touch is inside the referenced element, ignore it
-      if (
-        !containerRef.current ||
-        containerRef.current.contains(event.target as Node)
-      ) {
-        return
-      }
-
-      if (openAccountPopover) {
-        setOpenAccountPopover(false)
-      }
+  const { ref: containerRef } = useClickOutside<HTMLDivElement>(() => {
+    if (openAccountPopover) {
+      setOpenAccountPopover(false)
     }
-
-    document.addEventListener('click', listener)
-    document.addEventListener('touchstart', listener)
-
-    return () => {
-      document.removeEventListener('click', listener)
-      document.removeEventListener('touchstart', listener)
-    }
-  }, [containerRef, openAccountPopover])
+  })
 
   return (
     <div className='relative w-fit' ref={containerRef}>

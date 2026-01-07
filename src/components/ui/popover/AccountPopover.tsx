@@ -5,7 +5,7 @@ import {
   SwitchChainButton,
 } from '@/components/ui/wallet-button'
 import { LIST_ACCOUNT_NAVIGATION, LIST_CONNECTOR_ICON } from '@/constants'
-import { TUserInfo } from '@/lib/graphql/generated/graphql'
+import { TUserInfoResponse } from '@/lib/graphql/generated/graphql'
 import useAuthStore from '@/store/auth-store'
 import { TPopoverProps } from '@/types'
 import { cn } from '@/utils'
@@ -21,7 +21,7 @@ import { useAccount, useDisconnect } from 'wagmi'
 
 type TAccountPopoverProps = TPopoverProps &
   ComponentPropsWithRef<'div'> & {
-    userInfo: TUserInfo
+    userInfo: TUserInfoResponse
   }
 
 export const AccountPopover: FC<TAccountPopoverProps> = ({
@@ -29,6 +29,7 @@ export const AccountPopover: FC<TAccountPopoverProps> = ({
   ref,
   className,
   userInfo,
+  onClose,
 }) => {
   const { isConnected, address, connector } = useAccount()
   const { disconnect } = useDisconnect()
@@ -142,6 +143,7 @@ export const AccountPopover: FC<TAccountPopoverProps> = ({
               target={link.openInNewTab ? '_blank' : '_self'}
               href={link.href}
               title={link.name}
+              onClick={onClose}
               className='from-primary-100 to-beige-50 flex size-full items-center justify-between gap-2 px-2 py-2 hover:bg-linear-to-r md:px-3'
             >
               <p className='text-18 font-small-caps text-dark-600/70 font-semibold'>

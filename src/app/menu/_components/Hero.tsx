@@ -9,6 +9,7 @@ import {
   NEW_PRODUCT_DATA,
   SIZE_OPTION,
 } from '@/constants'
+import { useClickOutside } from '@/hooks/use-click-outside'
 import useCartStore, {
   calculateItemPrice,
   getCartKey,
@@ -16,7 +17,7 @@ import useCartStore, {
 import { ENewProduct } from '@/types'
 import { cn } from '@/utils'
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Bottle3D } from './ui/Bottle3D'
 
 const ANIMATION_DURATION = 700 // ms
@@ -36,7 +37,11 @@ export const Hero = () => {
     NEW_PRODUCT_DATA[selectedProduct].requireOption?.[0].name ?? '',
   )
 
-  const containerRef = useRef<HTMLDivElement>(null)
+  const { ref: containerRef } = useClickOutside<HTMLDivElement>(() => {
+    if (showMore) {
+      setShowMore(false)
+    }
+  })
 
   const handleSelectItem = (id: ENewProduct) => {
     setAnimation(false)
@@ -114,24 +119,6 @@ export const Hero = () => {
   }, [itemAmount, selectedProduct, selectedSize])
 
   // handle click outside to close
-  useEffect(() => {
-    if (!containerRef.current) {
-      return
-    }
-    const listener = () => {
-      if (showMore) {
-        setShowMore(false)
-      }
-    }
-
-    document.addEventListener('click', listener)
-    document.addEventListener('touchstart', listener)
-
-    return () => {
-      document.removeEventListener('click', listener)
-      document.removeEventListener('touchstart', listener)
-    }
-  }, [showMore])
 
   return (
     <section
