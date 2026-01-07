@@ -12,6 +12,13 @@ export type TModalProps = {
   overlayClassName?: string
 }
 
+export const enum ESorting {
+  ASC = 'asc',
+  DESC = 'desc',
+}
+
+export type TListStatus<T> = T | 'Status'
+
 export type TNavigationItem = {
   name: string
   icon?: string | React.ReactNode

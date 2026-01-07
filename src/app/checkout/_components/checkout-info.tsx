@@ -21,7 +21,7 @@ import {
   PaypalLogoIcon,
   XCircleIcon,
 } from '@phosphor-icons/react/dist/ssr'
-import { useRouter } from 'next/router'
+import { useRouter } from 'next/navigation'
 import { FC, useState } from 'react'
 
 type TCheckoutInfoProps = {

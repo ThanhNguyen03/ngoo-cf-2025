@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useState } from 'react'
 
 import { LIST_CHAIN_ICON } from '@/constants'
+import { useClickOutside } from '@/hooks/use-click-outside'
 import { cn } from '@/utils'
 import { CaretDownIcon, CheckIcon, WarningIcon } from '@phosphor-icons/react'
 import Image from 'next/image'
@@ -17,31 +18,11 @@ export const SwitchChainButton = ({ className }: TSwitchChainButtonProps) => {
 
   const isOnlyOneChain = chains.length === 1
 
-  const containerRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    const listener = (event: MouseEvent | TouchEvent) => {
-      // If the click/touch is inside the referenced element, ignore it
-      if (
-        !containerRef.current ||
-        containerRef.current.contains(event.target as Node)
-      ) {
-        return
-      }
-
-      if (isPopoverOpen) {
-        setIsPopoverOpen(false)
-      }
+  const { ref: containerRef } = useClickOutside<HTMLDivElement>(() => {
+    if (isPopoverOpen) {
+      setIsPopoverOpen(false)
     }
-
-    document.addEventListener('click', listener)
-    document.addEventListener('touchstart', listener)
-
-    return () => {
-      document.removeEventListener('click', listener)
-      document.removeEventListener('touchstart', listener)
-    }
-  }, [containerRef, isPopoverOpen])
+  })
 
   const handleSwitchChain = (chainId: number) => {
     switchChain({ chainId })
