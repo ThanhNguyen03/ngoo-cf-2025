@@ -29,6 +29,7 @@ export const AccountPopover: FC<TAccountPopoverProps> = ({
   ref,
   className,
   userInfo,
+  onClose,
 }) => {
   const { isConnected, address, connector } = useAccount()
   const { disconnect } = useDisconnect()
@@ -142,6 +143,7 @@ export const AccountPopover: FC<TAccountPopoverProps> = ({
               target={link.openInNewTab ? '_blank' : '_self'}
               href={link.href}
               title={link.name}
+              onClick={onClose}
               className='from-primary-100 to-beige-50 flex size-full items-center justify-between gap-2 px-2 py-2 hover:bg-linear-to-r md:px-3'
             >
               <p className='text-18 font-small-caps text-dark-600/70 font-semibold'>
