@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client'
 import { TPaymentSocketResponse } from './graphql/generated/graphql'
 
 let socket: Socket | null = null
+let listeningOrderId: string | null = null
 
 export const getSocketClient = async (): Promise<Socket> => {
   if (socket) {
@@ -41,10 +42,19 @@ export const connectPaymentSocket = async (
 ) => {
   const socketClient = await getSocketClient()
 
+  if (listeningOrderId === orderId) {
+    return
+  }
+
+  // cleanup old listener
+  socketClient.removeAllListeners('paymentStatus')
+  listeningOrderId = orderId
+
   const handler = async (data: TPaymentSocketResponse) => {
     if (data.orderId === orderId) {
       await callback(data)
       socketClient.off('paymentStatus', handler)
+      listeningOrderId = null
     }
   }
 
