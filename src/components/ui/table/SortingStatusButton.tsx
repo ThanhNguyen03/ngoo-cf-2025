@@ -1,8 +1,11 @@
+import { useAnchoredFloating } from '@/hooks/use-anchored-floating'
 import { useClickOutside } from '@/hooks/use-click-outside'
 import { TListStatus } from '@/types'
 import { cn } from '@/utils'
-import { CaretUp, Check } from '@phosphor-icons/react'
+import { Check } from '@phosphor-icons/react'
+import { CaretUpIcon } from '@phosphor-icons/react/dist/ssr'
 import { useState } from 'react'
+import { createPortal } from 'react-dom'
 
 const getStatusClass = <T extends string>(
   status: T | 'Status' | undefined,
@@ -33,10 +36,17 @@ export const SortingStatusButton = <T extends string>({
     }
   })
 
+  const { anchorRef, floatingRef, floatingStyle } =
+    useAnchoredFloating<HTMLDivElement>({
+      open: isOpen,
+      placement: 'bottom',
+      offset: 5,
+    })
+
   return (
-    <div className='relative'>
+    <div className='relative' ref={ref}>
       <div
-        ref={ref}
+        ref={anchorRef}
         onClick={() => setIsOpen(!isOpen)}
         className={cn(
           'text-14 flex w-fit cursor-pointer flex-row items-center gap-2 rounded-md px-2 py-1 focus:outline-none',
@@ -44,7 +54,7 @@ export const SortingStatusButton = <T extends string>({
         )}
       >
         <span className='capitalize'>{String(selectedStatus)}</span>
-        <CaretUp
+        <CaretUpIcon
           size={16}
           className={cn(
             'text-neutral-900/30 duration-500',
@@ -54,27 +64,33 @@ export const SortingStatusButton = <T extends string>({
         />
       </div>
 
-      {isOpen && (
-        <div className='rounded-2 absolute z-50 mt-1 w-fit border border-neutral-900/10 bg-white shadow-lg'>
-          {listStatus.map((option) => (
-            <button
-              key={String(option)}
-              onClick={() => {
-                setIsOpen(false)
-                setSelectedStatus(option || 'Status')
-              }}
-              className='flex w-full gap-3 px-3 py-2 text-neutral-700 hover:bg-neutral-300'
-            >
-              <div className='size-3'>
-                {selectedStatus === option && (
-                  <Check size={16} className='text-neutral-900/50' />
-                )}
-              </div>
-              <p className='text-right capitalize'>{String(option)}</p>
-            </button>
-          ))}
-        </div>
-      )}
+      {isOpen &&
+        createPortal(
+          <div
+            ref={floatingRef}
+            style={floatingStyle}
+            className='rounded-2 text-14 z-10 w-fit border border-neutral-900/10 bg-white font-medium shadow-lg'
+          >
+            {listStatus.map((option) => (
+              <button
+                key={String(option)}
+                onClick={() => {
+                  setIsOpen(false)
+                  setSelectedStatus(option || 'Status')
+                }}
+                className='flex w-full gap-3 px-3 py-2 text-neutral-700 hover:bg-neutral-300'
+              >
+                <div className='size-3'>
+                  {selectedStatus === option && (
+                    <Check size={16} className='text-neutral-900/50' />
+                  )}
+                </div>
+                <p className='text-right capitalize'>{String(option)}</p>
+              </button>
+            ))}
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }
