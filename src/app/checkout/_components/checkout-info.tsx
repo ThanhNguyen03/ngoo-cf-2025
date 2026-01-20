@@ -1,4 +1,4 @@
-import { Button, Checkbox, toast, Tooltip } from '@/components/ui'
+import { Button, Checkbox, Tooltip } from '@/components/ui'
 import { SelectDropdown } from '@/components/ui/SelectDropdown'
 import { TextInput } from '@/components/ui/TextInput'
 import { useForm } from '@/hooks/use-form'
@@ -7,10 +7,9 @@ import {
   CreateOrderDocument,
   CreateOrderInput,
   EPaymentMethod,
-  EPaymentStatus,
   TUserInfoSnapshot,
+  UserInfoSnapshotInput,
 } from '@/lib/graphql/generated/graphql'
-import { connectPaymentSocket } from '@/lib/socket-client'
 import useAuthStore from '@/store/auth-store'
 import useCartStore, { convertCartToOrderItems } from '@/store/cart-store'
 import { apolloWrapper, cn } from '@/utils'
@@ -33,7 +32,8 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
   const getTotalCartPrice = useCartStore((state) => state.getTotalCartPrice)
   const router = useRouter()
 
-  const [userInfoSnapshot, setUserInfoSnapshot] = useState<TUserInfoSnapshot>()
+  const [userInfoSnapshot, setUserInfoSnapshot] =
+    useState<UserInfoSnapshotInput>()
   const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>()
 
   const listPaymentMethod = Object.values(EPaymentMethod)
@@ -64,6 +64,7 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
       if (!paymentMethod) {
         throw new Error('Please choose your payment method!')
       }
+
       const input: CreateOrderInput = {
         items: convertCartToOrderItems(listCartItem),
         paymentMethod,
@@ -71,6 +72,7 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
         cancelUrl: `${process.env.APP_URL}/checkout?status=cancel`,
         returnUrl: `${process.env.APP_URL}/checkout?status=return`,
       }
+
       const { data, error } = await client.mutate({
         mutation: CreateOrderDocument,
         variables: { input },
@@ -82,29 +84,7 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
       if (data) {
         // handle Paypal
         if (data.createOrder.paypalApproveUrl) {
-          await connectPaymentSocket(
-            data.createOrder.orderId,
-            async (socketData) => {
-              if (socketData.orderId !== data.createOrder.orderId) {
-                return
-              }
-
-              switch (socketData.status) {
-                case EPaymentStatus.Success:
-                  toast.success('Payment successful')
-                  router.replace(`/payment/${socketData.paymentId}`)
-                  break
-                case EPaymentStatus.Failed:
-                  toast.error('Payment failed')
-                  router.replace(`/payment/${socketData.paymentId}`)
-                  break
-                case EPaymentStatus.Cancelled:
-                  toast.error('Payment cancelled')
-                  router.replace('/checkout?status=cancel')
-                  break
-              }
-            },
-          )
+          localStorage.setItem('paypal-order-id', data.createOrder.orderId)
           window.open(
             data.createOrder.paypalApproveUrl,
             '_blank',
