@@ -25,11 +25,15 @@ import { FC, useState } from 'react'
 
 type TCheckoutInfoProps = {
   setLoading: (loading: boolean) => void
+  startProcessTimeout: () => void
 }
-export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
+export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
+  setLoading,
+  startProcessTimeout,
+}) => {
   const listCartItem = useCartStore((state) => state.listCartItem)
-  const userInfo = useAuthStore((state) => state.userInfo)
   const getTotalCartPrice = useCartStore((state) => state.getTotalCartPrice)
+  const userInfo = useAuthStore((state) => state.userInfo)
   const router = useRouter()
 
   const [userInfoSnapshot, setUserInfoSnapshot] =
@@ -52,56 +56,51 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
     mode: 'onChange',
   })
 
-  const handleCheckout = apolloWrapper(
-    async () => {
-      setLoading(true)
-      if (!listCartItem || listCartItem.length === 0) {
-        throw new Error('Your cart is empty! Check it again')
-      }
-      if (!userInfoSnapshot) {
-        throw new Error('Please fill your information!')
-      }
-      if (!paymentMethod) {
-        throw new Error('Please choose your payment method!')
+  const handleCheckout = apolloWrapper(async () => {
+    setLoading(true)
+    startProcessTimeout()
+    if (!listCartItem || listCartItem.length === 0) {
+      throw new Error('Your cart is empty! Check it again')
+    }
+    if (!userInfoSnapshot) {
+      throw new Error('Please fill your information!')
+    }
+    if (!paymentMethod) {
+      throw new Error('Please choose your payment method!')
+    }
+
+    const input: CreateOrderInput = {
+      items: convertCartToOrderItems(listCartItem),
+      paymentMethod,
+      userInfo: userInfoSnapshot,
+      cancelUrl: `${process.env.APP_URL}/payment/return?status=cancel`,
+      returnUrl: `${process.env.APP_URL}/payment/return?status=return`,
+    }
+
+    const { data, error } = await client.mutate({
+      mutation: CreateOrderDocument,
+      variables: { input },
+    })
+
+    if (error) {
+      throw error
+    }
+    if (data) {
+      // handle Paypal
+      if (data.createOrder.paypalApproveUrl) {
+        localStorage.setItem('paypal-order-id', data.createOrder.orderId)
+        localStorage.setItem(
+          'paypal-approve-url',
+          data.createOrder.paypalApproveUrl,
+        )
       }
 
-      const input: CreateOrderInput = {
-        items: convertCartToOrderItems(listCartItem),
-        paymentMethod,
-        userInfo: userInfoSnapshot,
-        cancelUrl: `${process.env.APP_URL}/checkout?status=cancel`,
-        returnUrl: `${process.env.APP_URL}/checkout?status=return`,
+      // handle COD
+      if (data.createOrder.transactionId) {
+        router.replace(`/payment/${data.createOrder.transactionId}?method=COD`)
       }
-
-      const { data, error } = await client.mutate({
-        mutation: CreateOrderDocument,
-        variables: { input },
-      })
-
-      if (error) {
-        throw error
-      }
-      if (data) {
-        // handle Paypal
-        if (data.createOrder.paypalApproveUrl) {
-          localStorage.setItem('paypal-order-id', data.createOrder.orderId)
-          window.open(
-            data.createOrder.paypalApproveUrl,
-            '_blank',
-            'width=993,height=650',
-          )
-        }
-
-        // handle COD
-        if (data.createOrder.transactionId) {
-          router.replace(
-            `/payment/${data.createOrder.transactionId}?method=COD`,
-          )
-        }
-      }
-    },
-    { onFinally: () => setLoading(false) },
-  )
+    }
+  })
 
   return (
     <div className='from-beige-50 to-primary-500/2 rounded-4 shadow-container border-primary-500/10 relative mt-11 flex size-full max-w-[35%] flex-col items-start gap-6 overflow-hidden border bg-linear-to-b p-2 md:mt-13 md:gap-10 md:p-4'>
@@ -326,6 +325,20 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({ setLoading }) => {
       >
         Check Out {getTotalCartPrice().toFixed(2)}$
       </Button>
+
+      <button
+        className='center font-small-caps text-dark-600 hover:text-primary-500 ml-auto w-fit cursor-pointer gap-2 font-semibold duration-200 hover:translate-x-2 disabled:cursor-not-allowed disabled:opacity-30'
+        onClick={() => {
+          const url = localStorage.getItem('paypal-approve-url')!
+          try {
+            window.open(url, '_blank', 'width=993,height=650')
+          } catch (error) {
+            console.error('Error to open approval PayPal popup', error)
+          }
+        }}
+      >
+        asdasdadsasd
+      </button>
     </div>
   )
 }

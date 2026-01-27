@@ -1,4 +1,5 @@
 export * from './use-container-width'
+export * from './use-cooldown'
 export * from './use-debounce'
 export * from './use-is-hydrated'
 export * from './use-parallax-layer'
