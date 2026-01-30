@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 
 /**
  * React hook to manage a persistent cooldown timer using `localStorage`.
@@ -37,8 +37,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 export const useCooldown = (key: string, defaultSeconds: number) => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null)
   const endTimeRef = useRef<number>(0)
-
-  const [cooldown, setCooldown] = useState<number>(0)
+  const displayElementRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     if (typeof window === 'undefined') {
@@ -49,55 +48,112 @@ export const useCooldown = (key: string, defaultSeconds: number) => {
     if (savedEndTime) {
       const endTime = +savedEndTime
       const remaining = Math.max(Math.floor((endTime - Date.now()) / 1000), 0)
+
       if (remaining > 0) {
-        setCooldown(remaining)
         endTimeRef.current = endTime
+        startInterval()
       } else {
         localStorage.removeItem(key)
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [key])
 
-  useEffect(() => {
+  // Format time
+  const formatTime = useCallback((seconds: number): string => {
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`
+  }, [])
+
+  // Update DOM element
+  const updateDisplay = useCallback(
+    (seconds: number) => {
+      if (displayElementRef.current) {
+        displayElementRef.current.textContent = formatTime(seconds)
+      }
+    },
+    [formatTime],
+  )
+
+  // Start interval
+  const startInterval = useCallback(() => {
     if (intervalRef.current) {
-      return
+      clearInterval(intervalRef.current)
     }
 
     intervalRef.current = setInterval(() => {
-      if (!endTimeRef.current) {
-        setCooldown(0)
-        return
-      }
-      const remaining = Math.max(
-        Math.floor((endTimeRef.current - Date.now()) / 1000),
-        0,
-      )
-      setCooldown(remaining)
+      const remaining = endTimeRef.current
+        ? Math.max(Math.floor((endTimeRef.current - Date.now()) / 1000), 0)
+        : 0
+
+      updateDisplay(remaining)
+
       if (remaining <= 0) {
+        if (intervalRef.current) {
+          clearInterval(intervalRef.current)
+          intervalRef.current = null
+        }
         localStorage.removeItem(key)
         endTimeRef.current = 0
       }
     }, 1000)
+  }, [key, updateDisplay])
 
+  // Start cooldown
+  const startCooldown = useCallback(() => {
+    const endTime = Date.now() + defaultSeconds * 1000
+    localStorage.setItem(key, endTime.toString())
+    endTimeRef.current = endTime
+
+    updateDisplay(defaultSeconds)
+    startInterval()
+  }, [defaultSeconds, key, updateDisplay, startInterval])
+
+  // Clear cooldown
+  const clearCooldown = useCallback(() => {
+    localStorage.removeItem(key)
+    endTimeRef.current = 0
+
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current)
+      intervalRef.current = null
+    }
+
+    updateDisplay(0)
+  }, [key, updateDisplay])
+
+  // Register display element
+  const registerDisplay = useCallback(
+    (element: HTMLElement | null) => {
+      displayElementRef.current = element
+      if (element && endTimeRef.current) {
+        const remaining = Math.max(
+          Math.floor((endTimeRef.current - Date.now()) / 1000),
+          0,
+        )
+        updateDisplay(remaining)
+      }
+    },
+    [updateDisplay],
+  )
+
+  // Cleanup
+  useEffect(() => {
     return () => {
       if (intervalRef.current) {
         clearInterval(intervalRef.current)
       }
     }
-  }, [key])
+  }, [])
 
-  const startCooldown = useCallback(() => {
-    const endTime = Date.now() + defaultSeconds * 1000
-    localStorage.setItem(key, endTime.toString())
-    endTimeRef.current = endTime
-    setCooldown(defaultSeconds)
-  }, [defaultSeconds, key])
-
-  const clearCooldown = useCallback(() => {
-    localStorage.removeItem(key)
-    endTimeRef.current = 0
-    setCooldown(0)
-  }, [key])
-
-  return [cooldown, startCooldown, clearCooldown] as const
+  return {
+    startCooldown,
+    clearCooldown,
+    registerDisplay,
+    getCurrent: () =>
+      endTimeRef.current
+        ? Math.max(Math.floor((endTimeRef.current - Date.now()) / 1000), 0)
+        : 0,
+  }
 }

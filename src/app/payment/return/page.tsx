@@ -17,8 +17,25 @@ const PaypalReturn = () => {
     hasProcessed.current = true
 
     const handlePayment = async () => {
-      window.close()
-      return
+      try {
+        if (window.opener && !window.opener.closed) {
+          window.opener.postMessage(
+            {
+              type: 'PAYPAL_RETURN',
+              timestamp: Date.now(),
+            },
+            window.location.origin,
+          )
+        }
+
+        // Đóng popup sau 100ms để message kịp gửi
+        setTimeout(() => {
+          window.close()
+        }, 100)
+      } catch (error) {
+        console.error('Error handling PayPal return:', error)
+        window.close()
+      }
     }
 
     handlePayment()

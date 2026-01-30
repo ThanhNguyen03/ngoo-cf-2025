@@ -26,10 +26,12 @@ import { FC, useState } from 'react'
 type TCheckoutInfoProps = {
   setLoading: (loading: boolean) => void
   startProcessTimeout: () => void
+  getCheckoutData: (data: { url: string; orderId: string }) => void
 }
 export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
   setLoading,
   startProcessTimeout,
+  getCheckoutData,
 }) => {
   const listCartItem = useCartStore((state) => state.listCartItem)
   const getTotalCartPrice = useCartStore((state) => state.getTotalCartPrice)
@@ -73,8 +75,8 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
       items: convertCartToOrderItems(listCartItem),
       paymentMethod,
       userInfo: userInfoSnapshot,
-      cancelUrl: `${process.env.APP_URL}/payment/return?status=cancel`,
-      returnUrl: `${process.env.APP_URL}/payment/return?status=return`,
+      cancelUrl: `${process.env.APP_URL}/payment/return?status=cancel&t=${Date.now()}`,
+      returnUrl: `${process.env.APP_URL}/payment/return?status=success&t=${Date.now()}`,
     }
 
     const { data, error } = await client.mutate({
@@ -88,11 +90,10 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
     if (data) {
       // handle Paypal
       if (data.createOrder.paypalApproveUrl) {
-        localStorage.setItem('paypal-order-id', data.createOrder.orderId)
-        localStorage.setItem(
-          'paypal-approve-url',
-          data.createOrder.paypalApproveUrl,
-        )
+        getCheckoutData({
+          url: data.createOrder.paypalApproveUrl,
+          orderId: data.createOrder.orderId,
+        })
       }
 
       // handle COD
@@ -325,20 +326,6 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
       >
         Check Out {getTotalCartPrice().toFixed(2)}$
       </Button>
-
-      <button
-        className='center font-small-caps text-dark-600 hover:text-primary-500 ml-auto w-fit cursor-pointer gap-2 font-semibold duration-200 hover:translate-x-2 disabled:cursor-not-allowed disabled:opacity-30'
-        onClick={() => {
-          const url = localStorage.getItem('paypal-approve-url')!
-          try {
-            window.open(url, '_blank', 'width=993,height=650')
-          } catch (error) {
-            console.error('Error to open approval PayPal popup', error)
-          }
-        }}
-      >
-        asdasdadsasd
-      </button>
     </div>
   )
 }

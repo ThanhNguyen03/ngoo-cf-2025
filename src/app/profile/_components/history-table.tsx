@@ -6,7 +6,6 @@ import {
   Table,
   TTableColumn,
 } from '@/components/ui/table'
-import { DEFAULT_PAGINATION } from '@/constants'
 import {
   EPaymentMethod,
   EPaymentStatus,
@@ -22,6 +21,7 @@ import {
   PaypalLogoIcon,
 } from '@phosphor-icons/react/dist/ssr'
 import dayjs from 'dayjs'
+import { useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 
 const PAYMENT_STATUS_CLASSES: Record<EPaymentStatus, string> = {
@@ -50,6 +50,7 @@ type TPaymentHistoryProps = {
   data: TUserPaymentResponse[]
 }
 const PaymentHistoryTable: FC<TPaymentHistoryProps> = ({ data }) => {
+  const router = useRouter()
   const [selectedStatus, setSelectedStatus] =
     useState<TListStatus<EPaymentStatus>>('Status')
   const [filtedData, setFiltedData] = useState<TUserPaymentResponse[]>(data)
@@ -157,7 +158,14 @@ const PaymentHistoryTable: FC<TPaymentHistoryProps> = ({ data }) => {
     },
   ]
 
-  return <Table columns={column} data={data} />
+  return (
+    <Table
+      columns={column}
+      onRowClick={(row) => router.replace(`/payment/${row?.paymentId}`)}
+      data={data}
+      className='max-h-[480px]'
+    />
+  )
 }
 
 export const HistoryTable = () => {
@@ -165,7 +173,10 @@ export const HistoryTable = () => {
   const [total, setTotal] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(true)
 
-  const [pagination, setPagination] = useState<TPagination>(DEFAULT_PAGINATION)
+  const [pagination, setPagination] = useState<TPagination>({
+    limit: 10,
+    offset: 0,
+  })
 
   const { data } = useQuery(ListUserPaymentHistoryDocument, {
     variables: {
