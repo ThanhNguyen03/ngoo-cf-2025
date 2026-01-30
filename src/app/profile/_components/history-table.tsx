@@ -6,7 +6,6 @@ import {
   Table,
   TTableColumn,
 } from '@/components/ui/table'
-import { DEFAULT_PAGINATION } from '@/constants'
 import {
   EPaymentMethod,
   EPaymentStatus,
@@ -22,24 +21,28 @@ import {
   PaypalLogoIcon,
 } from '@phosphor-icons/react/dist/ssr'
 import dayjs from 'dayjs'
+import { useRouter } from 'next/navigation'
 import { FC, useEffect, useState } from 'react'
 
 const PAYMENT_STATUS_CLASSES: Record<EPaymentStatus, string> = {
-  [EPaymentStatus.Processing]: 'bg-yellow-100 text-yellow-500',
-  [EPaymentStatus.Success]: 'bg-green-100 text-green-600',
-  [EPaymentStatus.Failed]: ' bg-red-100 text-red-500',
-  [EPaymentStatus.Cancelled]: 'bg-pink-100 text-pink-500',
+  [EPaymentStatus.Processing]:
+    'bg-yellow-75 border border-yellow-400/10 text-yellow-400',
+  [EPaymentStatus.Success]:
+    'bg-green-100 border border-green-500/10 text-green-600',
+  [EPaymentStatus.Failed]: 'bg-red-100 text-red-500 border border-red-500/10',
+  [EPaymentStatus.Cancelled]:
+    'bg-pink-100 text-pink-500 border border-pink-500/10',
 }
 
 const PAYMENT_ICON: Record<EPaymentMethod, React.ReactNode> = {
   [EPaymentMethod.Crypto]: (
-    <CurrencyEthIcon size={20} fill='#8A2BE2' weight='duotone' />
+    <CurrencyEthIcon size={24} fill='#8A2BE2' weight='duotone' />
   ),
   [EPaymentMethod.Paypal]: (
-    <PaypalLogoIcon size={20} fill='#003087' weight='duotone' />
+    <PaypalLogoIcon size={24} fill='#003087' weight='duotone' />
   ),
   [EPaymentMethod.Cod]: (
-    <MoneyWavyIcon size={20} fill='#228B22' weight='duotone' />
+    <MoneyWavyIcon size={24} fill='#228B22' weight='duotone' />
   ),
 }
 
@@ -47,6 +50,7 @@ type TPaymentHistoryProps = {
   data: TUserPaymentResponse[]
 }
 const PaymentHistoryTable: FC<TPaymentHistoryProps> = ({ data }) => {
+  const router = useRouter()
   const [selectedStatus, setSelectedStatus] =
     useState<TListStatus<EPaymentStatus>>('Status')
   const [filtedData, setFiltedData] = useState<TUserPaymentResponse[]>(data)
@@ -90,7 +94,7 @@ const PaymentHistoryTable: FC<TPaymentHistoryProps> = ({ data }) => {
       cellRender: (row) => (
         <span
           className={cn(
-            'text-14 me-2 rounded px-2.5 py-1 !capitalize',
+            'text-14! rounded px-2.5 py-1 leading-[160%] font-semibold !capitalize',
             PAYMENT_STATUS_CLASSES[row.status],
           )}
         >
@@ -122,7 +126,9 @@ const PaymentHistoryTable: FC<TPaymentHistoryProps> = ({ data }) => {
         />
       ),
       key: 'totalPrice',
-      cellRender: (item) => <>{item.totalPrice}</>,
+      cellRender: (item) => (
+        <p className='text-16 font-semibold'>{item.totalPrice}$</p>
+      ),
     },
     {
       title: '',
@@ -140,17 +146,28 @@ const PaymentHistoryTable: FC<TPaymentHistoryProps> = ({ data }) => {
       ),
       key: 'updatedAt',
       cellRender: (row) => (
-        <div className='w-fit'>{dayjs(row.updatedAt).format('DD/MM/YYYY')}</div>
+        <div className='w-fit'>
+          {dayjs(row.updatedAt).format('HH:mm - DD/MM/YYYY')}
+        </div>
       ),
     },
     {
       title: 'Type',
       key: 'paymentMethod',
-      cellRender: (row) => <div className='w-fit'>{row.paymentMethod}</div>,
+      cellRender: (row) => (
+        <p className='w-fit font-bold'>{row.paymentMethod}</p>
+      ),
     },
   ]
 
-  return <Table columns={column} data={data} />
+  return (
+    <Table
+      columns={column}
+      onRowClick={(row) => router.replace(`/payment/${row?.paymentId}`)}
+      data={data}
+      className='max-h-[480px]'
+    />
+  )
 }
 
 export const HistoryTable = () => {
@@ -158,7 +175,10 @@ export const HistoryTable = () => {
   const [total, setTotal] = useState<number>(0)
   const [loading, setLoading] = useState<boolean>(true)
 
-  const [pagination, setPagination] = useState<TPagination>(DEFAULT_PAGINATION)
+  const [pagination, setPagination] = useState<TPagination>({
+    limit: 10,
+    offset: 0,
+  })
 
   const { data } = useQuery(ListUserPaymentHistoryDocument, {
     variables: {

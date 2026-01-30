@@ -223,7 +223,7 @@ export const Filter: FC<TFilterProps> = ({
           <nav className='flex items-center gap-x-1' aria-label='Pagination'>
             <button
               type='button'
-              className='text-dark-600 inline-flex size-6 items-center justify-center text-sm duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+              className='text-dark-600 inline-flex size-6 cursor-pointer items-center justify-center text-sm duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
               aria-label='Previous'
               onClick={goToFirstPage}
               disabled={currentPage === 1 || disableChangePage}
@@ -232,7 +232,7 @@ export const Filter: FC<TFilterProps> = ({
             </button>
             <button
               type='button'
-              className='text-dark-600 inline-flex size-6 items-center justify-center text-sm duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+              className='text-dark-600 inline-flex size-6 cursor-pointer items-center justify-center text-sm duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
               aria-label='Previous'
               onClick={goToPreviousPage}
               disabled={currentPage === 1 || disableChangePage}
@@ -260,7 +260,7 @@ export const Filter: FC<TFilterProps> = ({
             </div>
             <button
               type='button'
-              className='text-dark-600 inline-flex size-6 items-center justify-center text-sm duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+              className='text-dark-600 inline-flex size-6 cursor-pointer items-center justify-center text-sm duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
               aria-label='Next'
               onClick={goToNextPage}
               disabled={
@@ -274,7 +274,7 @@ export const Filter: FC<TFilterProps> = ({
             </button>
             <button
               type='button'
-              className='text-dark-600 inline-flex size-6 items-center justify-center text-sm duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+              className='text-dark-600 inline-flex size-6 cursor-pointer items-center justify-center text-sm duration-200 focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
               aria-label='Previous'
               onClick={goToLastPage}
               disabled={

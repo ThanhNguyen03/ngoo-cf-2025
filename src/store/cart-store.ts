@@ -33,7 +33,11 @@ export const convertCartToOrderItems = (
     amount,
     itemId,
     note,
-    selectedOptions,
+    selectedOptions: selectedOptions?.map((o) => ({
+      group: o.group,
+      name: o.name,
+      extraPrice: o.extraPrice || 0,
+    })),
   }))
 }
 

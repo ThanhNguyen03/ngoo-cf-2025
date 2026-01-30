@@ -5,6 +5,7 @@ import {
 } from '@/lib/graphql/generated/graphql'
 import { cn } from '@/utils'
 import { CheckCircleIcon, XCircleIcon } from '@phosphor-icons/react/dist/ssr'
+import dayjs from 'dayjs'
 import { FC } from 'react'
 import { PaymentItem } from './payment-item'
 
@@ -70,7 +71,10 @@ export const PaymentDetail: FC<TPaymentDetailProps> = ({ data }) => {
           <SwitchButton
             className='rounded-3! w-fit font-semibold text-nowrap'
             variant='white'
-            href='/profile/?tab=activity'
+            onClick={(e) => {
+              e.preventDefault()
+              window.location.href = '/profile/?tab=activity'
+            }}
           >
             Back to History
           </SwitchButton>
@@ -112,7 +116,9 @@ export const PaymentDetail: FC<TPaymentDetailProps> = ({ data }) => {
             </div>
             <div className='text-16 text-dark-600 flex w-full items-center justify-between'>
               <p>Invoice date</p>
-              <p className='font-bold'>{data.updatedAt}</p>
+              <p className='font-bold'>
+                {dayjs(data.updatedAt).format('HH:mm - DD/MM/YYYY')}
+              </p>
             </div>
           </div>
 

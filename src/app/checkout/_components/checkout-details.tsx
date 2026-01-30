@@ -49,15 +49,17 @@ const ItemCheckout: FC<TItemCheckoutProps> = ({
           </div>
           <div className='flex flex-col items-start p-1'>
             <h5 className='text-16 mb-1 font-semibold'>{data.itemInfo.name}</h5>
-            {data.selectedOptions &&
-              data.selectedOptions.map((option) => (
-                <p key={option.group} className='text-14 text-dark-600/70'>
-                  {option.group === 'size' ? 'Size' : ''} {option.name}{' '}
-                  {option.extraPrice && option.extraPrice > 0
-                    ? `(+${option.extraPrice}$)`
-                    : ''}
-                </p>
-              ))}
+            <ul className='list-outside list-disc pl-5'>
+              {data.selectedOptions &&
+                data.selectedOptions.map((option) => (
+                  <li key={option.name} className='text-14 text-dark-600/70'>
+                    {option.group === 'size' ? 'Size' : ''} {option.name}{' '}
+                    {option.extraPrice && option.extraPrice > 0
+                      ? `(+${option.extraPrice}$)`
+                      : ''}
+                  </li>
+                ))}
+            </ul>
           </div>
         </div>
       </td>

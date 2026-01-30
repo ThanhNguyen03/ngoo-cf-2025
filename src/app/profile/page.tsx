@@ -58,7 +58,7 @@ const ProfilePage = () => {
   return (
     <>
       <main className='relative size-full overflow-x-hidden bg-white'>
-        <section className='mx-auto flex size-full h-[calc(100dvh-380px)] max-w-[1200px] items-start gap-6 py-10 md:gap-10 md:px-4 md:py-20 lg:px-8'>
+        <section className='mx-auto flex size-full min-h-[calc(100dvh-380px)] max-w-[1200px] items-start gap-6 py-10 md:gap-10 md:px-4 md:py-20 lg:px-8'>
           {/* Tab bar */}
           <div className='flex size-full max-w-[320px] flex-col justify-between gap-10'>
             <div className='relative flex h-full flex-col gap-4'>

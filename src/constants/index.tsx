@@ -10,7 +10,7 @@ import {
   orangeJuiceBottle,
   strawberryJuiceBottle,
 } from '@/assets/products'
-import { TItemOption, TItemResponse } from '@/lib/graphql/generated/graphql'
+import { TItemOption } from '@/lib/graphql/generated/graphql'
 import {
   ENewProduct,
   TCollectionData,
@@ -28,7 +28,6 @@ import {
   TelegramLogoIcon,
   VaultIcon,
 } from '@phosphor-icons/react/dist/ssr'
-import { StaticImageData } from 'next/image'
 import { mainnet, monadTestnet, sepolia } from 'viem/chains'
 
 export const DEV_APP_URL = 'http://localhost:3000'
@@ -196,20 +195,6 @@ export const LIST_NEW_PRODUCT: TCollectionData[] = [
   },
 ]
 
-type TNewItem = {
-  image: string | StaticImageData
-  title: string
-  price: number
-  amount: number
-  discountPercent?: number
-  description?: string
-  requireOption?: TItemOption[]
-  model: string
-  tag: string
-  bgClassName?: string
-  buttonClassName?: string
-  titleClassName?: string
-}
 export const SIZE_OPTION: TItemOption[] = [
   {
     group: 'size',
@@ -221,116 +206,3 @@ export const SIZE_OPTION: TItemOption[] = [
     extraPrice: 2,
   },
 ]
-export const NEW_PRODUCT_DATA: Record<ENewProduct, TNewItem> = {
-  [ENewProduct.Cherry]: {
-    title: 'Cherry Juice',
-    image: cherryJuiceBottle,
-    model: '/models/cherry.glb',
-    tag: 'Sweet, fresh, and a sip of happiness.',
-    price: 5,
-    amount: 0,
-    requireOption: SIZE_OPTION,
-    bgClassName:
-      'bg-[radial-gradient(ellipse_at_center,hsl(340,75%,30%)_0%,hsl(335,75%,42%)_40%,hsla(345,7%,10%)_80%)]',
-    buttonClassName: 'hover:bg-linear-to-br from-cherry-500/70 to-white/10',
-    titleClassName: 'bg-linear-to-br from-cherry-300 to-white',
-    description:
-      'Our Cherry Juice shines with a vibrant ruby-red color and a naturally sweet-tart taste from fresh cherries. Packed with antioxidants, it not only refreshes but also supports glowing skin and heart health. A perfect balance of sweetness and lightness in every sip.',
-  },
-  [ENewProduct.Kiwi]: {
-    title: 'Kiwi Juice',
-    image: kiwiJuiceBottole,
-    model: '/models/kiwi.glb',
-    tag: 'Tangy, refreshing, and naturally energizing.',
-    price: 5,
-    amount: 0,
-    requireOption: SIZE_OPTION,
-    bgClassName:
-      'bg-[radial-gradient(ellipse_at_center,hsl(68,76%,30%)_0%,hsl(68,76%,42%)_40%,hsla(345,7%,10%)_80%)]',
-    buttonClassName: 'hover:bg-linear-to-br from-kiwi-500/50 to-white/10',
-    titleClassName: 'bg-linear-to-br from-kiwi-300 to-white',
-    description:
-      'Kiwi Juice delivers a refreshing surprise with its tangy-sweet balance and distinctive fragrance of fresh kiwi. Rich in vitamin C and fiber, it boosts your energy while keeping you light, fresh, and healthy throughout the day.',
-  },
-  [ENewProduct.Orange]: {
-    title: 'Orange Juice',
-    image: orangeJuiceBottle,
-    model: '/models/orange.glb',
-    tag: 'One glass of orange, one brighter day.',
-    price: 5,
-    amount: 0,
-    requireOption: SIZE_OPTION,
-    bgClassName:
-      'bg-[radial-gradient(ellipse_at_center,hsl(32,99%,30%)_0%,hsl(32,99%,42%)_40%,hsla(345,7%,10%)_80%)]',
-    buttonClassName: 'hover:bg-linear-to-br from-orange-500/50 to-white/10',
-    titleClassName: 'bg-linear-to-br from-orange-300 to-white',
-    description:
-      'Nothing beats the freshness of pure Orange Juice. With its sweet, zesty flavor and vitamin C richness, it strengthens immunity, brightens your mood, and fuels your day with vitality. A timeless classic that never goes out of style.',
-  },
-  [ENewProduct.Strawberry]: {
-    title: 'Strawberry Juice',
-    image: strawberryJuiceBottle,
-    model: '/models/strawberry.glb',
-    tag: 'Naturally sweet, love at first sip.',
-    price: 5,
-    amount: 0,
-    requireOption: SIZE_OPTION,
-    bgClassName:
-      'bg-[radial-gradient(ellipse_at_center,hsl(0,96%,30%)_0%,hsl(0,96%,42%)_40%,hsla(345,7%,10%)_80%)]',
-    buttonClassName: 'hover:bg-linear-to-br from-strawberry-500/50 to-white/10',
-    titleClassName: 'bg-linear-to-br from-strawberry-300 to-white',
-    description:
-      'Strawberry Juice bursts with the sweet, refreshing taste of ripe strawberries. Each sip delivers freshness and a natural energy boost. More than just a drink, it’s a delightful treat for your senses that you’ll fall in love with instantly.',
-  },
-}
-
-export const CART_NEW_DATA: Record<ENewProduct, TItemResponse> = {
-  [ENewProduct.Cherry]: {
-    name: 'Cherry Juice',
-    price: 5,
-    image: cherryJuiceBottle.src,
-    itemId: '123123qdwqasdasdqweqew1',
-    requireOption: SIZE_OPTION,
-    createdAt: 0,
-    updatedAt: 0,
-    categoryName: 'Fruit Juice',
-    description:
-      'Our Cherry Juice shines with a vibrant ruby-red color and a naturally sweet-tart taste from fresh cherries. Packed with antioxidants, it not only refreshes but also supports glowing skin and heart health. A perfect balance of sweetness and lightness in every sip.',
-  },
-  [ENewProduct.Kiwi]: {
-    name: 'Kiwi Juice',
-    price: 5,
-    image: kiwiJuiceBottole.src,
-    itemId: '123123qdwqasdasdqweqew2',
-    requireOption: SIZE_OPTION,
-    createdAt: 0,
-    updatedAt: 0,
-    categoryName: 'Fruit Juice',
-    description:
-      'Kiwi Juice delivers a refreshing surprise with its tangy-sweet balance and distinctive fragrance of fresh kiwi. Rich in vitamin C and fiber, it boosts your energy while keeping you light, fresh, and healthy throughout the day.',
-  },
-  [ENewProduct.Orange]: {
-    name: 'Orange Juice',
-    price: 5,
-    image: orangeJuiceBottle.src,
-    itemId: '123123qdwqasdasdqweqew3',
-    requireOption: SIZE_OPTION,
-    createdAt: 0,
-    updatedAt: 0,
-    categoryName: 'Fruit Juice',
-    description:
-      'Nothing beats the freshness of pure Orange Juice. With its sweet, zesty flavor and vitamin C richness, it strengthens immunity, brightens your mood, and fuels your day with vitality. A timeless classic that never goes out of style.',
-  },
-  [ENewProduct.Strawberry]: {
-    name: 'Strawberry Juice',
-    price: 5,
-    image: strawberryJuiceBottle.src,
-    itemId: '123123qdwqasdasdqweqew4',
-    requireOption: SIZE_OPTION,
-    createdAt: 0,
-    updatedAt: 0,
-    categoryName: 'Fruit Juice',
-    description:
-      'Strawberry Juice bursts with the sweet, refreshing taste of ripe strawberries. Each sip delivers freshness and a natural energy boost. More than just a drink, it’s a delightful treat for your senses that you’ll fall in love with instantly.',
-  },
-}

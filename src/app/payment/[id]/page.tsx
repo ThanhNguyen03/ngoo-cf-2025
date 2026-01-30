@@ -4,6 +4,7 @@ import { checkoutLoading } from '@/assets/images'
 import { SkeletonLoader } from '@/components/ui'
 import { client } from '@/lib/apollo-client'
 import {
+  EPaymentMethod,
   PaymentUserHistoryDocument,
   TUserPaymentResponse,
 } from '@/lib/graphql/generated/graphql'
@@ -11,7 +12,7 @@ import { apolloWrapper, cn } from '@/utils'
 import { CaretRightIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useParams, useSearchParams } from 'next/navigation'
+import { useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { PaymentDetail } from '../_components/payment-detail'
 
@@ -25,7 +26,6 @@ const step = [
 const MOCKED_TIME_STEPS = [1, 10, 20, 1] // minutes
 
 const PaymentDetailPage = () => {
-  const searchParams = useSearchParams().get('method')
   const { id } = useParams()
 
   const [loading, setLoading] = useState<boolean>(true)
@@ -80,7 +80,7 @@ const PaymentDetailPage = () => {
       >
         {paymentInfo && (
           <>
-            {searchParams ? (
+            {paymentInfo.paymentMethod === EPaymentMethod.Cod ? (
               <div className='border-dark-600/30 shadow-container relative mx-auto flex size-full max-w-[1200px] items-start justify-center gap-10 border-x bg-white px-2 py-20 md:px-6 md:py-30 lg:px-10'>
                 {/* progress */}
                 <div className='flex h-full w-1/5 flex-col items-start'>

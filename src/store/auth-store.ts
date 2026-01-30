@@ -62,7 +62,6 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
     }
 
     await signIn('credentials', {
-      redirect: false,
       isRegister,
       email: data.email,
       password: data.password,
