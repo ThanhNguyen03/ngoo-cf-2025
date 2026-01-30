@@ -146,7 +146,9 @@ const PaymentHistoryTable: FC<TPaymentHistoryProps> = ({ data }) => {
       ),
       key: 'updatedAt',
       cellRender: (row) => (
-        <div className='w-fit'>{dayjs(row.updatedAt).format('DD/MM/YYYY')}</div>
+        <div className='w-fit'>
+          {dayjs(row.updatedAt).format('HH:mm - DD/MM/YYYY')}
+        </div>
       ),
     },
     {

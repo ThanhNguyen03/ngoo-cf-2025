@@ -176,11 +176,17 @@ export const CheckoutProcess: FC<TCheckoutProcessProps> = ({
               className='object-cover'
             />
             <p className='text-18 text-dark-600 text-center font-medium'>
-              We are processing your payment request, please wait in{' '}
-              <b ref={countdownRef} className='text-secondary-500'>
-                {cooldownHook.getCurrent()}
-              </b>{' '}
-              seconds... <br />
+              We are processing your payment request
+              {!isPaypalClosed && (
+                <span>
+                  , please wait in{' '}
+                  <b ref={countdownRef} className='text-secondary-500'>
+                    {cooldownHook.getCurrent()}
+                  </b>{' '}
+                  seconds...{' '}
+                </span>
+              )}
+              <br />
               {retry &&
                 'PayPal window was closed! Re-launch the window to complete your purchase'}
             </p>
