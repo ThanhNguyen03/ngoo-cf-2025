@@ -1,0 +1,11 @@
+mutation UserUpdateInfo($userInfo: TUserInfoInput!) {
+  userUpdateInfo(userInfo: $userInfo) {
+    uuid
+    email
+    name
+    walletAddress
+    authMethods
+    address
+    phoneNumber
+  }
+}

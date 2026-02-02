@@ -1,32 +1,73 @@
-import { SwitchButton } from '@/components/ui'
+import { SwitchButton, toast } from '@/components/ui'
 import { TextInput } from '@/components/ui/TextInput'
 import { useForm } from '@/hooks/use-form'
-import { TUserInfoResponse } from '@/lib/graphql/generated/graphql'
-import useAuthStore from '@/store/auth-store'
+import { client } from '@/lib/apollo-client'
+import {
+  TUserInfoResponse,
+  UserUpdateInfoDocument,
+} from '@/lib/graphql/generated/graphql'
+import { apolloWrapper } from '@/utils'
+import { type FC } from 'react'
 
-export const InfoForm = () => {
-  const userInfo = useAuthStore((state) => state.userInfo!)
+type TInfoFormProps = {
+  userInfo: TUserInfoResponse
+  onUpdateSuccess?: () => Promise<void>
+}
+export const InfoForm: FC<TInfoFormProps> = ({ userInfo, onUpdateSuccess }) => {
   const {
     register,
-    handleSubmit,
     formState: { errors, values },
+    reset,
   } = useForm<TUserInfoResponse>({
     defaultValues: {
       email: userInfo.email,
-      name: userInfo?.name || '',
-      phoneNumber: userInfo?.phoneNumber || '',
-      address: userInfo?.address || '',
+      name: userInfo.name ?? '',
+      phoneNumber: userInfo.phoneNumber ?? '',
+      address: userInfo.address ?? '',
     },
     mode: 'onChange',
   })
 
-  // const isValuesChanged = Object.keys(values).some((key) => {
-  //   return (
-  //     !!values[key as keyof TUserInfoResponse] &&
-  //     values[key as keyof TUserInfoResponse] !==
-  //       userInfo[key as keyof TUserInfoResponse]
-  //   )
-  // })
+  const isValuesChanged = Object.keys(values).some((key) => {
+    return (
+      !!values[key as keyof TUserInfoResponse] &&
+      values[key as keyof TUserInfoResponse] !==
+        userInfo[key as keyof TUserInfoResponse]
+    )
+  })
+
+  const handleSubmit = apolloWrapper(
+    async () => {
+      toast.info('Updating user info', { progressBar: true, id: 'update' })
+      const { data, error } = await client.mutate({
+        mutation: UserUpdateInfoDocument,
+        variables: {
+          userInfo: {
+            name: values.name,
+            phoneNumber: values.phoneNumber,
+            address: values.address,
+          },
+        },
+      })
+
+      if (error) {
+        throw error
+      }
+
+      if (data) {
+        toast.success('Update successfully!', { id: 'update' })
+        if (onUpdateSuccess) {
+          await onUpdateSuccess()
+        }
+      }
+    },
+    {
+      onFinally: () => {
+        toast.close('update')
+        reset()
+      },
+    },
+  )
 
   return (
     <div className='rounded-2 border-dark-600/10 flex w-full flex-col overflow-hidden border bg-white'>
@@ -70,48 +111,40 @@ export const InfoForm = () => {
           <TextInput
             label='Phone Number'
             errorMessage={errors.phoneNumber}
-            {...register(
-              'phoneNumber',
-              userInfo.phoneNumber || values.phoneNumber
-                ? {
-                    required: 'Phone number is required',
-                    pattern: {
-                      value: /^[0-9]{8,15}$/,
-                      message: 'Phone number is invalid',
-                    },
-                    minLength: {
-                      value: 8,
-                      message: 'Phone must be at least 8 digits',
-                    },
-                    maxLength: {
-                      value: 15,
-                      message: 'Phone must be under 15 digits',
-                    },
-                  }
-                : undefined,
-            )}
+            {...register('phoneNumber', {
+              required: 'Phone number is required',
+              minLength: {
+                value: 8,
+                message: 'Phone must be at least 8 digits',
+              },
+              maxLength: {
+                value: 15,
+                message: 'Phone must be under 15 digits',
+              },
+              pattern: {
+                value: /^[0-9]/,
+                message: 'Phone number is invalid',
+              },
+            })}
           />
         </div>
         <TextInput
           label='Address'
           errorMessage={errors.address}
-          {...register(
-            'address',
-            userInfo.address
-              ? {
-                  required: 'Address is required',
-                  minLength: {
-                    value: 8,
-                    message: 'Address must be at least 8 characters',
-                  },
-                }
-              : undefined,
-          )}
+          {...register('address', {
+            required: 'Address is required',
+            minLength: {
+              value: 8,
+              message: 'Address must be at least 8 characters',
+            },
+          })}
         />
         <SwitchButton
-          // disabled={!errors || !isValuesChanged}
-          onClick={handleSubmit(() => {})}
-          disabled
+          type='submit'
+          disabled={
+            Object.values(errors).some((value) => !!value) || !isValuesChanged
+          }
+          onClick={handleSubmit}
           className='text-14 rounded-3! ml-auto h-10 min-h-10 w-fit leading-[160%] font-semibold text-white'
         >
           Update Profile
