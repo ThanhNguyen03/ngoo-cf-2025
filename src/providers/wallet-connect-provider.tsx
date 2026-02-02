@@ -62,22 +62,30 @@ export const WalletConnectProvider = ({ children }: PropsWithChildren) => {
         listTypeIcon={{
           info: (
             <div className='rounded-2 center bg-zk-support-500 size-9'>
-              <InfoIcon weight='fill' color='white' size={20} />
+              <InfoIcon weight='fill' className='text-blue-500' size={20} />
             </div>
           ),
           success: (
             <div className='rounded-2 center bg-zk-green-500 size-9'>
-              <ConfettiIcon weight='fill' color='white' size={20} />
+              <ConfettiIcon
+                weight='fill'
+                className='text-green-500'
+                size={20}
+              />
             </div>
           ),
           error: (
             <div className='rounded-2 center bg-zk-pink-500 size-9'>
-              <XIcon color='white' size={20} />
+              <XIcon className='text-pink-500' size={20} />
             </div>
           ),
           warning: (
             <div className='rounded-2 center bg-zk-orange-500 size-9'>
-              <WarningIcon weight='fill' color='white' size={20} />
+              <WarningIcon
+                weight='fill'
+                className='text-orange-500'
+                size={20}
+              />
             </div>
           ),
         }}

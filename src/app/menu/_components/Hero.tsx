@@ -214,8 +214,6 @@ export const Hero = () => {
     )
   }, [itemAmount, selectedProduct, selectedSize, NEW_PRODUCT_DATA])
 
-  console.log('first', NEW_PRODUCT_DATA)
-
   return (
     <>
       {loading || !NEW_PRODUCT_DATA ? (

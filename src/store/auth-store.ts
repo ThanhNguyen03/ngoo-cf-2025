@@ -15,7 +15,7 @@ type TAuthState = {
 }
 
 type TAuthAction = {
-  getUserInfo: () => Promise<void>
+  getUserInfo: (refetch?: boolean) => Promise<void>
   login: (data: MutationUserLoginArgs, isRegister?: boolean) => Promise<void>
   logout: () => Promise<void>
 }
@@ -25,8 +25,8 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
   loading: false,
   error: null,
 
-  getUserInfo: async () => {
-    if (get().userInfo) {
+  getUserInfo: async (refetch) => {
+    if (get().userInfo && !refetch) {
       return
     }
 

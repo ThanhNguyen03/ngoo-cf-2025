@@ -26,6 +26,7 @@ type Documents = {
     "mutation UserLogout($logoutEverywhere: Boolean) {\n  userLogout(logoutEverywhere: $logoutEverywhere)\n}": typeof types.UserLogoutDocument,
     "mutation RefreshToken($refreshToken: String!) {\n  refreshToken(refreshToken: $refreshToken) {\n    userUuid\n    accessToken\n    refreshToken\n  }\n}": typeof types.RefreshTokenDocument,
     "mutation UserRegister($email: String!, $password: String!) {\n  userRegister(email: $email, password: $password) {\n    userUuid\n    accessToken\n    refreshToken\n  }\n}": typeof types.UserRegisterDocument,
+    "mutation UserUpdateInfo($userInfo: TUserInfoInput!) {\n  userUpdateInfo(userInfo: $userInfo) {\n    uuid\n    email\n    name\n    walletAddress\n    authMethods\n    address\n    phoneNumber\n  }\n}": typeof types.UserUpdateInfoDocument,
     "query ListCategory {\n  listCategory {\n    categoryId\n    name\n  }\n}": typeof types.ListCategoryDocument,
     "query ItemById($itemId: String!) {\n  itemById(itemId: $itemId) {\n    itemId\n    name\n    image\n    price\n    description\n    discountPercent\n    requireOption {\n      group\n      name\n      extraPrice\n    }\n    additionalOption {\n      group\n      name\n      extraPrice\n    }\n    status\n    categoryName\n    createdAt\n    updatedAt\n  }\n}": typeof types.ItemByIdDocument,
     "query ListItemByCategory($categoryName: String!, $offset: Int, $limit: Int) {\n  listItemByCategory(categoryName: $categoryName, offset: $offset, limit: $limit) {\n    offset\n    limit\n    total\n    query {\n      column\n      sort\n    }\n    records {\n      itemId\n      name\n      image\n      price\n      description\n      discountPercent\n      requireOption {\n        group\n        name\n        extraPrice\n      }\n      additionalOption {\n        group\n        name\n        extraPrice\n      }\n      status\n      categoryName\n      createdAt\n      updatedAt\n    }\n  }\n}": typeof types.ListItemByCategoryDocument,
@@ -51,6 +52,7 @@ const documents: Documents = {
     "mutation UserLogout($logoutEverywhere: Boolean) {\n  userLogout(logoutEverywhere: $logoutEverywhere)\n}": types.UserLogoutDocument,
     "mutation RefreshToken($refreshToken: String!) {\n  refreshToken(refreshToken: $refreshToken) {\n    userUuid\n    accessToken\n    refreshToken\n  }\n}": types.RefreshTokenDocument,
     "mutation UserRegister($email: String!, $password: String!) {\n  userRegister(email: $email, password: $password) {\n    userUuid\n    accessToken\n    refreshToken\n  }\n}": types.UserRegisterDocument,
+    "mutation UserUpdateInfo($userInfo: TUserInfoInput!) {\n  userUpdateInfo(userInfo: $userInfo) {\n    uuid\n    email\n    name\n    walletAddress\n    authMethods\n    address\n    phoneNumber\n  }\n}": types.UserUpdateInfoDocument,
     "query ListCategory {\n  listCategory {\n    categoryId\n    name\n  }\n}": types.ListCategoryDocument,
     "query ItemById($itemId: String!) {\n  itemById(itemId: $itemId) {\n    itemId\n    name\n    image\n    price\n    description\n    discountPercent\n    requireOption {\n      group\n      name\n      extraPrice\n    }\n    additionalOption {\n      group\n      name\n      extraPrice\n    }\n    status\n    categoryName\n    createdAt\n    updatedAt\n  }\n}": types.ItemByIdDocument,
     "query ListItemByCategory($categoryName: String!, $offset: Int, $limit: Int) {\n  listItemByCategory(categoryName: $categoryName, offset: $offset, limit: $limit) {\n    offset\n    limit\n    total\n    query {\n      column\n      sort\n    }\n    records {\n      itemId\n      name\n      image\n      price\n      description\n      discountPercent\n      requireOption {\n        group\n        name\n        extraPrice\n      }\n      additionalOption {\n        group\n        name\n        extraPrice\n      }\n      status\n      categoryName\n      createdAt\n      updatedAt\n    }\n  }\n}": types.ListItemByCategoryDocument,
@@ -126,6 +128,10 @@ export function graphql(source: "mutation RefreshToken($refreshToken: String!) {
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
 export function graphql(source: "mutation UserRegister($email: String!, $password: String!) {\n  userRegister(email: $email, password: $password) {\n    userUuid\n    accessToken\n    refreshToken\n  }\n}"): (typeof documents)["mutation UserRegister($email: String!, $password: String!) {\n  userRegister(email: $email, password: $password) {\n    userUuid\n    accessToken\n    refreshToken\n  }\n}"];
+/**
+ * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
+ */
+export function graphql(source: "mutation UserUpdateInfo($userInfo: TUserInfoInput!) {\n  userUpdateInfo(userInfo: $userInfo) {\n    uuid\n    email\n    name\n    walletAddress\n    authMethods\n    address\n    phoneNumber\n  }\n}"): (typeof documents)["mutation UserUpdateInfo($userInfo: TUserInfoInput!) {\n  userUpdateInfo(userInfo: $userInfo) {\n    uuid\n    email\n    name\n    walletAddress\n    authMethods\n    address\n    phoneNumber\n  }\n}"];
 /**
  * The graphql function is used to parse GraphQL queries into a document that can be used by GraphQL clients.
  */
