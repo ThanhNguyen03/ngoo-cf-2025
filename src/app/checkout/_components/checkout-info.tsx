@@ -7,8 +7,7 @@ import {
   CreateOrderDocument,
   CreateOrderInput,
   EPaymentMethod,
-  TUserInfoSnapshot,
-  UserInfoSnapshotInput,
+  type UserInfoSnapshotInput,
 } from '@/lib/graphql/generated/graphql'
 import useAuthStore from '@/store/auth-store'
 import useCartStore, { convertCartToOrderItems } from '@/store/cart-store'
@@ -21,7 +20,7 @@ import {
   XCircleIcon,
 } from '@phosphor-icons/react/dist/ssr'
 import { useRouter } from 'next/navigation'
-import { FC, useState } from 'react'
+import { FC, useMemo, useState } from 'react'
 
 type TCheckoutInfoProps = {
   setLoading: (loading: boolean) => void
@@ -35,73 +34,88 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
 }) => {
   const listCartItem = useCartStore((state) => state.listCartItem)
   const getTotalCartPrice = useCartStore((state) => state.getTotalCartPrice)
-  const userInfo = useAuthStore((state) => state.userInfo)
+  const clearCart = useCartStore((state) => state.clearCart)
+  const userInfo = useAuthStore((state) => state.userInfo!)
   const router = useRouter()
 
-  const [userInfoSnapshot, setUserInfoSnapshot] =
-    useState<UserInfoSnapshotInput>()
+  const [openInfoForm, setOpenInfoForm] = useState<boolean>(true)
   const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>()
 
   const listPaymentMethod = Object.values(EPaymentMethod)
 
   const {
     register,
-    handleSubmit,
-    formState: { errors, isSubmitting, isValid },
-  } = useForm<TUserInfoSnapshot>({
+    formState: { values, errors },
+  } = useForm<UserInfoSnapshotInput>({
     defaultValues: {
-      email: userInfo?.email || '',
-      name: '',
-      phoneNumber: '',
-      address: '',
+      email: userInfo.email,
+      name: userInfo.name ?? '',
+      phoneNumber: userInfo.phoneNumber ?? '',
+      address: userInfo.address ?? '',
     },
     mode: 'onChange',
   })
 
-  const handleCheckout = apolloWrapper(async () => {
-    setLoading(true)
-    startProcessTimeout()
-    if (!listCartItem || listCartItem.length === 0) {
-      throw new Error('Your cart is empty! Check it again')
-    }
-    if (!userInfoSnapshot) {
-      throw new Error('Please fill your information!')
-    }
-    if (!paymentMethod) {
-      throw new Error('Please choose your payment method!')
-    }
+  const isValidForm = useMemo(() => {
+    return Object.values(values).every((v) => !!v)
+  }, [values])
 
-    const input: CreateOrderInput = {
-      items: convertCartToOrderItems(listCartItem),
-      paymentMethod,
-      userInfo: userInfoSnapshot,
-      cancelUrl: `${process.env.APP_URL}/payment/return?status=cancel&t=${Date.now()}`,
-      returnUrl: `${process.env.APP_URL}/payment/return?status=success&t=${Date.now()}`,
-    }
-
-    const { data, error } = await client.mutate({
-      mutation: CreateOrderDocument,
-      variables: { input },
-    })
-
-    if (error) {
-      throw error
-    }
-    if (data) {
-      // handle Paypal
-      if (data.createOrder.paypalApproveUrl) {
-        getCheckoutData({
-          url: data.createOrder.paypalApproveUrl,
-          orderId: data.createOrder.orderId,
-        })
+  const handleCheckout = apolloWrapper(
+    async () => {
+      setLoading(true)
+      startProcessTimeout()
+      if (!listCartItem || listCartItem.length === 0) {
+        throw new Error('Your cart is empty! Check it again')
+      }
+      if (!isValidForm) {
+        throw new Error('Please fill your information!')
+      }
+      if (!paymentMethod) {
+        throw new Error('Please choose your payment method!')
       }
 
-      // handle COD
-      if (data.createOrder.transactionId) {
-        router.replace(`/payment/${data.createOrder.transactionId}?method=COD`)
+      const userInfo: UserInfoSnapshotInput = {
+        address: values.address!,
+        email: values.email!,
+        name: values.name!,
+        phoneNumber: values.phoneNumber!,
       }
-    }
-  })
+
+      const input: CreateOrderInput = {
+        items: convertCartToOrderItems(listCartItem),
+        paymentMethod,
+        userInfo,
+        cancelUrl: `${process.env.APP_URL}/payment/return?status=cancel&t=${Date.now()}`,
+        returnUrl: `${process.env.APP_URL}/payment/return?status=success&t=${Date.now()}`,
+      }
+
+      const { data, error } = await client.mutate({
+        mutation: CreateOrderDocument,
+        variables: { input },
+      })
+
+      if (error) {
+        throw error
+      }
+      if (data) {
+        // handle Paypal
+        if (data.createOrder.paypalApproveUrl) {
+          getCheckoutData({
+            url: data.createOrder.paypalApproveUrl,
+            orderId: data.createOrder.orderId,
+          })
+        }
+
+        // handle COD
+        if (data.createOrder.transactionId) {
+          router.replace(
+            `/payment/${data.createOrder.transactionId}?method=COD`,
+          )
+        }
+      }
+    },
+    { onFinally: () => clearCart() },
+  )
 
   return (
     <div className='from-beige-50 to-primary-500/2 rounded-4 shadow-container border-primary-500/10 relative mt-11 flex size-full max-w-[35%] flex-col items-start gap-6 overflow-hidden border bg-linear-to-b p-2 md:mt-13 md:gap-10 md:p-4'>
@@ -110,13 +124,16 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
       <div className='flex w-full flex-col items-start gap-4'>
         {/* customer info */}
         <SelectDropdown
-          openDropdown={!userInfoSnapshot && listCartItem.length > 0}
+          openDropdown={openInfoForm && listCartItem.length > 0}
           defaultValue={
-            <div className='center w-full justify-between'>
+            <div
+              onClick={() => setOpenInfoForm(!openInfoForm)}
+              className='center w-full cursor-pointer justify-between'
+            >
               <h4 className='text-18 font-small-caps text-cherry-800 font-bold'>
                 Customer Info
               </h4>
-              {userInfoSnapshot ? (
+              {isValidForm ? (
                 <CheckCircleIcon
                   weight='fill'
                   size={20}
@@ -132,19 +149,16 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
             </div>
           }
           selectButtonClassName='p-2 md:px-4'
-          disabled={!!userInfoSnapshot || listCartItem.length === 0}
+          disabled={listCartItem.length === 0}
         >
-          <form
-            onSubmit={handleSubmit((data) => setUserInfoSnapshot(data))}
-            className='flex size-full flex-col gap-4 p-2 md:p-4'
-          >
+          <form className='flex size-full flex-col gap-4 p-2 md:p-4'>
             {/* email */}
             <TextInput
               label='Email'
               errorMessage={errors.email}
               isRequired
-              value={userInfo?.email}
-              disabled={!!userInfo && !!userInfo.email}
+              value={userInfo.email}
+              disabled
               placeholder='Email....'
               className='mb-2'
             />
@@ -210,9 +224,12 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
             />
 
             <button
+              type='button'
               className='center font-small-caps text-dark-600 hover:text-primary-500 ml-auto w-fit cursor-pointer gap-2 font-semibold duration-200 hover:translate-x-2 disabled:cursor-not-allowed disabled:opacity-30'
-              type='submit'
-              disabled={isSubmitting || !isValid}
+              onClick={() => setOpenInfoForm(false)}
+              disabled={
+                Object.values(errors).some((err) => !!err) || !isValidForm
+              }
             >
               <p className='text-18! mb-0.5'>Next</p>
               <ArrowRightIcon size={16} />
@@ -222,11 +239,11 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
 
         {/* payment method */}
         <SelectDropdown
-          openDropdown={!!userInfoSnapshot}
+          openDropdown={isValidForm && !openInfoForm}
           defaultValue='Payment Method.'
           valueClassName='text-18! font-small-caps text-cherry-800 font-bold'
           selectButtonClassName='p-2 md:px-4'
-          disabled={!userInfoSnapshot}
+          disabled={!isValidForm}
         >
           <div className='flex flex-col gap-4 p-2 md:p-4'>
             {listPaymentMethod.map((method) => (
@@ -321,7 +338,7 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
       <Button
         className='rounded-3 w-full bg-green-500 px-6 py-3 font-bold uppercase'
         disableAnimation
-        disabled={!userInfoSnapshot || !paymentMethod}
+        disabled={!isValidForm || !paymentMethod}
         onClick={handleCheckout}
       >
         Check Out {getTotalCartPrice().toFixed(2)}$

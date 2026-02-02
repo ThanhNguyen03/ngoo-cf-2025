@@ -1,5 +1,5 @@
 import { cn } from '@/utils'
-import { FC } from 'react'
+import { FC, useState } from 'react'
 
 type TTextInputProps = React.ComponentProps<'input'> & {
   errorMessage?: string
@@ -20,6 +20,7 @@ export const TextInput: FC<TTextInputProps> = ({
   label,
   ...props
 }) => {
+  const [isFocus, setIsFocus] = useState<boolean>(false)
   return (
     <div className={cn('relative flex w-full flex-col items-start', className)}>
       <div className='center absolute -top-4 left-3 z-10 w-full justify-between'>
@@ -53,11 +54,13 @@ export const TextInput: FC<TTextInputProps> = ({
           type='text'
           id={label}
           disabled={disabled}
+          onFocus={() => setIsFocus(true)}
+          onBlur={() => setIsFocus(false)}
           className='placeholder:text-dark-600/30 relative w-full font-medium caret-blue-500 duration-700 focus-within:outline-none focus:ring-0 focus:ring-offset-0 disabled:cursor-not-allowed'
         />
       </label>
-      {errorMessage && (
-        <span className='text-secondary-500 text-12 absolute -bottom-4 left-1'>
+      {errorMessage && isFocus && (
+        <span className='text-secondary-500 text-12 absolute -bottom-4 left-1 text-nowrap'>
           {errorMessage}
         </span>
       )}

@@ -3,7 +3,6 @@ import { SwitchButton, toast } from '@/components/ui'
 import type { useCooldown } from '@/hooks'
 import { EPaymentStatus } from '@/lib/graphql/generated/graphql'
 import { connectPaymentSocket } from '@/lib/socket-client'
-import useCartStore from '@/store/cart-store'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { FC, useEffect, useRef, useState } from 'react'
@@ -28,7 +27,6 @@ export const CheckoutProcess: FC<TCheckoutProcessProps> = ({
   checkoutData,
 }) => {
   const router = useRouter()
-  const clearCart = useCartStore((state) => state.clearCart)
 
   const [retry, setRetry] = useState<boolean>(false)
   const [isPaypalClosed, setIsPaypalClosed] = useState<boolean>(false)
@@ -122,7 +120,6 @@ export const CheckoutProcess: FC<TCheckoutProcessProps> = ({
 
           // Timeout redirect to see toast toast
           setTimeout(() => {
-            clearCart()
             router.replace(`/payment/${socketData.paymentId}`)
           }, 1000)
 
