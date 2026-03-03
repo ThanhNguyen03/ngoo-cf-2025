@@ -1,6 +1,6 @@
 'use client'
 
-import { NgOoLogo, SwitchButton } from '@/components/ui'
+import { NgOoLogo, SwitchButton, Tooltip } from '@/components/ui'
 import { AuthenButton } from '@/components/ui/wallet-button'
 import { LIST_HEADER_NAVIGATION } from '@/constants'
 import { cn } from '@/utils'
@@ -39,21 +39,38 @@ export const Header = () => {
           {/* center content */}
           <div className='absolute left-1/2 z-0 hidden size-full -translate-x-1/2 items-center justify-center md:flex lg:gap-4'>
             {LIST_HEADER_NAVIGATION.map((link) => (
-              <Link
+              <Tooltip
                 key={link.name}
-                target={link.openInNewTab ? '_blank' : '_self'}
-                href={link.href}
-                title={link.name}
+                position='bottom'
+                offset={0}
                 className={cn(
-                  'flex h-full items-center justify-center gap-2 px-3',
-                  pathname === link.href
-                    ? 'underline-active text-dark-600'
-                    : 'underline-hover text-dark-600/70 hover:text-dark-600',
+                  link.href !== '#' && 'hidden',
+                  'shadow-container bg-beige-50 z-50 size-fit',
                 )}
+                wrapperClassName='md:center h-full lg:gap-4'
+                content={
+                  <p className='text-14 text-dark-600 font-semibold'>
+                    Coming soon!
+                  </p>
+                }
               >
-                <div className='shrink-0'>{link.icon}</div>
-                <p className='text-14 font-semibold'>{link.name}</p>
-              </Link>
+                <Link
+                  target={link.openInNewTab ? '_blank' : '_self'}
+                  href={link.href}
+                  title={link.name}
+                  className={cn(
+                    'center h-full gap-2 px-3',
+                    pathname === link.href
+                      ? 'underline-active text-dark-600'
+                      : 'underline-hover text-dark-600/70 hover:text-dark-600',
+                    link.href === '#' &&
+                      'pointer-events-none cursor-not-allowed opacity-50',
+                  )}
+                >
+                  <div className='shrink-0'>{link.icon}</div>
+                  <p className='text-14 font-semibold'>{link.name}</p>
+                </Link>
+              </Tooltip>
             ))}
           </div>
 
