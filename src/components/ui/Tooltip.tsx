@@ -327,7 +327,7 @@ export const Tooltip = ({
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <div>{children}</div>
+        <>{children}</>
       </div>
 
       {visible &&
