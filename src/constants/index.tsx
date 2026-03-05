@@ -98,7 +98,7 @@ export const LIST_HEADER_NAVIGATION: TNavigationItem[] = [
         className='data group-data-[active=true]:text-secondary-500 md:text-secondary-500 size-6 md:size-[18px]'
       />
     ),
-    href: 'https://thanhng-portfolio-2024.vercel.app/',
+    href: 'https://thanhfng-portfolio.vercel.app/',
     openInNewTab: true,
   },
 ]
@@ -116,7 +116,7 @@ export const LIST_SOCIAL_BUTTON: TNavigationItem[] = [
   {
     name: 'LinkedIn',
     icon: <LinkedinLogoIcon size={24} fill='#0a62bd' />,
-    href: 'https://www.linkedin.com/in/thanhfnguyen03/',
+    href: 'https://www.linkedin.com/in/thanhfng12dev/',
   },
   {
     name: 'Mail',
@@ -133,7 +133,7 @@ export const LIST_FOOTER_NAVIGATION: Array<
     title: 'Developers',
     children: [
       { href: '/', name: 'Homepage' },
-      { href: 'https://thanhng-portfolio-2024.vercel.app/', name: 'Explore' },
+      { href: 'https://thanhfng-portfolio.vercel.app/', name: 'Explore' },
       { href: 'https://github.com/ThanhNguyen03', name: 'Github' },
     ],
   },
@@ -142,7 +142,7 @@ export const LIST_FOOTER_NAVIGATION: Array<
     children: [
       { href: 'https://m.me/thanhfnguyen.03', name: 'Facebook' },
       { href: 'https://ig.me/m/thanhf.ng_', name: 'Instagram' },
-      { href: 'https://www.linkedin.com/in/thanhfnguyen03/', name: 'LinkedIn' },
+      { href: 'https://www.linkedin.com/in/thanhfng12dev/', name: 'LinkedIn' },
       { href: 'https://t.me/thanhf.ng_', name: 'Telegram' },
     ],
   },

@@ -47,7 +47,7 @@ export const ContactForWork = () => {
             <SwitchButton
               target='_blank'
               className='rounded-3! flex w-fit gap-2 border-0'
-              href='https://thanhng-portfolio-2024.vercel.app/'
+              href='https://thanhfng-portfolio.vercel.app/'
               variant='gray'
             >
               Explore more
