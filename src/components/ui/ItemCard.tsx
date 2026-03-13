@@ -5,7 +5,7 @@ import { TCartItem } from '@/types'
 import { cn } from '@/utils'
 import { PlusIcon, TagIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
-import { FC } from 'react'
+import { FC, memo } from 'react'
 import { Button } from './Button'
 import { EItemModalDetailStatus } from './modal'
 
@@ -18,7 +18,9 @@ type TItemCardProps = {
   ) => void
 }
 
-export const ItemCard: FC<TItemCardProps> = ({ data, handleSelectItem }) => {
+// memo prevents re-renders when the parent slider re-renders
+// but this specific item's data and handleSelectItem haven't changed.
+export const ItemCard: FC<TItemCardProps> = memo(({ data, handleSelectItem }) => {
   const { listCartItem } = useCartStore()
   const cartItem = listCartItem.find((c) => c.itemId === data.itemId)
 
@@ -97,4 +99,6 @@ export const ItemCard: FC<TItemCardProps> = ({ data, handleSelectItem }) => {
       </div>
     </>
   )
-}
+})
+
+ItemCard.displayName = 'ItemCard'

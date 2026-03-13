@@ -5,22 +5,28 @@ export const useClickOutside = <T extends HTMLElement>(
 ) => {
   const ref = useRef<T | null>(null)
 
-  const handleClick = (e: MouseEvent | TouchEvent) => {
-    if (ref.current && !ref.current.contains(e.target as Node)) {
-      callback()
-    }
-  }
+  // Store callback in a ref so the effect never goes stale when callback changes.
+  // This avoids re-registering event listeners on every parent render while still
+  // always calling the latest version of the callback.
+  const callbackRef = useRef(callback)
+  callbackRef.current = callback
 
   useEffect(() => {
+    const handleClick = (e: MouseEvent | TouchEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        callbackRef.current()
+      }
+    }
+
     document.addEventListener('click', handleClick)
-    document.addEventListener('touchstart', handleClick)
+    // passive: true allows the browser to optimise scroll performance
+    document.addEventListener('touchstart', handleClick, { passive: true })
 
     return () => {
       document.removeEventListener('click', handleClick)
       document.removeEventListener('touchstart', handleClick)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [callback])
+  }, []) // empty deps — handleClick always reads from callbackRef
 
   return { ref }
 }

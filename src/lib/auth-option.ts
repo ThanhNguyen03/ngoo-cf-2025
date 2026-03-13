@@ -100,7 +100,9 @@ const authOptions: NextAuthOptions = {
             token.accessTokenExpires = Date.now() + EXPIRES_IN
           }
           return token
-        } catch {
+        } catch (err) {
+          // Log the error for observability — the user will be unauthenticated
+          console.error('[auth] Google login failed:', err)
           return token
         }
       }
@@ -147,7 +149,9 @@ const authOptions: NextAuthOptions = {
             token.uuid = data.refreshToken.userUuid
           }
           return token
-        } catch {
+        } catch (err) {
+          // Log refresh failures — user will be forced to re-authenticate
+          console.error('[auth] Token refresh failed:', err)
           token.error = 'RefreshAccessTokenError'
           return token
         }
@@ -168,13 +172,11 @@ const authOptions: NextAuthOptions = {
       return session
     },
   },
-  // TODO: implement sign out api
   events: {
     async signOut({ token }) {
       if (token.refreshToken && token.accessToken) {
         try {
           const { error } = await client.mutate({
-            // TODO: will remove hard code when have design about logout button
             mutation: UserLogoutDocument,
             variables: {
               logoutEverywhere: false,

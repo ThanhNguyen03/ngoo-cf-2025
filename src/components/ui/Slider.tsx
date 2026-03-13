@@ -11,6 +11,7 @@ import {
   Children,
   FC,
   PropsWithChildren,
+  useCallback,
   useEffect,
   useMemo,
   useRef,
@@ -121,11 +122,26 @@ export const Slider: FC<PropsWithChildren & TSliderProps> = ({
     return containerWidth / 2 - activeIndex * total - itemWidth / 2
   }, [activeIndex, itemWidth, containerWidth, visibleCount])
 
-  // SLIDE HANDLER
-  const slide = (dir: 'next' | 'prev') => {
-    setTransition(true)
-    setActiveIndex((prev) => prev + (dir === 'next' ? step : -step))
-  }
+  // Tracks whether a slide animation is in progress to prevent button spam
+  const isAnimatingRef = useRef<boolean>(false)
+
+  // SLIDE HANDLER — guarded to prevent rapid-click corruption of activeIndex
+  const slide = useCallback(
+    (dir: 'next' | 'prev') => {
+      if (isAnimatingRef.current) {
+        return
+      }
+      isAnimatingRef.current = true
+      setTransition(true)
+      setActiveIndex((prev) => prev + (dir === 'next' ? step : -step))
+
+      // Release the guard after the CSS transition completes
+      setTimeout(() => {
+        isAnimatingRef.current = false
+      }, ANIMATION_DURATION)
+    },
+    [step],
+  )
 
   // AUTO SLIDE
   useEffect(() => {

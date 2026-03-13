@@ -47,6 +47,11 @@ export const useCooldown = (key: string, defaultSeconds: number) => {
     const savedEndTime = localStorage.getItem(key)
     if (savedEndTime) {
       const endTime = +savedEndTime
+      // Guard against corrupted localStorage values that would produce NaN
+      if (Number.isNaN(endTime)) {
+        localStorage.removeItem(key)
+        return
+      }
       const remaining = Math.max(Math.floor((endTime - Date.now()) / 1000), 0)
 
       if (remaining > 0) {

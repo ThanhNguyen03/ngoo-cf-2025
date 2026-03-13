@@ -5,14 +5,30 @@ import useAuthStore from '@/store/auth-store'
 import { truncateAddress } from '@/utils'
 import { SignInIcon } from '@phosphor-icons/react/dist/ssr'
 import { useSession } from 'next-auth/react'
-import { useRef, useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useRef, useState } from 'react'
 
 export const AuthenButton = () => {
   const { status } = useSession()
   const userInfo = useAuthStore((state) => state.userInfo)
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
   const [openLoginModal, setOpenLoginModal] = useState<boolean>(false)
   const [openAccountPopover, setOpenAccountPopover] = useState<boolean>(false)
+
+  // Auto-open the login modal when the middleware redirects here with ?login=true.
+  // This gives users clear feedback instead of silently landing on the home page.
+  useEffect(() => {
+    if (searchParams.get('login') === 'true' && status === 'unauthenticated') {
+      setOpenLoginModal(true)
+      // Clean up the query param from the URL without a page reload
+      const params = new URLSearchParams(searchParams.toString())
+      params.delete('login')
+      const newUrl = params.size > 0 ? `/?${params}` : '/'
+      router.replace(newUrl)
+    }
+  }, [searchParams, status, router])
 
   const triggerButtonRef = useRef<HTMLButtonElement>(null)
   const popoverRef = useRef<HTMLDivElement>(null)

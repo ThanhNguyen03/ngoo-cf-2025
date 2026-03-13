@@ -6,7 +6,7 @@ import { useParallaxLayer } from '@/hooks'
 import { TItemResponse } from '@/lib/graphql/generated/graphql'
 import { TCartItem } from '@/types'
 import { cn } from '@/utils'
-import React, { forwardRef, useState } from 'react'
+import React, { forwardRef, useCallback, useState } from 'react'
 import { FenceCloud } from '../icons'
 
 const ProductPosition = () => {
@@ -29,7 +29,9 @@ type TBestSellerProps = {
   isLoading?: boolean
 }
 
-export const BestSeller = forwardRef<HTMLElement, TBestSellerProps>(
+// React.memo wraps forwardRef so parent useInView changes don't re-render
+// this component when isInview, data, and isLoading haven't changed.
+export const BestSeller = React.memo(forwardRef<HTMLElement, TBestSellerProps>(
   ({ isInview, data, isLoading }, ref) => {
     const cloudFenceRef = useParallaxLayer<SVGSVGElement>(
       ref as React.RefObject<HTMLElement | null>,
@@ -43,15 +45,19 @@ export const BestSeller = forwardRef<HTMLElement, TBestSellerProps>(
       EItemModalDetailStatus.CREATE,
     )
 
-    const handleSelectItem = (
-      item: TItemResponse,
-      status: EItemModalDetailStatus,
-      cartItem?: TCartItem,
-    ) => {
-      setSelectedItem(item)
-      setModalStatus(status)
-      setCartItem(cartItem)
-    }
+    // Stable reference so ItemCard children don't re-render when BestSeller renders
+    const handleSelectItem = useCallback(
+      (
+        item: TItemResponse,
+        status: EItemModalDetailStatus,
+        cartItem?: TCartItem,
+      ) => {
+        setSelectedItem(item)
+        setModalStatus(status)
+        setCartItem(cartItem)
+      },
+      [],
+    )
 
     return (
       <section
@@ -112,6 +118,6 @@ export const BestSeller = forwardRef<HTMLElement, TBestSellerProps>(
       </section>
     )
   },
-)
+))
 
 BestSeller.displayName = 'BestSeller'

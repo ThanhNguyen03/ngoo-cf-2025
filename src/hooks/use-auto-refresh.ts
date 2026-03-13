@@ -12,17 +12,27 @@ export const useAutoRefresh = () => {
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
   const runningRef = useRef(false)
 
-  const clear = () => {
+  const clear = useCallback(() => {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current)
       timeoutRef.current = null
     }
-  }
+  }, [])
 
-  const schedule = (ms: number) => {
-    clear()
-    timeoutRef.current = setTimeout(handleRefresh, ms)
-  }
+  // Store handleRefresh in a ref so schedule() can always call the latest version
+  // without becoming a dependency of schedule itself — this breaks the circular
+  // reference: handleRefresh → schedule → handleRefresh.
+  const handleRefreshRef = useRef<(() => Promise<void>) | undefined>(undefined)
+
+  const schedule = useCallback(
+    (ms: number) => {
+      clear()
+      timeoutRef.current = setTimeout(() => {
+        handleRefreshRef.current?.()
+      }, ms)
+    },
+    [clear],
+  )
 
   const handleRefresh = useCallback(async () => {
     if (!session || !session.accessToken || !session.accessTokenExpires) {
@@ -30,11 +40,11 @@ export const useAutoRefresh = () => {
     }
 
     if (session.error === 'RefreshAccessTokenError') {
-      await logout() // Force sign in to hopefully resolve error
+      await logout() // Force sign in to resolve the error
       return
     }
 
-    // avoid double refresh
+    // Prevent double-refresh if a refresh is already running
     if (runningRef.current) {
       return
     }
@@ -45,7 +55,7 @@ export const useAutoRefresh = () => {
       const expireAt = session.accessTokenExpires
       const timeLeft = expireAt - now
 
-      //  Still valid → reschedule
+      // Still valid → reschedule for later
       if (timeLeft > REFRESH_GAP) {
         schedule(timeLeft - REFRESH_GAP)
         return
@@ -57,8 +67,10 @@ export const useAutoRefresh = () => {
     } finally {
       runningRef.current = false
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, update, logout])
+  }, [session, update, logout, schedule])
+
+  // Keep the ref in sync with the latest handleRefresh
+  handleRefreshRef.current = handleRefresh
 
   useEffect(() => {
     clear()
@@ -70,14 +82,13 @@ export const useAutoRefresh = () => {
     const now = Date.now()
     const timeLeft = session.accessTokenExpires - now
 
-    // schedule first refresh attempt: 60s before expiry
+    // Schedule first refresh attempt 60 s before expiry
     schedule(Math.max(1000, timeLeft - REFRESH_GAP))
 
     return clear
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [session, update])
+  }, [session, update, clear, schedule])
 
-  // clear when logout
+  // Clear timer on logout; fetch user info on login
   useEffect(() => {
     if (status === 'unauthenticated') {
       clear()
@@ -86,6 +97,7 @@ export const useAutoRefresh = () => {
     if (status === 'authenticated') {
       getUserInfo()
     }
+    // getUserInfo is a stable Zustand action — safe to omit from deps
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [status])
+  }, [status, clear])
 }

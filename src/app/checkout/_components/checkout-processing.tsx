@@ -104,34 +104,45 @@ export const CheckoutProcess: FC<TCheckoutProcessProps> = ({
       return
     }
 
-    const handleEmitSocket = () => {
-      connectPaymentSocket(checkoutData.orderId, async (socketData) => {
-        if (socketData.orderId !== checkoutData.orderId) {
-          return
-        }
-
-        if (socketData.status !== EPaymentStatus.Processing) {
-          if (socketData.status === EPaymentStatus.Success) {
-            toast.success('Payment successful!')
-          } else {
-            toast.error(`Payment ${socketData.status.toLowerCase()}`)
+    const handleEmitSocket = async () => {
+      const connected = await connectPaymentSocket(
+        checkoutData.orderId,
+        async (socketData) => {
+          if (socketData.orderId !== checkoutData.orderId) {
+            return
           }
 
-          setIsProcessing(false)
-          // Cleanup before redirect
-          sessionStorage.removeItem('paypal-order-id')
-          sessionStorage.removeItem('paypal-approve-url')
+          if (socketData.status !== EPaymentStatus.Processing) {
+            if (socketData.status === EPaymentStatus.Success) {
+              toast.success('Payment successful!')
+            } else {
+              toast.error(`Payment ${socketData.status.toLowerCase()}`)
+            }
 
-          // Timeout redirect to see toast toast
-          setTimeout(() => {
-            router.replace(`/payment/${socketData.paymentId}`)
-          }, 1000)
+            setIsProcessing(false)
+            // Cleanup before redirect
+            sessionStorage.removeItem('paypal-order-id')
+            sessionStorage.removeItem('paypal-approve-url')
 
-          cooldownHook.clearCooldown()
+            // Timeout redirect to see toast
+            setTimeout(() => {
+              router.replace(`/payment/${socketData.paymentId}`)
+            }, 1000)
 
-          return
-        }
-      })
+            cooldownHook.clearCooldown()
+
+            return
+          }
+        },
+      )
+
+      // Notify user if we failed to establish the socket connection
+      if (!connected) {
+        toast.error(
+          'Failed to connect to payment server. Please check your connection.',
+        )
+        setIsProcessing(false)
+      }
     }
 
     handleEmitSocket()

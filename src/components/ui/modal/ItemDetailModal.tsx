@@ -1,7 +1,6 @@
 'use client'
 
 import { AmountCounter, Button, Checkbox } from '@/components/ui'
-import { DEBOUNCE_DURATION } from '@/constants'
 import {
   EItemStatus,
   ItemOptionInput,
@@ -152,8 +151,6 @@ export const ItemDetailModal: FC<TItemDetailModalProps> = ({
       ? cartItem?.selectedOptions || []
       : [],
   )
-  const [loading, setLoading] = useState<boolean>(false)
-  const [totalPrice, setTotalPrice] = useState<number>(0)
 
   const requiredGroups: TItemOptionGroup[] = useMemo(() => {
     const map = new Map<string, TItemOption[]>()
@@ -189,14 +186,12 @@ export const ItemDetailModal: FC<TItemDetailModalProps> = ({
     )
   }, [requiredGroups, selectedOptions])
 
-  useEffect(() => {
-    setLoading(true)
-    const handler = setTimeout(() => {
-      setTotalPrice(calculateItemPrice(data, selectedOptions, itemAmount))
-      setLoading(false)
-    }, DEBOUNCE_DURATION)
-    return () => clearTimeout(handler)
-  }, [itemAmount, data, selectedOptions])
+  // calculateItemPrice is synchronous — no need to debounce.
+  // useMemo computes instantly on change without blocking the button.
+  const totalPrice = useMemo(
+    () => calculateItemPrice(data, selectedOptions, itemAmount),
+    [data, selectedOptions, itemAmount],
+  )
 
   const handleSubmit = () => {
     if (itemAmount === 0) {
@@ -373,7 +368,6 @@ export const ItemDetailModal: FC<TItemDetailModalProps> = ({
             onClick={handleSubmit}
             disabled={
               (!isRequiredSelected && itemAmount !== 0) ||
-              loading ||
               (status === EItemModalDetailStatus.CREATE && itemAmount === 0)
             }
             className={cn(

@@ -21,6 +21,9 @@ export const Menu = () => {
   const [listCategory, setListCategory] = useState<TCategory[]>()
   const [selectedCategory, setSelectedCategory] =
     useState<TCategory>(INIT_CATEGORY)
+  // Dedicated loading flag prevents the skeleton from flashing if listCategory
+  // is later updated (e.g., refetch) while categories are already rendered.
+  const [loadingCategories, setLoadingCategories] = useState<boolean>(true)
 
   useEffect(() => {
     const getListCategory = apolloWrapper(
@@ -38,6 +41,7 @@ export const Menu = () => {
       },
       {
         errorMessage: 'Failed to fetch list category',
+        onFinally: () => setLoadingCategories(false),
       },
     )
 
@@ -52,8 +56,9 @@ export const Menu = () => {
             Menu Search
           </h2>
           <div className='flex size-full flex-col items-start gap-3 md:flex-row md:gap-6'>
+            {/* Desktop sidebar skeleton — hidden on mobile */}
             <SkeletonLoader
-              loading={!listCategory || listCategory.length === 0}
+              loading={loadingCategories}
               className='hidden h-full max-h-none min-h-40 w-full md:flex! md:w-[25%]'
             />
             {listCategory && listCategory.length > 0 && (
@@ -66,8 +71,9 @@ export const Menu = () => {
               />
             )}
             <div className='from-primary-500 to-dark-600/10 sticky top-20 hidden h-80 w-0.25 bg-gradient-to-b md:inline' />
+            {/* Main content skeleton */}
             <SkeletonLoader
-              loading={!listCategory || listCategory.length === 0}
+              loading={loadingCategories}
               className='min-h-40 w-full md:w-[75%]'
             >
               {listCategory && listCategory.length > 0 && (
@@ -81,8 +87,9 @@ export const Menu = () => {
           </div>
         </div>
       </div>
+      {/* Mobile sticky search bar skeleton */}
       <SkeletonLoader
-        loading={!listCategory || listCategory.length === 0}
+        loading={loadingCategories}
         className='h-full max-h-none min-h-40 w-full md:hidden md:w-[25%]'
       />
       {listCategory && listCategory.length > 0 && (

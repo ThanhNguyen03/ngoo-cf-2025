@@ -40,6 +40,8 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
 
   const [openInfoForm, setOpenInfoForm] = useState<boolean>(true)
   const [paymentMethod, setPaymentMethod] = useState<EPaymentMethod>()
+  // Prevents double-submission when the user clicks checkout rapidly
+  const [submitting, setSubmitting] = useState<boolean>(false)
 
   const listPaymentMethod = Object.values(EPaymentMethod)
 
@@ -56,13 +58,16 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
     mode: 'onChange',
   })
 
+  // Depend on individual fields instead of the entire values object reference
+  // to avoid recomputing on every keystroke in unrelated fields.
   const isValidForm = useMemo(() => {
-    return Object.values(values).every((v) => !!v)
-  }, [values])
+    return !!values.email && !!values.name && !!values.phoneNumber && !!values.address
+  }, [values.email, values.name, values.phoneNumber, values.address])
 
   const handleCheckout = apolloWrapper(
     async () => {
       setLoading(true)
+      setSubmitting(true)
       startProcessTimeout()
       if (!listCartItem || listCartItem.length === 0) {
         throw new Error('Your cart is empty! Check it again')
@@ -85,8 +90,10 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
         items: convertCartToOrderItems(listCartItem),
         paymentMethod,
         userInfo,
-        cancelUrl: `${process.env.APP_URL}/payment/return?status=cancel&t=${Date.now()}`,
-        returnUrl: `${process.env.APP_URL}/payment/return?status=success&t=${Date.now()}`,
+        // NEXT_PUBLIC_APP_URL is used here (not APP_URL) because this code runs
+        // client-side where only NEXT_PUBLIC_* env vars are accessible.
+        cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL}/payment/return?status=cancel&t=${Date.now()}`,
+        returnUrl: `${process.env.NEXT_PUBLIC_APP_URL}/payment/return?status=success&t=${Date.now()}`,
       }
 
       const { data, error } = await client.mutate({
@@ -114,7 +121,12 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
         }
       }
     },
-    { onFinally: () => clearCart() },
+    {
+      onFinally: () => {
+        clearCart()
+        setSubmitting(false)
+      },
+    },
   )
 
   return (
@@ -335,13 +347,14 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
         </SelectDropdown>
       </div>
 
+      {/* disabled during submission to prevent duplicate orders */}
       <Button
         className='rounded-3 w-full bg-green-500 px-6 py-3 font-bold uppercase'
         disableAnimation
-        disabled={!isValidForm || !paymentMethod}
+        disabled={!isValidForm || !paymentMethod || submitting}
         onClick={handleCheckout}
       >
-        Check Out {getTotalCartPrice().toFixed(2)}$
+        {submitting ? 'Processing...' : `Check Out ${getTotalCartPrice().toFixed(2)}$`}
       </Button>
     </div>
   )

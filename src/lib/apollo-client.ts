@@ -16,20 +16,21 @@ const authLink = new SetContextLink(async ({ headers }) => {
       authorization: session ? `Bearer ${session.accessToken}` : '',
       ...headers,
     },
-    fetchOptions: {
-      watchQuery: {
-        fetchPolicy: 'no-cache',
-        errorPolicy: 'ignore',
-      },
-      query: {
-        fetchPolicy: 'no-cache',
-        errorPolicy: 'all',
-      },
-    },
   }
 })
 
 export const client = new ApolloClient({
   cache: new InMemoryCache(),
   link: ApolloLink.from([authLink, httpLink]), // authLink must come before httpLink
+  // Set default options so all queries surface errors rather than swallowing them
+  defaultOptions: {
+    watchQuery: {
+      fetchPolicy: 'no-cache',
+      errorPolicy: 'all',
+    },
+    query: {
+      fetchPolicy: 'no-cache',
+      errorPolicy: 'all',
+    },
+  },
 })

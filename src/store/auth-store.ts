@@ -56,18 +56,24 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
   },
 
   login: async (data: MutationUserLoginArgs, isRegister?: boolean) => {
-    set({ loading: true })
-    if (!data.email && !data.password) {
-      throw new Error('Failed to sign in: Invalid data!')
+    // Validate that both fields are present before attempting sign-in
+    if (!data.email || !data.password) {
+      throw new Error('Failed to sign in: Email and password are required!')
     }
 
-    await signIn('credentials', {
-      isRegister,
-      email: data.email,
-      password: data.password,
-    })
-
-    set({ loading: false })
+    set({ loading: true })
+    try {
+      await signIn('credentials', {
+        isRegister,
+        email: data.email,
+        password: data.password,
+      })
+    } catch (err) {
+      handleError(err, 'Failed to sign in!')
+    } finally {
+      // Always reset loading, even if signIn throws
+      set({ loading: false })
+    }
   },
 
   logout: async () => {

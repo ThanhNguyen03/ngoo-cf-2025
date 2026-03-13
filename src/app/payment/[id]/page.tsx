@@ -36,12 +36,21 @@ const PaymentDetailPage = () => {
     if (!id) {
       return
     }
+
+    // Validate the ID to prevent unexpected characters from reaching the API.
+    // Payment IDs are UUIDs or alphanumeric strings — reject anything else.
+    const paymentId = id.toString()
+    if (!/^[a-zA-Z0-9-]+$/.test(paymentId)) {
+      setLoading(false)
+      return
+    }
+
     const handleGetPaymentDetail = apolloWrapper(
       async () => {
         setLoading(true)
         const { data, error } = await client.query({
           query: PaymentUserHistoryDocument,
-          variables: { paymentId: id.toString() },
+          variables: { paymentId },
         })
 
         if (error) {
@@ -58,13 +67,16 @@ const PaymentDetailPage = () => {
   }, [id])
 
   useEffect(() => {
+    // Guard: all steps complete — no need to create a new interval
+    if (currentStep >= step.length) {
+      return
+    }
+
+    // MOCKED_TIME_STEPS drives the visual progress animation (minutes per step).
+    // This will be replaced by real socket/API status updates in Phase 2.
     const interval = setInterval(
       () => {
-        if (currentStep < step.length) {
-          setCurrentStep((prev) => prev + 1)
-        } else {
-          clearInterval(interval)
-        }
+        setCurrentStep((prev) => prev + 1)
       },
       MOCKED_TIME_STEPS[currentStep] * 1000 * 60,
     )

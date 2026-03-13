@@ -39,11 +39,18 @@ export const disconnectSocket = () => {
 export const connectPaymentSocket = async (
   orderId: string,
   callback: (data: TPaymentSocketResponse) => Promise<void> | void,
-) => {
-  const socketClient = await getSocketClient()
+): Promise<boolean> => {
+  let socketClient
+  try {
+    socketClient = await getSocketClient()
+  } catch (err) {
+    // Failed to get socket client — likely missing auth token
+    console.error('[socket] Failed to connect payment socket:', err)
+    return false
+  }
 
   if (listeningOrderId === orderId) {
-    return
+    return true
   }
 
   // cleanup old listener
@@ -59,4 +66,5 @@ export const connectPaymentSocket = async (
   }
 
   socketClient.on('paymentStatus', handler)
+  return true
 }

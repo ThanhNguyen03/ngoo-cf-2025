@@ -8,7 +8,7 @@ import {
   XIcon,
 } from '@phosphor-icons/react/dist/ssr'
 import Link from 'next/link'
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useCallback, useEffect, useRef, useState } from 'react'
 
 type TMenuSearchProps = {
   disabled?: boolean
@@ -32,14 +32,25 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
 
   const isScrollingRef = useRef<boolean>(false)
 
-  const handleSelectCategory = (value: TCategory) => {
-    selectCategory(value)
-    setOpenDropdown(false)
-  }
+  // Memoise to avoid recreating this function on every parent render —
+  // it is passed as a click handler to each category link inside the dropdown.
+  const handleSelectCategory = useCallback(
+    (value: TCategory) => {
+      selectCategory(value)
+      setOpenDropdown(false)
+    },
+    [selectCategory],
+  )
 
   useEffect(() => {
+    // Guard: the section map may be empty if categories haven't rendered yet
+    if (sectionRef.current.size === 0) {
+      return
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
+        // Ignore intersection events while the user is programmatically scrolling
         if (isScrollingRef.current) {
           return
         }
@@ -68,6 +79,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
     })
 
     return () => observer.disconnect()
+    // selectCategory is a stable setState setter — safe to omit
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sectionRef, listCategory])
 
