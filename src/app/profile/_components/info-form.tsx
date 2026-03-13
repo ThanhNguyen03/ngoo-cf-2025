@@ -122,7 +122,7 @@ export const InfoForm: FC<TInfoFormProps> = ({ userInfo, onUpdateSuccess }) => {
                 message: 'Phone must be under 15 digits',
               },
               pattern: {
-                value: /^[0-9]/,
+                value: /^[0-9]{8,15}$/,
                 message: 'Phone number is invalid',
               },
             })}

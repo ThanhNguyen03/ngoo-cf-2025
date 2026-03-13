@@ -39,6 +39,10 @@ export const CheckoutProcess: FC<TCheckoutProcessProps> = ({
       return
     }
     try {
+      const parsed = new URL(url)
+      if (!parsed.hostname.endsWith('paypal.com')) {
+        throw new Error('Invalid payment redirect URL')
+      }
       paypalWindowRef.current = window.open(
         url,
         '_blank',
@@ -46,8 +50,8 @@ export const CheckoutProcess: FC<TCheckoutProcessProps> = ({
       )
       setIsPaypalClosed(false)
       setRetry(false)
-    } catch (error) {
-      console.error('Error to open approval PayPal popup', error)
+    } catch {
+      toast.error('Failed to open PayPal payment window')
     }
   }
 
@@ -115,8 +119,8 @@ export const CheckoutProcess: FC<TCheckoutProcessProps> = ({
 
           setIsProcessing(false)
           // Cleanup before redirect
-          localStorage.removeItem('paypal-order-id')
-          localStorage.removeItem('paypal-approve-url')
+          sessionStorage.removeItem('paypal-order-id')
+          sessionStorage.removeItem('paypal-approve-url')
 
           // Timeout redirect to see toast toast
           setTimeout(() => {
@@ -146,8 +150,8 @@ export const CheckoutProcess: FC<TCheckoutProcessProps> = ({
         setRetry(false)
 
         // Cleanup
-        localStorage.removeItem('paypal-order-id')
-        localStorage.removeItem('paypal-approve-url')
+        sessionStorage.removeItem('paypal-order-id')
+        sessionStorage.removeItem('paypal-approve-url')
 
         // Close popup if old popup still open
         if (paypalWindowRef.current && !paypalWindowRef.current.closed) {
@@ -197,8 +201,8 @@ export const CheckoutProcess: FC<TCheckoutProcessProps> = ({
                   onClick={() => {
                     setIsProcessing(false)
                     setRetry(false)
-                    localStorage.removeItem('paypal-order-id')
-                    localStorage.removeItem('paypal-approve-url')
+                    sessionStorage.removeItem('paypal-order-id')
+                    sessionStorage.removeItem('paypal-approve-url')
                   }}
                 >
                   Cancel Payment
