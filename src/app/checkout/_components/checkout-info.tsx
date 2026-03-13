@@ -7,6 +7,7 @@ import {
   CreateOrderDocument,
   CreateOrderInput,
   EPaymentMethod,
+  TCryptoPaymentProof,
   type UserInfoSnapshotInput,
 } from '@/lib/graphql/generated/graphql'
 import useAuthStore from '@/store/auth-store'
@@ -15,6 +16,7 @@ import { apolloWrapper, cn } from '@/utils'
 import {
   ArrowRightIcon,
   CheckCircleIcon,
+  CurrencyBtcIcon,
   MoneyWavyIcon,
   PaypalLogoIcon,
   XCircleIcon,
@@ -25,7 +27,11 @@ import { FC, useMemo, useState } from 'react'
 type TCheckoutInfoProps = {
   setLoading: (loading: boolean) => void
   startProcessTimeout: () => void
-  getCheckoutData: (data: { url: string; orderId: string }) => void
+  getCheckoutData: (data: {
+    url?: string
+    orderId: string
+    cryptoProof?: TCryptoPaymentProof
+  }) => void
 }
 export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
   setLoading,
@@ -36,6 +42,7 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
   const getTotalCartPrice = useCartStore((state) => state.getTotalCartPrice)
   const clearCart = useCartStore((state) => state.clearCart)
   const userInfo = useAuthStore((state) => state.userInfo!)
+  const walletAddress = useAuthStore((s) => s.userInfo?.walletAddress)
   const router = useRouter()
 
   const [openInfoForm, setOpenInfoForm] = useState<boolean>(true)
@@ -105,27 +112,42 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
         throw error
       }
       if (data) {
-        // handle Paypal
+        // handle PayPal — redirect to PayPal approval page
         if (data.createOrder.paypalApproveUrl) {
+          clearCart()
           getCheckoutData({
             url: data.createOrder.paypalApproveUrl,
             orderId: data.createOrder.orderId,
           })
+          return
         }
 
-        // handle COD
-        if (data.createOrder.transactionId) {
+        // handle COD — redirect to payment detail page
+        if (paymentMethod === EPaymentMethod.Cod && data.createOrder.transactionId) {
+          clearCart()
           router.replace(
             `/payment/${data.createOrder.transactionId}?method=COD`,
           )
+          return
+        }
+
+        // handle Crypto — save cart backup before passing proof to processing component.
+        // Cart must NOT be cleared here because the user might reject the wallet tx.
+        // It will be cleared after on-chain confirmation in checkout-crypto-processing.tsx.
+        if (data.createOrder.cryptoPaymentProof) {
+          sessionStorage.setItem(
+            'checkout-cart-backup',
+            JSON.stringify(listCartItem),
+          )
+          getCheckoutData({
+            orderId: data.createOrder.orderId,
+            cryptoProof: data.createOrder.cryptoPaymentProof,
+          })
         }
       }
     },
     {
-      onFinally: () => {
-        clearCart()
-        setSubmitting(false)
-      },
+      onFinally: () => setSubmitting(false),
     },
   )
 
@@ -258,91 +280,125 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
           disabled={!isValidForm}
         >
           <div className='flex flex-col gap-4 p-2 md:p-4'>
-            {listPaymentMethod.map((method) => (
-              <Tooltip
-                key={method}
-                position='top'
-                offset={0}
-                className={cn(
-                  method !== EPaymentMethod.Crypto && 'hidden',
-                  'shadow-container',
-                )}
-                content={
-                  <p className='text-14 font-semibold text-white'>
-                    Coming soon!
-                  </p>
-                }
-              >
-                <button
+            {listPaymentMethod.map((method) => {
+              // Crypto is available only when the user has a verified wallet address
+              const isCryptoDisabled =
+                method === EPaymentMethod.Crypto && !walletAddress
+              const cryptoTooltip = !walletAddress
+                ? 'Connect & verify your wallet first'
+                : undefined
+
+              return (
+                <Tooltip
+                  key={method}
+                  position='top'
+                  offset={0}
                   className={cn(
-                    'text-16 text-dark-600/50 hover:text-dark-600/70 group flex cursor-pointer items-center gap-4 font-bold duration-300',
-                    paymentMethod && paymentMethod !== method && 'opacity-50',
-                    method === EPaymentMethod.Crypto && 'cursor-not-allowed',
+                    !isCryptoDisabled && 'hidden',
+                    'shadow-container',
                   )}
-                  onClick={() => setPaymentMethod(method)}
-                  disabled={method === EPaymentMethod.Crypto}
+                  content={
+                    <p className='text-14 font-semibold text-white'>
+                      {cryptoTooltip}
+                    </p>
+                  }
                 >
-                  <Checkbox
-                    type='radio'
-                    checked={paymentMethod === method}
+                  <button
                     className={cn(
-                      'group-hover:border-primary-500',
-                      paymentMethod === EPaymentMethod.Cod
-                        ? 'checked:border-green-600 checked:group-hover:border-green-600 checked:hover:border-green-600'
-                        : 'checked:border-[#022475] checked:group-hover:border-[#022475] checked:hover:border-[#022475]',
+                      'text-16 text-dark-600/50 hover:text-dark-600/70 group flex cursor-pointer items-center gap-4 font-bold duration-300',
+                      paymentMethod && paymentMethod !== method && 'opacity-50',
+                      isCryptoDisabled && 'cursor-not-allowed',
                     )}
-                    onChange={() => setPaymentMethod(method)}
-                    labelClassName={cn(
-                      paymentMethod && paymentMethod !== method && 'opacity-30',
+                    onClick={() => setPaymentMethod(method)}
+                    disabled={isCryptoDisabled}
+                  >
+                    <Checkbox
+                      type='radio'
+                      checked={paymentMethod === method}
+                      className={cn(
+                        'group-hover:border-primary-500',
+                        paymentMethod === EPaymentMethod.Cod
+                          ? 'checked:border-green-600 checked:group-hover:border-green-600 checked:hover:border-green-600'
+                          : paymentMethod === EPaymentMethod.Crypto
+                            ? 'checked:border-orange-500 checked:group-hover:border-orange-500'
+                            : 'checked:border-[#022475] checked:group-hover:border-[#022475] checked:hover:border-[#022475]',
+                      )}
+                      onChange={() => setPaymentMethod(method)}
+                      labelClassName={cn(
+                        paymentMethod && paymentMethod !== method && 'opacity-30',
+                      )}
+                      checkedRadioClassName={cn(
+                        paymentMethod === EPaymentMethod.Cod
+                          ? 'bg-green-600'
+                          : paymentMethod === EPaymentMethod.Crypto
+                            ? 'bg-orange-500'
+                            : 'bg-[#022475]',
+                      )}
+                    />
+                    {method === EPaymentMethod.Cod && (
+                      <div className='center gap-2'>
+                        <MoneyWavyIcon
+                          weight='fill'
+                          size={24}
+                          className='text-green-600'
+                        />
+                        <p
+                          className={cn(
+                            paymentMethod === method &&
+                              'text-green-600 hover:text-green-600',
+                          )}
+                        >
+                          Pay on Delivery
+                        </p>
+                      </div>
                     )}
-                    checkedRadioClassName={
-                      paymentMethod === EPaymentMethod.Cod
-                        ? 'bg-green-600'
-                        : 'bg-[#022475]'
-                    }
-                  />
-                  {method === EPaymentMethod.Cod && (
-                    <div className='center gap-2'>
-                      <MoneyWavyIcon
-                        weight='fill'
-                        size={24}
-                        className='text-green-600'
-                      />
-                      <p
+                    {method === EPaymentMethod.Crypto && (
+                      <div
                         className={cn(
-                          paymentMethod === method &&
-                            'text-green-600 hover:text-green-600',
+                          'center gap-2',
+                          isCryptoDisabled && 'opacity-50',
                         )}
                       >
-                        Pay on Delivery
-                      </p>
-                    </div>
-                  )}
-                  {method === EPaymentMethod.Crypto && (
-                    <div className='center gap-2 opacity-50'>
-                      Cryptocurrency
-                    </div>
-                  )}
-                  {method === EPaymentMethod.Paypal && (
-                    <div className='center gap-2'>
-                      <PaypalLogoIcon
-                        weight='fill'
-                        size={24}
-                        className='text-[#022475]'
-                      />
-                      <p
-                        className={cn(
-                          paymentMethod === method &&
-                            'text-[#022475] hover:text-[#022475]',
-                        )}
-                      >
-                        Paypal
-                      </p>
-                    </div>
-                  )}
-                </button>
-              </Tooltip>
-            ))}
+                        <CurrencyBtcIcon
+                          weight='fill'
+                          size={24}
+                          className={cn(
+                            paymentMethod === method
+                              ? 'text-orange-500'
+                              : 'text-dark-600/50',
+                          )}
+                        />
+                        <p
+                          className={cn(
+                            paymentMethod === method &&
+                              'text-orange-500 hover:text-orange-500',
+                          )}
+                        >
+                          Crypto (BNB)
+                        </p>
+                      </div>
+                    )}
+                    {method === EPaymentMethod.Paypal && (
+                      <div className='center gap-2'>
+                        <PaypalLogoIcon
+                          weight='fill'
+                          size={24}
+                          className='text-[#022475]'
+                        />
+                        <p
+                          className={cn(
+                            paymentMethod === method &&
+                              'text-[#022475] hover:text-[#022475]',
+                          )}
+                        >
+                          Paypal
+                        </p>
+                      </div>
+                    )}
+                  </button>
+                </Tooltip>
+              )
+            })}
           </div>
         </SelectDropdown>
       </div>

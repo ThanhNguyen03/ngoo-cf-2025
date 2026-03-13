@@ -46,8 +46,8 @@ export const MenuDetail: FC<TMenuDetailProps> = ({
     if (!cache[categoryId]) {
       handleUpdateCache(categoryId, {
         list: [],
-        total: 0,
-        offset: 0,
+        cursor: null,
+        hasMore: true,
       })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -60,8 +60,8 @@ export const MenuDetail: FC<TMenuDetailProps> = ({
 
         const cacheData = cache[category.categoryId] ?? {
           list: [],
-          total: 0,
-          offset: 0,
+          cursor: null,
+          hasMore: true,
           fetched: false,
         }
 

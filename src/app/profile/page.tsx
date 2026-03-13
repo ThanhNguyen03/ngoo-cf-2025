@@ -38,7 +38,8 @@ const BILLING_TABS = [
 const ProfilePage = () => {
   const router = useRouter()
   const userInfo = useAuthStore((state) => state.userInfo!)
-  const { getUserInfo, loading } = useAuthStore()
+  const getUserInfo = useAuthStore((state) => state.getUserInfo)
+  const loading = useAuthStore((state) => state.loading)
 
   const tabId = useSearchParams().get('tab') || BILLING_TABS[0].key
   const [activeKey, setActiveKey] = useState<string>(tabId)

@@ -7,11 +7,14 @@ import type { TModalProps } from '@/types'
 
 import { SwitchButton } from '@/components/ui'
 import { METAMASK_BASE64_ICON } from '@/constants'
-import { useIsHydrated } from '@/hooks'
+import { useIsHydrated, useWalletAuth } from '@/hooks'
+import useAuthStore from '@/store/auth-store'
 import { cn } from '@/utils'
-import { XIcon } from '@phosphor-icons/react/dist/ssr'
+import { SpinnerIcon, XIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
 import Link from 'next/link'
+import { toast } from 'react-toastify'
+import { useDisconnect } from 'wagmi'
 import { Modal } from './Modal'
 
 type TWalletConnetorProps = {
@@ -47,20 +50,50 @@ const WalletConnetor: FC<TWalletConnetorProps> = ({ connector, className }) => {
 }
 
 export const ConnectWalletModal: FC<TModalProps> = ({ isOpen, onClose }) => {
-  const { isConnected } = useAccount()
+  const { isConnected, address } = useAccount()
+  const { disconnect } = useDisconnect()
   const isHydrate = useIsHydrated()
   const { connectors } = useConnect()
+  const userInfo = useAuthStore((s) => s.userInfo)
+  const { connectWallet, isConnecting, isSuccess, error, reset } =
+    useWalletAuth()
 
   const metamaskWalletConnector =
     connectors.length > 0
       ? connectors.find((wallet) => wallet.id.includes('metamask'))
       : undefined
 
+  // After wallet provider connects, check if we still need to verify ownership.
+  // If walletAddress is already set in user profile, just close the modal.
+  // Otherwise trigger the nonce → sign → verify flow.
   useEffect(() => {
-    if (isConnected) {
+    if (!isConnected || !address) return
+
+    if (userInfo?.walletAddress) {
+      // Already verified — close immediately
       onClose()
+      return
     }
-  }, [isConnected, onClose])
+
+    // Start verification flow
+    connectWallet()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isConnected, address])
+
+  // Handle successful verification
+  useEffect(() => {
+    if (!isSuccess) return
+    toast.success('Wallet connected successfully!')
+    onClose()
+  }, [isSuccess, onClose])
+
+  // Handle verification error — disconnect wallet and show error toast
+  useEffect(() => {
+    if (!error) return
+    toast.error(error)
+    disconnect()
+    reset()
+  }, [error, disconnect, reset])
 
   return (
     <Modal
@@ -87,7 +120,21 @@ export const ConnectWalletModal: FC<TModalProps> = ({ isOpen, onClose }) => {
           </div>
           <div className='h-[2px] bg-gradient-to-r from-white to-white/[0.02]' />
 
-          {connectors.length > 0 ? (
+          {/* Verification pending state — shown after wallet connects */}
+          {isConnecting && (
+            <div className='flex min-h-40 flex-col items-center justify-center gap-3 p-6'>
+              <SpinnerIcon size={32} className='text-primary-500 animate-spin' />
+              <p className='text-16 text-dark-600 text-center font-medium'>
+                Verifying wallet ownership...
+                <br />
+                <span className='text-14 text-dark-600/60'>
+                  Please sign the message in your wallet
+                </span>
+              </p>
+            </div>
+          )}
+
+          {!isConnecting && connectors.length > 0 && (
             <div className='flex w-full flex-col gap-4 p-4 md:p-6'>
               {metamaskWalletConnector && (
                 <div className='flex w-full flex-col gap-2'>
@@ -121,9 +168,10 @@ export const ConnectWalletModal: FC<TModalProps> = ({ isOpen, onClose }) => {
                 </div>
               </div>
             </div>
-          ) : (
+          )}
+
+          {!isConnecting && connectors.length === 0 && (
             <div className='flex min-h-60 flex-col items-center justify-center gap-4 p-4'>
-              {/* <Image src={'noWallet'} alt='No Wallet Icon' width={68} height={40} /> */}
               <p className='text-16 text-dark-600/70 text-center font-medium'>
                 No wallet detected.
                 <br />

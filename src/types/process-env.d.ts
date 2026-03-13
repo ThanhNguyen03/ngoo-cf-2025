@@ -4,5 +4,7 @@ declare namespace NodeJS {
     NEXTAUTH_URL: string
     NEXTAUTH_SECRET: string
     NGOO_BACKEND_API: string
+    NEXT_PUBLIC_NGOO_CONTRACT_ADDRESS: string
+    NEXT_PUBLIC_NGOO_CHAIN_ID: string
   }
 }

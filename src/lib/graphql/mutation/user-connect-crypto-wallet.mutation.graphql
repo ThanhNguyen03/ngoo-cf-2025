@@ -1,0 +1,7 @@
+mutation UserConnectCryptoWallet($signature: String!, $address: String!) {
+  userConnectCryptoWallet(signature: $signature, address: $address) {
+    connectCompleted
+    userUuid
+    walletAddress
+  }
+}

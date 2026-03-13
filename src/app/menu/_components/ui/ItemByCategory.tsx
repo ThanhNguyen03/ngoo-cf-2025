@@ -7,7 +7,7 @@ import { DEFAULT_PAGINATION } from '@/constants'
 import { client } from '@/lib/apollo-client'
 import {
   EItemStatus,
-  ListItemByCategoryDocument,
+  ListItemCursorDocument,
   ListItemByStatusDocument,
   TCategory,
   TItemResponse,
@@ -16,13 +16,16 @@ import useCartStore from '@/store/cart-store'
 import { apolloWrapper, cn } from '@/utils'
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
-import { FC, memo, useEffect, useRef, useState } from 'react'
+import { FC, memo, useCallback, useEffect, useRef, useState } from 'react'
 import { INIT_CATEGORY } from '../Menu'
 
+// Cursor-based cache shape: replaces offset+total with cursor+hasMore.
+// On each page load, the server returns nextCursor (null when no more pages)
+// and hasMore flag — the client appends records and updates these two fields.
 export type TItemByCategoryData = {
   list: TItemResponse[]
-  total: number
-  offset: number
+  cursor: string | null
+  hasMore: boolean
   fetched?: boolean
 }
 
@@ -52,118 +55,110 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
     const [selectedItem, setSelectedItem] = useState<TItemResponse>()
     const { listCartItem } = useCartStore()
 
-    const getListItem = apolloWrapper(
-      async () => {
-        setLoading(true)
-        const { list, offset } = itemData
-        if (selectedCategory.name === INIT_CATEGORY.name) {
-          const { data, error } = await client.query({
-            query: ListItemByStatusDocument,
-            variables: {
-              status: [EItemStatus.Seller],
-            },
-          })
+    // Counter incremented by IntersectionObserver to trigger next page fetch.
+    // Using a counter (not a boolean) lets re-triggers work even if the value
+    // doesn't logically change (e.g. fast consecutive scrolls).
+    const [loadMoreTrigger, setLoadMoreTrigger] = useState(0)
 
-          if (error) {
-            throw error
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    const getListItem = useCallback(
+      apolloWrapper(
+        async () => {
+          setLoading(true)
+          const { list } = itemData
+
+          // "For you" category uses status-based query (no cursor support needed)
+          if (selectedCategory.name === INIT_CATEGORY.name) {
+            const { data, error } = await client.query({
+              query: ListItemByStatusDocument,
+              variables: {
+                status: [EItemStatus.Seller],
+              },
+            })
+
+            if (error) throw error
+
+            if (data) {
+              handleUpdateData(selectedCategory.categoryId, {
+                list: data.listItemByStatus.records,
+                // Status-based query returns all records — no pagination needed
+                cursor: null,
+                hasMore: false,
+                fetched: true,
+              })
+            }
+            return
           }
 
+          // All other categories use cursor-based pagination
+          const { data, error } = await client.query({
+            query: ListItemCursorDocument,
+            variables: {
+              categoryName: selectedCategory.name,
+              limit: DEFAULT_PAGINATION.limit,
+              // Pass null cursor on first load; subsequent loads use nextCursor
+              cursor: itemData.cursor,
+            },
+            fetchPolicy: 'no-cache',
+          })
+
+          if (error) throw error
+
           if (data) {
+            const { records, pageInfo } = data.listItemCursor
             handleUpdateData(selectedCategory.categoryId, {
-              list:
-                offset === 0
-                  ? data.listItemByStatus.records
-                  : [...list, ...data.listItemByStatus.records],
-              total: data.listItemByStatus.total,
+              // First page: replace list. Subsequent pages: append records.
+              list: itemData.cursor === null ? records : [...list, ...records],
+              cursor: pageInfo.nextCursor ?? null,
+              hasMore: pageInfo.hasMore,
               fetched: true,
             })
           }
-          return
-        }
-
-        const { data, error } = await client.query({
-          query: ListItemByCategoryDocument,
-          variables: {
-            categoryName: selectedCategory.name,
-            limit: DEFAULT_PAGINATION.limit,
-            offset,
-          },
-          fetchPolicy: 'no-cache',
-        })
-
-        if (error) {
-          throw error
-        }
-
-        if (data) {
-          handleUpdateData(selectedCategory.categoryId, {
-            list:
-              offset === 0
-                ? data.listItemByCategory.records
-                : [...list, ...data.listItemByCategory.records],
-            total: data.listItemByCategory.total,
-            fetched: true,
-          })
-        }
-      },
-      {
-        errorMessage: `Failed to get list item by category ${selectedCategory.name}`,
-        onFinally: () => setLoading(false),
-      },
+        },
+        {
+          errorMessage: `Failed to get list item by category ${selectedCategory.name}`,
+          onFinally: () => setLoading(false),
+        },
+      ),
+      [selectedCategory, itemData, handleUpdateData],
     )
 
+    // Initial fetch: runs when the section first enters the viewport
     useEffect(() => {
-      if (!inViewport) {
-        return
-      }
-      if (itemData.fetched) {
-        return
-      }
-      if (itemData.list.length > 0 && itemData.offset === 0) {
-        return
-      }
+      if (!inViewport) return
+      if (itemData.fetched) return
 
-      if (itemData.list.length === 0) {
-        getListItem()
-      }
-      if (itemData.offset > 0) {
-        getListItem()
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [inViewport, itemData.offset])
+      getListItem()
+    }, [inViewport]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Infinite scroll — observe sentinel div to load the next page
+    // Load-more: runs when IntersectionObserver increments the trigger counter
     useEffect(() => {
-      if (!inViewport) {
-        return
-      }
+      if (loadMoreTrigger === 0) return
+      if (!itemData.hasMore) return
+
+      getListItem()
+    }, [loadMoreTrigger]) // eslint-disable-line react-hooks/exhaustive-deps
+
+    // Infinite scroll sentinel — observe the bottom div and increment the
+    // trigger counter when it enters viewport (only if more pages exist).
+    useEffect(() => {
+      if (!inViewport) return
       const element = bottomRef.current
-      if (!element) {
-        return
-      }
+      if (!element) return
 
       const observer = new IntersectionObserver(
         (entries) => {
-          if (!entries[0].isIntersecting) {
-            return
-          }
-          const { offset, total } = itemData
-          const limit = DEFAULT_PAGINATION.limit
-          const canLoadMore = total > limit + offset
-          if (!canLoadMore) {
-            return
-          }
-          // Increase offset to trigger getListItem in the effect above
-          handleUpdateData(selectedCategory.categoryId, {
-            offset: offset + limit,
-          })
+          if (!entries[0].isIntersecting) return
+          if (!itemData.hasMore) return
+          if (loading) return
+
+          setLoadMoreTrigger((prev) => prev + 1)
         },
         { threshold: 1 },
       )
       observer.observe(element)
       return () => observer.disconnect()
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [inViewport, itemData])
+    }, [inViewport, itemData.hasMore, loading])
 
     const openCreate = (item: TItemResponse) => {
       setSelectedItem(item)
@@ -182,7 +177,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
         </h4>
         <div className='flex w-full max-w-[560px] flex-col items-start gap-4 xl:max-w-none xl:flex-row xl:flex-wrap'>
           {/* Initial load skeleton — shows full-height placeholders */}
-          {loading && itemData.offset === 0 ? (
+          {loading && !itemData.fetched ? (
             Array.from({ length: 4 }).map((_, index) => (
               <SkeletonLoader
                 key={index}
@@ -288,7 +283,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
               )}
 
               {/* Pagination loading indicator — shows only when fetching more pages */}
-              {loading && itemData.offset > 0 && (
+              {loading && itemData.fetched && (
                 <div className='flex w-full justify-center py-2'>
                   <SkeletonLoader
                     loading

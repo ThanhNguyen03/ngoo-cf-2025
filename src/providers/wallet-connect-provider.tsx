@@ -21,7 +21,7 @@ import { WagmiProvider } from 'wagmi'
 export const WalletConnectProvider = ({ children }: PropsWithChildren) => {
   const [queryClient] = useState(() => new QueryClient())
   const [config] = useState(() => wagmiConfig)
-  const { loading } = useAuthStore()
+  const loading = useAuthStore((s) => s.loading)
   const isHydrated = useIsHydrated()
 
   useAutoRefresh()

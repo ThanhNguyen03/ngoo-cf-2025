@@ -1,11 +1,17 @@
+'use client'
+
 import { SwitchButton } from '@/components/ui'
 import {
+  EPaymentMethod,
   EPaymentStatus,
   TUserPaymentResponse,
 } from '@/lib/graphql/generated/graphql'
+import useCartStore from '@/store/cart-store'
+import { TCartItem } from '@/types'
 import { cn } from '@/utils'
 import { CheckCircleIcon, XCircleIcon } from '@phosphor-icons/react/dist/ssr'
 import dayjs from 'dayjs'
+import { useRouter } from 'next/navigation'
 import { FC } from 'react'
 import { PaymentItem } from './payment-item'
 
@@ -13,6 +19,45 @@ type TPaymentDetailProps = {
   data: TUserPaymentResponse
 }
 export const PaymentDetail: FC<TPaymentDetailProps> = ({ data }) => {
+  const router = useRouter()
+  const listCartItem = useCartStore((s) => s.listCartItem)
+
+  // Restore cart items from sessionStorage backup and navigate to checkout.
+  // The backup is saved by checkout-info.tsx before clearing the cart for crypto orders.
+  const handleRetry = () => {
+    const backup = sessionStorage.getItem('checkout-cart-backup')
+    if (backup && listCartItem.length === 0) {
+      try {
+        const items = JSON.parse(backup) as TCartItem[]
+        // Restore directly into Zustand's persisted store via localStorage key
+        // so the store picks it up on next render without a full page reload.
+        localStorage.setItem(
+          'cart-storage',
+          JSON.stringify({
+            state: {
+              listCartItem: items,
+              cartAmount: items.reduce((sum, i) => sum + i.amount, 0),
+            },
+            version: 0,
+          }),
+        )
+        sessionStorage.removeItem('checkout-cart-backup')
+        // Force a page navigation so the Zustand store reinitialises from localStorage
+        router.push('/checkout')
+        return
+      } catch {
+        // Backup was malformed — navigate to checkout with whatever is in the cart
+      }
+    }
+
+    router.push('/checkout')
+  }
+
+  const methodLabel =
+    data.paymentMethod === EPaymentMethod.Crypto
+      ? 'Crypto (BNB)'
+      : data.paymentMethod
+
   return (
     <div className='border-dark-600/30 relative mx-auto flex size-full min-h-[calc(100dvh-57px)] max-w-[640px] flex-col gap-10 overflow-x-hidden border-x bg-white px-2 py-5 md:px-6 lg:px-10'>
       {/* status */}
@@ -87,10 +132,11 @@ export const PaymentDetail: FC<TPaymentDetailProps> = ({ data }) => {
               Continue Shopping
             </SwitchButton>
           ) : (
+            // Retry: restores cart backup (for crypto) and navigates to checkout
             <SwitchButton
               className='rounded-3! w-fit px-12 font-semibold text-nowrap'
               variant='pink'
-              href='/menu'
+              onClick={handleRetry}
             >
               Retry
             </SwitchButton>
@@ -112,7 +158,7 @@ export const PaymentDetail: FC<TPaymentDetailProps> = ({ data }) => {
           <div className='flex w-full flex-col items-start gap-2'>
             <div className='text-16 text-dark-600 flex w-full items-center justify-between'>
               <p>Payment method</p>
-              <p className='font-bold'>{data.paymentMethod}</p>
+              <p className='font-bold'>{methodLabel}</p>
             </div>
             <div className='text-16 text-dark-600 flex w-full items-center justify-between'>
               <p>Invoice date</p>
@@ -127,7 +173,7 @@ export const PaymentDetail: FC<TPaymentDetailProps> = ({ data }) => {
           <div className='scrollbar-none relative size-full max-h-60 overflow-y-scroll'>
             <div className='flex flex-col items-start gap-4 pt-4'>
               {data.items.map((item) => (
-                <PaymentItem key={item.name} item={item} />
+                <PaymentItem key={item?.name} item={item!} />
               ))}
             </div>
           </div>
