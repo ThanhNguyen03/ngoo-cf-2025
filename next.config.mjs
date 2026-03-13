@@ -1,6 +1,5 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
   reactStrictMode: true,
   images: {
     remotePatterns: [
@@ -10,9 +9,47 @@ const nextConfig = {
       },
     ],
   },
-  env: {
-    APP_URL: process.env.NEXT_PUBLIC_APP_URL,
-    NGOO_BACKEND_API: process.env.NEXT_PUBLIC_NGOO_BACKEND_API,
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-Frame-Options',
+            value: 'DENY',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Referrer-Policy',
+            value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=()',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: [
+              "default-src 'self'",
+              "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
+              "style-src 'self' 'unsafe-inline'",
+              "img-src 'self' data: blob: https://storage.googleapis.com",
+              "font-src 'self' data:",
+              "connect-src 'self' https://*.paypal.com https://data-seed-prebsc-1-s1.binance.org wss: ws:",
+              "frame-src https://*.paypal.com https://sandbox.paypal.com",
+              "worker-src 'self' blob:",
+            ].join('; '),
+          },
+        ],
+      },
+    ]
   },
 }
 

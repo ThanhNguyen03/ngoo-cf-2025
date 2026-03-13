@@ -13,13 +13,16 @@ import {
   UserLogoutDocument,
   UserRegisterDocument,
 } from './graphql/generated/graphql'
-// TODO: remove console log
+if (!process.env.NEXTAUTH_SECRET) throw new Error('NEXTAUTH_SECRET env var is required')
+if (!process.env.GOOGLE_CLIENT_ID) throw new Error('GOOGLE_CLIENT_ID env var is required')
+if (!process.env.GOOGLE_CLIENT_SECRET) throw new Error('GOOGLE_CLIENT_SECRET env var is required')
+
 const authOptions: NextAuthOptions = {
-  secret: process.env.NEXTAUTH_SECRET || '',
+  secret: process.env.NEXTAUTH_SECRET,
   providers: [
     GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID || '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET || '',
+      clientId: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
     }),
 
     Credentials({
@@ -97,8 +100,7 @@ const authOptions: NextAuthOptions = {
             token.accessTokenExpires = Date.now() + EXPIRES_IN
           }
           return token
-        } catch (error) {
-          console.error(error, 'Failed to sign up')
+        } catch {
           return token
         }
       }
@@ -145,8 +147,7 @@ const authOptions: NextAuthOptions = {
             token.uuid = data.refreshToken.userUuid
           }
           return token
-        } catch (error) {
-          console.log(error)
+        } catch {
           token.error = 'RefreshAccessTokenError'
           return token
         }
@@ -187,17 +188,15 @@ const authOptions: NextAuthOptions = {
           if (error) {
             throw error
           }
-        } catch (error) {
-          console.error('Error while logout user', error)
+        } catch {
+          // Logout error is non-critical — session is already invalidated on the client
         }
       }
     },
   },
-  // TODO: Design auth error page
-  // pages: {
-  //   // redirect to error page if hit error when signin
-  //   error: '/api/auth/error',
-  // },
+  pages: {
+    error: '/api/auth/error',
+  },
 }
 
 export default authOptions

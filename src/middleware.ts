@@ -19,6 +19,9 @@ export default withAuth(
   },
   {
     callbacks: {
+      // Always return true so the middleware function above runs for every request.
+      // The actual route-protection logic is handled inside the middleware function
+      // by checking req.nextauth.token against LIST_PROTECT_PAGE.
       authorized: () => true,
     },
   },
