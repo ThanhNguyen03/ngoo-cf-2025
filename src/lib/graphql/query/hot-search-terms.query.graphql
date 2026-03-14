@@ -1,0 +1,6 @@
+query HotSearchTerms($limit: Int) {
+  hotSearchTerms(limit: $limit) {
+    term
+    score
+  }
+}

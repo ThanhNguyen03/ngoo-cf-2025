@@ -1,0 +1,25 @@
+query SearchItems($search: String!, $limit: Int, $categoryName: String) {
+  searchItems(search: $search, limit: $limit, categoryName: $categoryName) {
+    total
+    records {
+      itemId
+      name
+      image
+      price
+      discountPercent
+      status
+      categoryName
+      description
+      requireOption {
+        group
+        name
+        extraPrice
+      }
+      additionalOption {
+        group
+        name
+        extraPrice
+      }
+    }
+  }
+}
