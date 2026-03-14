@@ -95,6 +95,7 @@ const authOptions: NextAuthOptions = {
           }
           if (data) {
             const decoded = decodeJwtPayload(data.userLogin.accessToken)
+            if (!decoded) throw new Error('Malformed JWT payload')
 
             token.accessToken = data.userLogin.accessToken
             token.refreshToken = data.userLogin.refreshToken
@@ -111,6 +112,7 @@ const authOptions: NextAuthOptions = {
       }
       if (user) {
         const decoded = decodeJwtPayload(user.accessToken!)
+        if (!decoded) throw new Error('Malformed JWT payload')
 
         token.accessToken = user.accessToken
         token.refreshToken = user.refreshToken

@@ -8,7 +8,7 @@ import { getServerSession } from 'next-auth'
 import './globals.css'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.APP_URL || DEV_APP_URL),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || DEV_APP_URL),
   title: 'NgOo Coffee',
   description: '',
 }

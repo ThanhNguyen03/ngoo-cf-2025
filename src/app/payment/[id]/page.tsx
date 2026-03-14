@@ -146,10 +146,9 @@ const PaymentDetailPage = () => {
 
   return (
     <main className='bg-paper relative size-full overflow-x-hidden'>
-      {/* FIXME: [responsive] w-full max-w-[1200px] — w-[1200px] overflows on mobile */}
       <SkeletonLoader
         loading={loading}
-        className='bg-dark-600/10 mx-auto size-full min-h-[calc(100dvh-57px)] w-[1200px]'
+        className='bg-dark-600/10 mx-auto size-full min-h-[calc(100dvh-57px)] w-full max-w-[1200px]'
       >
         {isError && (
           <div className='center min-h-[calc(100dvh-57px)] flex-col gap-4'>
@@ -165,10 +164,37 @@ const PaymentDetailPage = () => {
         {paymentInfo && (
           <>
             {paymentInfo.paymentMethod === EPaymentMethod.Cod ? (
-              <div className='border-dark-600/30 shadow-container relative mx-auto flex size-full max-w-[1200px] items-start justify-center gap-10 border-x bg-white px-2 py-20 md:px-6 md:py-30 lg:px-10'>
-                {/* FIXME: [responsive] COD progress bar w-1/5 + content w-3/5 not responsive - use hidden md:flex for progress, w-full on mobile */}
-                {/* progress steps */}
-                <div className='flex h-full w-1/5 flex-col items-start'>
+              <div className='border-dark-600/30 shadow-container relative mx-auto flex size-full max-w-[1200px] flex-col items-start justify-center gap-10 border-x bg-white px-2 py-20 md:flex-row md:px-6 md:py-30 lg:px-10'>
+                {/* Mobile horizontal progress indicator */}
+                <div className='flex w-full items-center justify-between md:hidden'>
+                  {step.map((item, index) => (
+                    <div key={item.name} className='flex items-center'>
+                      <div
+                        className={cn(
+                          'text-14 flex size-8 items-center justify-center rounded-full',
+                          currentStep >= index
+                            ? 'bg-green-500 text-white'
+                            : 'bg-dark-600/10',
+                        )}
+                      >
+                        {index + 1}
+                      </div>
+                      {index < step.length - 1 && (
+                        <div
+                          className={cn(
+                            'mx-1 h-1 w-8 sm:w-12',
+                            currentStep > index
+                              ? 'bg-green-500'
+                              : 'bg-dark-600/10',
+                          )}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Desktop vertical progress steps */}
+                <div className='hidden h-full w-1/5 flex-col items-start md:flex'>
                   {step.map((item, index) => (
                     <div className='flex items-start gap-3' key={item.name}>
                       <div className='text-14 flex flex-col items-center'>
@@ -207,7 +233,7 @@ const PaymentDetailPage = () => {
                 </div>
 
                 {/* detail */}
-                <div className='center relative h-full w-3/5 flex-col gap-10'>
+                <div className='center relative h-full w-full flex-col gap-10 md:w-3/5'>
                   <Link
                     href='/menu'
                     className='text-16 text-dark-600 font-shantell center absolute -top-20 right-0 ml-3 gap-3 font-semibold duration-300 hover:translate-x-3'

@@ -1,3 +1,6 @@
+// Backend API origin for CSP connect-src (e.g. "http://localhost:1337" in dev)
+const backendOrigin = process.env.NEXT_PUBLIC_NGOO_BACKEND_API || ''
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -39,10 +42,10 @@ const nextConfig = {
             value: [
               "default-src 'self'",
               "script-src 'self' 'unsafe-inline' 'unsafe-eval'",
-              "style-src 'self' 'unsafe-inline'",
+              "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https://storage.googleapis.com",
-              "font-src 'self' data:",
-              "connect-src 'self' https://*.paypal.com https://data-seed-prebsc-1-s1.binance.org wss: ws:",
+              "font-src 'self' data: https://fonts.gstatic.com",
+              `connect-src 'self' ${backendOrigin} https://*.paypal.com https://data-seed-prebsc-1-s1.binance.org wss: ws:`,
               "frame-src https://*.paypal.com https://sandbox.paypal.com",
               "worker-src 'self' blob:",
             ].join('; '),

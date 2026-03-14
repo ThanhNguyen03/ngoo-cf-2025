@@ -47,7 +47,7 @@ export const Checkbox = forwardRef<HTMLInputElement, TCheckboxProps>(
               type === 'checkbox'
                 ? 'checked:border-primary-500 checked:bg-primary-500'
                 : 'checked:border-primary-500 checked:border', // Checked
-              'focus:ring-0 focus:outline-none', // Focus
+              'focus-visible:ring-2 focus-visible:ring-primary-500 focus:outline-none', // Focus
               disabled && 'cursor-not-allowed opacity-30', // Disabled
               className,
             )}

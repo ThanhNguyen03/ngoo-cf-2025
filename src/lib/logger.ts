@@ -4,7 +4,7 @@ type TLogLevel = 'fatal' | 'error' | 'warn' | 'info' | 'debug' | 'trace'
 
 // In prod: only 'error' and above → debug/info/warn are silent no-ops.
 // In dev: all levels visible for structured debugging.
-const isProd = process.env.NODE_ENV === 'production'
+const isProd = process.env.NEXT_PUBLIC_NODE_ENV === 'production'
 const level: TLogLevel = isProd ? 'error' : 'debug'
 
 const rootLogger = pino({

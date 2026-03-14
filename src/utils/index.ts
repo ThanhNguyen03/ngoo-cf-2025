@@ -190,7 +190,7 @@ type TPayload = {
   iat: number
   exp: number
 }
-export const decodeJwtPayload = (token: string): TPayload => {
+export const decodeJwtPayload = (token: string): TPayload | null => {
   const payload = token.split('.')[1]
   const base64 = payload.replace(/-/g, '+').replace(/_/g, '/')
   const json = decodeURIComponent(
@@ -200,5 +200,12 @@ export const decodeJwtPayload = (token: string): TPayload => {
       .join(''),
   )
 
-  return JSON.parse(json)
+  const parsed = JSON.parse(json)
+
+  // Validate required fields to prevent malformed JWT data from propagating
+  if (!parsed.uuid || !parsed.role) {
+    return null
+  }
+
+  return parsed
 }

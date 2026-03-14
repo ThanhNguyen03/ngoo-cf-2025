@@ -179,15 +179,14 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
         <h4 className='text-28 font-small-caps text-secondary-500 font-bold'>
           {selectedCategory.name}
         </h4>
-        {/* FIXME: [responsive] add lg: breakpoint for two-column — max-w-[560px] jumps straight to xl: without a lg: step */}
-        <div className='flex w-full max-w-[560px] flex-col items-start gap-4 xl:max-w-none xl:flex-row xl:flex-wrap'>
+        <div className='flex w-full max-w-[560px] flex-col items-start gap-4 lg:max-w-none lg:flex-row lg:flex-wrap'>
           {/* Initial load skeleton — shows full-height placeholders */}
           {loading && !itemData.fetched ? (
             Array.from({ length: 4 }).map((_, index) => (
               <SkeletonLoader
                 key={index}
                 loading={loading}
-                className='flex h-40 w-full items-start gap-4 xl:w-[calc(50%-16px)]'
+                className='flex h-40 w-full items-start gap-4 lg:w-[calc(50%-16px)]'
               />
             ))
           ) : (
@@ -202,8 +201,8 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
                     <div
                       key={item.name}
                       className={cn(
-                        'hover:shadow-container rounded-4 md:rounded-6 flex w-full cursor-pointer items-start duration-300 xl:w-[calc(50%-16px)]',
-                        index % 2 === 0 && 'xl:mr-2',
+                        'hover:shadow-container rounded-4 md:rounded-6 flex w-full cursor-pointer items-start duration-300 lg:w-[calc(50%-16px)]',
+                        index % 2 === 0 && 'lg:mr-2',
                       )}
                       onClick={() => openCreate(item)}
                     >
@@ -292,7 +291,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
                 <div className='flex w-full justify-center py-2'>
                   <SkeletonLoader
                     loading
-                    className='h-10 w-full xl:w-[calc(50%-16px)]'
+                    className='h-10 w-full lg:w-[calc(50%-16px)]'
                   />
                 </div>
               )}

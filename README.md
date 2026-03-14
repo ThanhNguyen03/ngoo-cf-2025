@@ -44,6 +44,16 @@ yarn dev
 
 Once the server starts, open your browser and visit: `http://localhost:3000`
 
+## Design System
+
+Figma file: [NgOo Coffee Design System](https://www.figma.com/design/sMPUpe33CNmUhnRGuzCF8k)
+
+Documents all reusable components (Button, TextInput, Checkbox, SwitchButton, etc.) with their states, plus responsive page layouts for Home, Menu, Checkout, Payment, and Profile pages at Desktop/Tablet/Mobile viewports.
+
+## TODO / Future Work
+
+- **Admin Panel** — The BE has full admin APIs (audit log queries, order management, payment management) behind `adminWrapper` with `ERole.Admin` enforcement. FE has no admin UI. Needs: `/admin` route with audit log viewer, order management dashboard, payment history, item/category CRUD UI.
+
 ## Test sandbox Paypal account
 
 Email: sb-6zfkd47331494@personal.example.com

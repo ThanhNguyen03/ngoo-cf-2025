@@ -152,8 +152,7 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
   )
 
   return (
-    <div className='from-beige-50 to-primary-500/2 rounded-4 shadow-container border-primary-500/10 relative mt-11 flex size-full max-w-[35%] flex-col items-start gap-6 overflow-hidden border bg-linear-to-b p-2 md:mt-13 md:gap-10 md:p-4'>
-      {/* FIXME: [responsive] w-full md:max-w-[35%] - 35% is too narrow on small viewports */}
+    <div className='from-beige-50 to-primary-500/2 rounded-4 shadow-container border-primary-500/10 relative mt-11 flex size-full w-full flex-col items-start gap-6 overflow-hidden border bg-linear-to-b p-2 md:mt-13 md:max-w-[35%] md:gap-10 md:p-4'>
       <h2 className='text-23 text-tint-600 font-bold'>Payment Info.</h2>
 
       <div className='flex w-full flex-col items-start gap-4'>
@@ -198,8 +197,7 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
               className='mb-2'
             />
 
-            {/* FIXME: [responsive] flex-col sm:flex-row — Name and Phone side-by-side is too tight on mobile */}
-            <div className='center my-2 w-full gap-2'>
+            <div className='center my-2 w-full flex-col gap-2 sm:flex-row'>
               {/* name */}
               <TextInput
                 label='Name'
