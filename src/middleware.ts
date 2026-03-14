@@ -12,7 +12,11 @@ export default withAuth(
       (path) => pathname === path || pathname.startsWith(`${path}/`),
     )
     if (!token && isProtected) {
-      return NextResponse.rewrite(new URL('/not-found', req.url))
+      // Redirect to home with ?login=true so the login modal auto-opens,
+      // giving the user clear feedback instead of a silent /not-found rewrite.
+      const loginUrl = new URL('/', req.url)
+      loginUrl.searchParams.set('login', 'true')
+      return NextResponse.redirect(loginUrl)
     }
 
     return NextResponse.next()

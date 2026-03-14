@@ -1,7 +1,10 @@
 'use client'
 
+import { createLogger } from '@/lib/logger'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
+
+const logger = createLogger('PayPalReturn')
 
 const PaypalReturn = () => {
   const searchParams = useSearchParams()
@@ -33,7 +36,7 @@ const PaypalReturn = () => {
           window.close()
         }, 100)
       } catch (error) {
-        console.error('Error handling PayPal return:', error)
+        logger.error({ err: error }, 'PayPal return handler failed')
         window.close()
       }
     }

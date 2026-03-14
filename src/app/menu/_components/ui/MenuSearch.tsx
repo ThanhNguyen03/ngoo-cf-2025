@@ -1,14 +1,31 @@
+'use client'
+
 import { SelectDropdown } from '@/components/ui/SelectDropdown'
 import { useClickOutside } from '@/hooks/use-click-outside'
-import { TCategory } from '@/lib/graphql/generated/graphql'
-import { cn } from '@/utils'
+import { useDebounce } from '@/hooks/use-debounce'
+import {
+  HotSearchTermsDocument,
+  SearchItemsDocument,
+  TCategory,
+} from '@/lib/graphql/generated/graphql'
+import { createLogger } from '@/lib/logger'
+import {
+  addRecentSearch,
+  clearRecentSearches,
+  getRecentSearches,
+} from '@/utils/recent-searches'
+import { useLazyQuery } from '@apollo/client/react'
 import {
   CheckIcon,
   MagnifyingGlassIcon,
   XIcon,
 } from '@phosphor-icons/react/dist/ssr'
 import Link from 'next/link'
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useCallback, useEffect, useRef, useState } from 'react'
+import { cn } from '@/utils'
+import { SearchResultsDropdown } from './SearchResultsDropdown'
+
+const logger = createLogger('MenuSearch')
 
 type TMenuSearchProps = {
   disabled?: boolean
@@ -18,6 +35,7 @@ type TMenuSearchProps = {
   selectCategory: (category: TCategory) => void
   className?: string
 }
+
 export const MenuSearch: FC<TMenuSearchProps> = ({
   disabled,
   sectionRef,
@@ -29,17 +47,76 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
   const [openDropdown, setOpenDropdown] = useState<boolean>(false)
   const [openSearchBar, setOpenSearchBar] = useState<boolean>(false)
   const [searchTerm, setSearchTerm] = useState<string>('')
+  const [showDropdown, setShowDropdown] = useState<boolean>(false)
+  const [recentSearches, setRecentSearches] = useState<string[]>([])
 
   const isScrollingRef = useRef<boolean>(false)
+  const debouncedSearch = useDebounce(searchTerm, 300)
 
-  const handleSelectCategory = (value: TCategory) => {
-    selectCategory(value)
-    setOpenDropdown(false)
-  }
+  const [searchItems, { data: searchData, loading: searchLoading }] =
+    useLazyQuery(SearchItemsDocument)
+  const [fetchHotTerms, { data: hotTermsData }] = useLazyQuery(
+    HotSearchTermsDocument,
+  )
+
+  // Trigger search when debounced term changes
+  useEffect(() => {
+    if (debouncedSearch.trim().length >= 1) {
+      searchItems({ variables: { search: debouncedSearch.trim(), limit: 10 } })
+      addRecentSearch(debouncedSearch.trim())
+      setRecentSearches(getRecentSearches())
+      logger.debug({ term: debouncedSearch }, 'Search triggered')
+    }
+  }, [debouncedSearch, searchItems])
+
+  const handleSearchFocus = useCallback(() => {
+    if (!openSearchBar) {
+      setOpenSearchBar(true)
+    }
+    setRecentSearches(getRecentSearches())
+    setShowDropdown(true)
+    // Prefetch hot search terms on focus
+    fetchHotTerms({ variables: { limit: 10 } })
+  }, [openSearchBar, fetchHotTerms])
+
+  const handleSelectTerm = useCallback(
+    (term: string) => {
+      setSearchTerm(term)
+      setShowDropdown(true)
+    },
+    [],
+  )
+
+  const handleClearRecent = useCallback(() => {
+    clearRecentSearches()
+    setRecentSearches([])
+  }, [])
+
+  const handleClearSearch = useCallback(() => {
+    setSearchTerm('')
+    setOpenSearchBar(false)
+    setShowDropdown(false)
+  }, [])
+
+  // Memoise to avoid recreating this function on every parent render —
+  // it is passed as a click handler to each category link inside the dropdown.
+  const handleSelectCategory = useCallback(
+    (value: TCategory) => {
+      selectCategory(value)
+      setOpenDropdown(false)
+    },
+    [selectCategory],
+  )
 
   useEffect(() => {
+    // Guard: the section map may be empty if categories haven't rendered yet
+    if (sectionRef.current.size === 0) {
+      return
+    }
+
     const observer = new IntersectionObserver(
       (entries) => {
+        // Ignore intersection events while the user is programmatically scrolling
         if (isScrollingRef.current) {
           return
         }
@@ -68,14 +145,21 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
     })
 
     return () => observer.disconnect()
+    // selectCategory is a stable setState setter — safe to omit
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sectionRef, listCategory])
 
-  // handle click outside to close
+  // Close category dropdown on outside click
   const { ref: containerRef } = useClickOutside<HTMLDivElement>(() => {
     if (openDropdown) {
       setOpenDropdown(false)
     }
+  })
+
+  // Close search dropdown on outside click
+  const { ref: searchContainerRef } = useClickOutside<HTMLDivElement>(() => {
+    setShowDropdown(false)
+    setOpenSearchBar(false)
   })
 
   return (
@@ -133,45 +217,68 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
           ))}
         </SelectDropdown>
 
-        {/* search bar */}
-        <label
-          onClick={() => {
-            if (!openSearchBar) {
-              setOpenSearchBar(true)
-            }
-          }}
-          className={cn(
-            'text-14! border-dark-600/10 relative ml-auto flex w-full max-w-fit cursor-pointer items-center justify-end gap-1 rounded-full border bg-white p-2 leading-[160%] duration-700',
-            'hover:border-primary-500 focus-within:border-primary-500',
-            (openSearchBar || searchTerm) &&
-              'border-primary-500 max-w-full px-3 duration-700',
-            disabled &&
-              'border-dark-600/10 bg-dark-600/10 text-dark-600/70 placeholder:text-dark-600/50 cursor-not-allowed opacity-100 focus:border-neutral-900/20 focus:ring-0',
-          )}
-          htmlFor='menu-search'
-        >
-          <input
-            value={searchTerm}
-            onBlur={() => setOpenSearchBar(false)}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            type='text'
-            id='menu-search'
+        {/* search bar + dropdown container */}
+        <div ref={searchContainerRef} className='relative ml-auto flex w-full max-w-fit flex-col'>
+          <label
+            onClick={handleSearchFocus}
             className={cn(
-              'absolute right-0 w-full max-w-0 caret-transparent duration-700 placeholder:text-transparent focus-within:outline-none focus:ring-0 focus:ring-offset-0',
+              'text-14! border-dark-600/10 relative flex w-full max-w-fit cursor-pointer items-center justify-end gap-1 rounded-full border bg-white p-2 leading-[160%] duration-700',
+              'hover:border-primary-500 focus-within:border-primary-500',
               (openSearchBar || searchTerm) &&
-                'caret-secondary-500 placeholder:text-primary-500/50 relative max-w-full',
+                'border-primary-500 max-w-full px-3 duration-700',
+              disabled &&
+                'border-dark-600/10 bg-dark-600/10 text-dark-600/70 placeholder:text-dark-600/50 cursor-not-allowed opacity-100 focus:border-neutral-900/20 focus:ring-0',
             )}
-            placeholder='Search for...'
-          />
-          {openSearchBar || searchTerm ? (
-            <XIcon size={20} className='text-secondary-500' />
-          ) : (
-            <MagnifyingGlassIcon
-              size={20}
-              className='text-primary-500 focus-within:text-primary-500'
+            htmlFor='menu-search'
+          >
+            <input
+              value={searchTerm}
+              onFocus={handleSearchFocus}
+              onChange={(e) => {
+                setSearchTerm(e.target.value)
+                if (e.target.value.trim() === '') {
+                  setShowDropdown(true) // keep open to show hot/recent
+                }
+              }}
+              type='text'
+              id='menu-search'
+              disabled={disabled}
+              className={cn(
+                'absolute right-0 w-full max-w-0 caret-transparent duration-700 placeholder:text-transparent focus-within:outline-none focus:ring-0 focus:ring-offset-0',
+                (openSearchBar || searchTerm) &&
+                  'caret-secondary-500 placeholder:text-primary-500/50 relative max-w-full',
+              )}
+              placeholder='Search for...'
             />
-          )}
-        </label>
+            {openSearchBar || searchTerm ? (
+              <XIcon
+                size={20}
+                className='text-secondary-500 shrink-0'
+                onMouseDown={(e) => {
+                  e.preventDefault()
+                  handleClearSearch()
+                }}
+              />
+            ) : (
+              <MagnifyingGlassIcon
+                size={20}
+                className='text-primary-500 focus-within:text-primary-500'
+              />
+            )}
+          </label>
+
+          {/* Search results dropdown */}
+          <SearchResultsDropdown
+            isOpen={showDropdown}
+            isLoading={searchLoading}
+            searchTerm={searchTerm}
+            results={searchData?.searchItems}
+            hotTerms={hotTermsData?.hotSearchTerms}
+            recentSearches={recentSearches}
+            onSelectTerm={handleSelectTerm}
+            onClearRecent={handleClearRecent}
+          />
+        </div>
       </div>
     </div>
   )

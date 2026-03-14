@@ -1,4 +1,5 @@
 import { client } from '@/lib/apollo-client'
+import { createLogger } from '@/lib/logger'
 import { handleError } from '@/utils'
 import { signIn, signOut } from 'next-auth/react'
 import { create } from 'zustand'
@@ -7,6 +8,8 @@ import {
   TUserInfoResponse,
   UserInfoDocument,
 } from './../lib/graphql/generated/graphql'
+
+const logger = createLogger('AuthStore')
 
 type TAuthState = {
   userInfo: TUserInfoResponse | null
@@ -44,6 +47,7 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
 
       if (data) {
         set({ userInfo: data.userInfo, error: null })
+        logger.debug('User info fetched')
       }
     } catch (err) {
       if (err instanceof Error && err.message === 'Missing access token') {
@@ -56,22 +60,29 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
   },
 
   login: async (data: MutationUserLoginArgs, isRegister?: boolean) => {
-    set({ loading: true })
-    if (!data.email && !data.password) {
-      throw new Error('Failed to sign in: Invalid data!')
+    // Validate that both fields are present before attempting sign-in
+    if (!data.email || !data.password) {
+      throw new Error('Failed to sign in: Email and password are required!')
     }
 
-    await signIn('credentials', {
-      isRegister,
-      email: data.email,
-      password: data.password,
-    })
-
-    set({ loading: false })
+    set({ loading: true })
+    try {
+      await signIn('credentials', {
+        isRegister,
+        email: data.email,
+        password: data.password,
+      })
+    } catch (err) {
+      handleError(err, 'Failed to sign in!')
+    } finally {
+      // Always reset loading, even if signIn throws
+      set({ loading: false })
+    }
   },
 
   logout: async () => {
     set({ userInfo: null })
+    logger.info('User logged out')
     await signOut()
     localStorage.removeItem('cart-storage')
   },

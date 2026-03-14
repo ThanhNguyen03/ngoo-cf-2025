@@ -62,7 +62,7 @@ export const SwitchButton: FC<TUnionButtonProps> = ({
   }
 
   const buttonClass = cn(
-    'rounded-4 mb-0.5 flex size-full min-h-12 cursor-pointer items-center justify-center px-3 py-2 transition-colors duration-100 hover:border-white/50',
+    'rounded-4 mb-0.5 flex size-full min-h-12 cursor-pointer items-center justify-center px-3 py-2 transition-colors duration-100 hover:border-white/50 focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none',
     isClicked ? listClickedClass[variant] : listVariantClass[variant],
     variant === 'white' || variant === 'gray'
       ? 'border border-neutral-900/10 text-neutral-900 hover:border-neutral-900/10'

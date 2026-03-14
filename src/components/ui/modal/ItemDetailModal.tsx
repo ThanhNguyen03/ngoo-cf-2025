@@ -1,13 +1,14 @@
 'use client'
 
 import { AmountCounter, Button, Checkbox } from '@/components/ui'
-import { DEBOUNCE_DURATION } from '@/constants'
 import {
+  EBehaviorEvent,
   EItemStatus,
   ItemOptionInput,
   TItemOption,
   TItemResponse,
 } from '@/lib/graphql/generated/graphql'
+import { useTrackBehavior } from '@/hooks'
 import useCartStore, { calculateItemPrice } from '@/store/cart-store'
 import { TCartItem, TModalProps } from '@/types'
 import { cn } from '@/utils'
@@ -143,6 +144,7 @@ export const ItemDetailModal: FC<TItemDetailModalProps> = ({
   status,
 }) => {
   const { addToCart, removeFromCart, updateCartItem } = useCartStore()
+  const { track } = useTrackBehavior()
 
   const [itemAmount, setItemAmount] = useState<number>(
     status === EItemModalDetailStatus.UPDATE ? cartItem?.amount || 1 : 1,
@@ -152,8 +154,6 @@ export const ItemDetailModal: FC<TItemDetailModalProps> = ({
       ? cartItem?.selectedOptions || []
       : [],
   )
-  const [loading, setLoading] = useState<boolean>(false)
-  const [totalPrice, setTotalPrice] = useState<number>(0)
 
   const requiredGroups: TItemOptionGroup[] = useMemo(() => {
     const map = new Map<string, TItemOption[]>()
@@ -189,14 +189,12 @@ export const ItemDetailModal: FC<TItemDetailModalProps> = ({
     )
   }, [requiredGroups, selectedOptions])
 
-  useEffect(() => {
-    setLoading(true)
-    const handler = setTimeout(() => {
-      setTotalPrice(calculateItemPrice(data, selectedOptions, itemAmount))
-      setLoading(false)
-    }, DEBOUNCE_DURATION)
-    return () => clearTimeout(handler)
-  }, [itemAmount, data, selectedOptions])
+  // calculateItemPrice is synchronous — no need to debounce.
+  // useMemo computes instantly on change without blocking the button.
+  const totalPrice = useMemo(
+    () => calculateItemPrice(data, selectedOptions, itemAmount),
+    [data, selectedOptions, itemAmount],
+  )
 
   const handleSubmit = () => {
     if (itemAmount === 0) {
@@ -217,6 +215,7 @@ export const ItemDetailModal: FC<TItemDetailModalProps> = ({
 
     // CREATE
     addToCart(data, selectedOptions, itemAmount)
+    track(data.itemId, EBehaviorEvent.AddToCart)
     onClose()
   }
 
@@ -373,7 +372,6 @@ export const ItemDetailModal: FC<TItemDetailModalProps> = ({
             onClick={handleSubmit}
             disabled={
               (!isRequiredSelected && itemAmount !== 0) ||
-              loading ||
               (status === EItemModalDetailStatus.CREATE && itemAmount === 0)
             }
             className={cn(

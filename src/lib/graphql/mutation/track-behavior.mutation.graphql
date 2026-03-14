@@ -1,0 +1,3 @@
+mutation TrackBehavior($input: TrackBehaviorInput!) {
+  trackBehavior(input: $input)
+}

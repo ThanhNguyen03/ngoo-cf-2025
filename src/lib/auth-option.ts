@@ -1,4 +1,5 @@
 import { EXPIRES_IN, REFRESH_GAP } from '@/constants'
+import { createLogger } from '@/lib/logger'
 import { decodeJwtPayload } from '@/utils'
 import { ErrorLike } from '@apollo/client'
 import { NextAuthOptions, User } from 'next-auth'
@@ -13,6 +14,8 @@ import {
   UserLogoutDocument,
   UserRegisterDocument,
 } from './graphql/generated/graphql'
+const logger = createLogger('Auth')
+
 if (!process.env.NEXTAUTH_SECRET) throw new Error('NEXTAUTH_SECRET env var is required')
 if (!process.env.GOOGLE_CLIENT_ID) throw new Error('GOOGLE_CLIENT_ID env var is required')
 if (!process.env.GOOGLE_CLIENT_SECRET) throw new Error('GOOGLE_CLIENT_SECRET env var is required')
@@ -92,6 +95,7 @@ const authOptions: NextAuthOptions = {
           }
           if (data) {
             const decoded = decodeJwtPayload(data.userLogin.accessToken)
+            if (!decoded) throw new Error('Malformed JWT payload')
 
             token.accessToken = data.userLogin.accessToken
             token.refreshToken = data.userLogin.refreshToken
@@ -100,12 +104,15 @@ const authOptions: NextAuthOptions = {
             token.accessTokenExpires = Date.now() + EXPIRES_IN
           }
           return token
-        } catch {
+        } catch (err) {
+          // Log the error for observability — the user will be unauthenticated
+          logger.error({ err }, 'Google login failed')
           return token
         }
       }
       if (user) {
         const decoded = decodeJwtPayload(user.accessToken!)
+        if (!decoded) throw new Error('Malformed JWT payload')
 
         token.accessToken = user.accessToken
         token.refreshToken = user.refreshToken
@@ -147,7 +154,9 @@ const authOptions: NextAuthOptions = {
             token.uuid = data.refreshToken.userUuid
           }
           return token
-        } catch {
+        } catch (err) {
+          // Log refresh failures — user will be forced to re-authenticate
+          logger.error({ err }, 'Token refresh failed')
           token.error = 'RefreshAccessTokenError'
           return token
         }
@@ -168,13 +177,11 @@ const authOptions: NextAuthOptions = {
       return session
     },
   },
-  // TODO: implement sign out api
   events: {
     async signOut({ token }) {
       if (token.refreshToken && token.accessToken) {
         try {
           const { error } = await client.mutate({
-            // TODO: will remove hard code when have design about logout button
             mutation: UserLogoutDocument,
             variables: {
               logoutEverywhere: false,
@@ -190,6 +197,7 @@ const authOptions: NextAuthOptions = {
           }
         } catch {
           // Logout error is non-critical — session is already invalidated on the client
+          logger.warn('Logout API call failed (non-critical)')
         }
       }
     },

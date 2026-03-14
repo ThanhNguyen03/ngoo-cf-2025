@@ -178,10 +178,18 @@ const useCartStore = create<TCartStoreState & TCartStoreAction>()(
     {
       name: 'cart-storage',
       storage: createJSONStorage(() => localStorage),
+      // Only persist the source of truth — cartAmount is derived on rehydration
       partialize: (state) => ({
         listCartItem: state.listCartItem,
-        cartAmount: state.cartAmount,
       }),
+      onRehydrateStorage: () => (state) => {
+        if (state) {
+          state.cartAmount = state.listCartItem.reduce(
+            (sum, item) => sum + item.amount,
+            0,
+          )
+        }
+      },
     },
   ),
 )

@@ -117,7 +117,7 @@ export const CheckoutDetails = () => {
   const [selectedUpdateItem, setSelectedUpdateItem] = useState<TCartItem>()
 
   return (
-    <div className='relative flex size-full max-w-[65%] flex-col items-start gap-4 overflow-hidden md:gap-6'>
+    <div className='relative flex size-full w-full flex-col items-start gap-4 overflow-hidden md:max-w-[65%] md:gap-6'>
       <h1 className='text-28 md:text-32 text-shadow-stroke-2 font-lobster w-fit pl-1.25 text-center font-black text-white'>
         Shopping Cart.
       </h1>

@@ -1,8 +1,8 @@
 import { cookieStorage, createConfig, createStorage, http } from 'wagmi'
-import { mainnet, monadTestnet } from 'wagmi/chains'
+import { bscTestnet, mainnet, monadTestnet } from 'wagmi/chains'
 
 export const wagmiConfig = createConfig({
-  chains: [mainnet, monadTestnet],
+  chains: [mainnet, monadTestnet, bscTestnet],
   ssr: true,
   storage: createStorage({
     storage: cookieStorage,
@@ -10,5 +10,6 @@ export const wagmiConfig = createConfig({
   transports: {
     [mainnet.id]: http(),
     [monadTestnet.id]: http(),
+    [bscTestnet.id]: http(),
   },
 })

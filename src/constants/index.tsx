@@ -87,7 +87,7 @@ export const LIST_HEADER_NAVIGATION: TNavigationItem[] = [
         className='data group-data-[active=true]:text-secondary-500 md:text-secondary-500 size-6 md:size-[18px]'
       />
     ),
-    href: '#', // TODO: faucet page ex: u2u, ftm, monad,...
+    href: '#', // Future: faucet page for testnet tokens (U2U, FTM, Monad)
   },
   {
     name: 'Contact',
@@ -156,7 +156,7 @@ export const LIST_ACCOUNT_NAVIGATION: TNavigationItem[] = [
   {
     name: 'Faucet',
     icon: <VaultIcon weight='fill' size={24} className='text-primary-400' />,
-    href: '#', // TODO: faucet page ex: u2u, ftm, monad,...
+    href: '#', // Future: faucet page for testnet tokens (U2U, FTM, Monad)
   },
 ]
 

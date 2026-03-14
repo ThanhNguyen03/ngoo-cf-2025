@@ -1,0 +1,40 @@
+query ListItemCursor(
+  $limit: Int
+  $cursor: String
+  $categoryName: String
+  $status: [EItemStatus]
+) {
+  listItemCursor(
+    limit: $limit
+    cursor: $cursor
+    categoryName: $categoryName
+    status: $status
+  ) {
+    records {
+      itemId
+      name
+      image
+      price
+      description
+      discountPercent
+      requireOption {
+        group
+        name
+        extraPrice
+      }
+      additionalOption {
+        group
+        name
+        extraPrice
+      }
+      status
+      categoryName
+      createdAt
+      updatedAt
+    }
+    pageInfo {
+      hasMore
+      nextCursor
+    }
+  }
+}

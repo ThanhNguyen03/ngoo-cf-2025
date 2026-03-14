@@ -1,3 +1,4 @@
+export * from './ConfirmModal'
 export * from './ConnectWalletModal'
 export * from './ItemDetailModal'
 export * from './LoginModal'
