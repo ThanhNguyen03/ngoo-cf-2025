@@ -14,9 +14,11 @@ const logger = createLogger('TrackBehavior')
  * Only fires for authenticated users — anonymous behavior is not tracked on the FE
  * (the recommendation engine serves anonymous users from hot-search + best-seller caches).
  *
- * VIEW deduplication: A per-render `sentRef` Set prevents the same VIEW event from
- * being sent more than once within the current component lifecycle. The server also
- * enforces a 30-second Redis dedup window per user+item to handle remounts.
+ * VIEW deduplication: A per-mount `sentRef` Set prevents the same VIEW event from
+ * being sent more than once within the current component lifecycle. On remount
+ * (e.g. navigation away and back) the Set resets, so the event fires again —
+ * this is intentional; the server enforces a 30-second Redis dedup window per
+ * user+item to collapse any duplicates that slip through.
  *
  * PURCHASE events are tracked server-side in the order resolver — not from the FE —
  * to prevent spoofing.

@@ -5,17 +5,13 @@ import { useState } from 'react'
 import { ConnectWalletModal } from '@/components/ui/modal'
 import { useWalletAuth } from '@/hooks'
 import useAuthStore from '@/store/auth-store'
-import { cn } from '@/utils'
+import { cn, truncateAddress } from '@/utils'
 import { WalletIcon } from '@phosphor-icons/react'
 import { useAccount, useDisconnect } from 'wagmi'
 
 type TConnectWalletButtonProps = {
   className?: string
 }
-
-// Truncate wallet address to "0x1234...abcd" for display
-const truncateAddress = (address: string) =>
-  `${address.slice(0, 6)}...${address.slice(-4)}`
 
 export const ConnectWalletButton = ({
   className,
@@ -45,7 +41,7 @@ export const ConnectWalletButton = ({
         >
           <WalletIcon size={18} />
           <span className='hidden md:inline'>
-            {truncateAddress(userInfo.walletAddress!)}
+            {truncateAddress(userInfo.walletAddress!, 6)}
           </span>
         </button>
       </div>

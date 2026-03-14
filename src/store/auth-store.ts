@@ -3,13 +3,13 @@ import { createLogger } from '@/lib/logger'
 import { handleError } from '@/utils'
 import { signIn, signOut } from 'next-auth/react'
 import { create } from 'zustand'
-
-const logger = createLogger('AuthStore')
 import {
   MutationUserLoginArgs,
   TUserInfoResponse,
   UserInfoDocument,
 } from './../lib/graphql/generated/graphql'
+
+const logger = createLogger('AuthStore')
 
 type TAuthState = {
   userInfo: TUserInfoResponse | null

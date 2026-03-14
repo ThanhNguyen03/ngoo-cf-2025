@@ -114,7 +114,12 @@ export const handleError = (
       errorMessage = USER_REJECT_TRANSACTION_ERROR_MESSAGE
     }
 
-    errorMessage = `${customErrorMessage}:\n${message}`
+    // In production, only show the custom message to avoid leaking internals.
+    // In dev, append the raw error for debugging.
+    errorMessage =
+      process.env.NODE_ENV === 'production'
+        ? customErrorMessage
+        : `${customErrorMessage}:\n${message}`
   }
 
   // Structured log: visible in dev, silent in prod (logger handles level gating)

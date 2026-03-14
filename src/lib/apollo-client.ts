@@ -32,7 +32,11 @@ const errorLink = new ErrorLink(({ error }) => {
     isUnauthenticated = error.errors.some(
       (err) => err.extensions?.code === 'UNAUTHENTICATED',
     )
-  } else if ('statusCode' in error && (error as { statusCode: number }).statusCode === 401) {
+  } else if (
+    error instanceof Error &&
+    'statusCode' in error &&
+    (error as Error & { statusCode: number }).statusCode === 401
+  ) {
     isUnauthenticated = true
   }
 

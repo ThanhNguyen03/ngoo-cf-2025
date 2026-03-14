@@ -17,10 +17,18 @@ export const AuthenButton = () => {
   const [openLoginModal, setOpenLoginModal] = useState<boolean>(false)
   const [openAccountPopover, setOpenAccountPopover] = useState<boolean>(false)
 
+  // Guard against StrictMode double-fire or rapid searchParams changes
+  const loginHandledRef = useRef(false)
+
   // Auto-open the login modal when the middleware redirects here with ?login=true.
   // This gives users clear feedback instead of silently landing on the home page.
   useEffect(() => {
-    if (searchParams.get('login') === 'true' && status === 'unauthenticated') {
+    if (
+      searchParams.get('login') === 'true' &&
+      status === 'unauthenticated' &&
+      !loginHandledRef.current
+    ) {
+      loginHandledRef.current = true
       setOpenLoginModal(true)
       // Clean up the query param from the URL without a page reload
       const params = new URLSearchParams(searchParams.toString())
