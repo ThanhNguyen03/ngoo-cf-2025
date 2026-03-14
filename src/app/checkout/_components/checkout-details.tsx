@@ -118,6 +118,7 @@ export const CheckoutDetails = () => {
 
   return (
     <div className='relative flex size-full max-w-[65%] flex-col items-start gap-4 overflow-hidden md:gap-6'>
+      {/* FIXME: [responsive] w-full md:max-w-[65%] - 65% is too narrow on small viewports */}
       <h1 className='text-28 md:text-32 text-shadow-stroke-2 font-lobster w-fit pl-1.25 text-center font-black text-white'>
         Shopping Cart.
       </h1>

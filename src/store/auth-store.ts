@@ -1,7 +1,10 @@
 import { client } from '@/lib/apollo-client'
+import { createLogger } from '@/lib/logger'
 import { handleError } from '@/utils'
 import { signIn, signOut } from 'next-auth/react'
 import { create } from 'zustand'
+
+const logger = createLogger('AuthStore')
 import {
   MutationUserLoginArgs,
   TUserInfoResponse,
@@ -44,6 +47,7 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
 
       if (data) {
         set({ userInfo: data.userInfo, error: null })
+        logger.debug('User info fetched')
       }
     } catch (err) {
       if (err instanceof Error && err.message === 'Missing access token') {
@@ -78,6 +82,7 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
 
   logout: async () => {
     set({ userInfo: null })
+    logger.info('User logged out')
     await signOut()
     localStorage.removeItem('cart-storage')
   },

@@ -2,10 +2,12 @@
 
 import { NGOO_PAYMENT_ABI } from '@/lib/contracts/ngoo-payment-abi'
 import { TCryptoPaymentProof } from '@/lib/graphql/generated/graphql'
+import { createLogger } from '@/lib/logger'
 import { handleError } from '@/utils'
 import { useCallback } from 'react'
-import { toast } from 'react-toastify'
 import { useChainId, useSwitchChain, useWaitForTransactionReceipt, useWriteContract } from 'wagmi'
+
+const logger = createLogger('CryptoPayment')
 
 type TUseCryptoPaymentReturn = {
   sendPayment: (proof: TCryptoPaymentProof) => Promise<void>
@@ -48,7 +50,9 @@ export const useCryptoPayment = (): TUseCryptoPaymentReturn => {
           await switchChainAsync({ chainId: proof.chainId })
         }
 
-        await writeContractAsync({
+        logger.info({ chainId: proof.chainId, amount: proof.amount }, 'Sending crypto payment')
+
+        const hash = await writeContractAsync({
           address: proof.contractAddress as `0x${string}`,
           abi: NGOO_PAYMENT_ABI,
           functionName: 'payOrder',
@@ -62,10 +66,10 @@ export const useCryptoPayment = (): TUseCryptoPaymentReturn => {
           // payable — msg.value must equal amount exactly
           value: BigInt(proof.amount),
         })
+        logger.info({ txHash: hash }, 'Transaction submitted')
       } catch (err) {
+        // handleError already shows a toast — no second toast.error() needed
         handleError(err, 'useCryptoPayment: sendPayment failed')
-        const message = err instanceof Error ? err.message : 'Transaction failed'
-        toast.error(message)
       }
     },
     [currentChainId, switchChainAsync, writeContractAsync],

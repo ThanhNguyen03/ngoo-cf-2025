@@ -2,7 +2,10 @@ import { checkoutLoading } from '@/assets/images'
 import { SwitchButton, toast } from '@/components/ui'
 import type { useCooldown } from '@/hooks'
 import { EPaymentStatus } from '@/lib/graphql/generated/graphql'
+import { createLogger } from '@/lib/logger'
 import { connectPaymentSocket } from '@/lib/socket-client'
+
+const logger = createLogger('CheckoutProcessing')
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import { FC, useEffect, useRef, useState } from 'react'
@@ -50,7 +53,8 @@ export const CheckoutProcess: FC<TCheckoutProcessProps> = ({
       )
       setIsPaypalClosed(false)
       setRetry(false)
-    } catch {
+    } catch (err) {
+      logger.error({ err }, 'Failed to open PayPal payment window')
       toast.error('Failed to open PayPal payment window')
     }
   }

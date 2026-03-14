@@ -1,6 +1,9 @@
+import { createLogger } from '@/lib/logger'
 import { getSession } from 'next-auth/react'
 import { io, Socket } from 'socket.io-client'
 import { TPaymentSocketResponse } from './graphql/generated/graphql'
+
+const logger = createLogger('SocketClient')
 
 let socket: Socket | null = null
 let listeningOrderId: string | null = null
@@ -45,7 +48,7 @@ export const connectPaymentSocket = async (
     socketClient = await getSocketClient()
   } catch (err) {
     // Failed to get socket client — likely missing auth token
-    console.error('[socket] Failed to connect payment socket:', err)
+    logger.error({ err }, 'Failed to connect payment socket')
     return false
   }
 
@@ -66,5 +69,6 @@ export const connectPaymentSocket = async (
   }
 
   socketClient.on('paymentStatus', handler)
+  logger.info({ orderId }, 'Payment socket connected')
   return true
 }

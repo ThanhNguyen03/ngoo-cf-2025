@@ -5,10 +5,13 @@ import {
   CryptoWalletWithNonceDocument,
   UserConnectCryptoWalletDocument,
 } from '@/lib/graphql/generated/graphql'
+import { createLogger } from '@/lib/logger'
 import useAuthStore from '@/store/auth-store'
 import { handleError } from '@/utils'
 import { useCallback, useState } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
+
+const logger = createLogger('WalletAuth')
 
 type TWalletAuthState = {
   isConnecting: boolean
@@ -56,6 +59,8 @@ export const useWalletAuth = (): TWalletAuthReturn => {
       const nonce = nonceData?.cryptoWalletWithNonce
       if (!nonce) throw new Error('Failed to get nonce from server')
 
+      logger.info('Nonce fetched, requesting wallet signature')
+
       // Step 2: prompt the wallet to sign the nonce message
       const signature = await signMessageAsync({ message: nonce })
 
@@ -68,6 +73,8 @@ export const useWalletAuth = (): TWalletAuthReturn => {
       if (!verifyResult.data?.userConnectCryptoWallet.connectCompleted) {
         throw new Error('Wallet verification failed')
       }
+
+      logger.info({ address }, 'Wallet verified successfully')
 
       // Refresh auth store with updated walletAddress from BE
       await getUserInfo(true)

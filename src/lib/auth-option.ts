@@ -1,4 +1,5 @@
 import { EXPIRES_IN, REFRESH_GAP } from '@/constants'
+import { createLogger } from '@/lib/logger'
 import { decodeJwtPayload } from '@/utils'
 import { ErrorLike } from '@apollo/client'
 import { NextAuthOptions, User } from 'next-auth'
@@ -13,6 +14,8 @@ import {
   UserLogoutDocument,
   UserRegisterDocument,
 } from './graphql/generated/graphql'
+const logger = createLogger('Auth')
+
 if (!process.env.NEXTAUTH_SECRET) throw new Error('NEXTAUTH_SECRET env var is required')
 if (!process.env.GOOGLE_CLIENT_ID) throw new Error('GOOGLE_CLIENT_ID env var is required')
 if (!process.env.GOOGLE_CLIENT_SECRET) throw new Error('GOOGLE_CLIENT_SECRET env var is required')
@@ -102,7 +105,7 @@ const authOptions: NextAuthOptions = {
           return token
         } catch (err) {
           // Log the error for observability — the user will be unauthenticated
-          console.error('[auth] Google login failed:', err)
+          logger.error({ err }, 'Google login failed')
           return token
         }
       }
@@ -151,7 +154,7 @@ const authOptions: NextAuthOptions = {
           return token
         } catch (err) {
           // Log refresh failures — user will be forced to re-authenticate
-          console.error('[auth] Token refresh failed:', err)
+          logger.error({ err }, 'Token refresh failed')
           token.error = 'RefreshAccessTokenError'
           return token
         }
@@ -192,6 +195,7 @@ const authOptions: NextAuthOptions = {
           }
         } catch {
           // Logout error is non-critical — session is already invalidated on the client
+          logger.warn('Logout API call failed (non-critical)')
         }
       }
     },

@@ -6,7 +6,10 @@ import {
   EPaymentStatus,
   TUserPaymentResponse,
 } from '@/lib/graphql/generated/graphql'
+import { createLogger } from '@/lib/logger'
 import useCartStore from '@/store/cart-store'
+
+const logger = createLogger('PaymentDetail')
 import { TCartItem } from '@/types'
 import { cn } from '@/utils'
 import { CheckCircleIcon, XCircleIcon } from '@phosphor-icons/react/dist/ssr'
@@ -47,6 +50,7 @@ export const PaymentDetail: FC<TPaymentDetailProps> = ({ data }) => {
         return
       } catch {
         // Backup was malformed — navigate to checkout with whatever is in the cart
+        logger.warn('Cart backup malformed, using fallback')
       }
     }
 

@@ -1,8 +1,11 @@
 import { toast } from '@/components/ui'
+import { createLogger } from '@/lib/logger'
 import { ERole, Maybe } from '@/lib/graphql/generated/graphql'
 import { twMerge } from 'tailwind-merge'
 import { formatUnits } from 'viem'
 import { ClassValue, clsx } from './clsx'
+
+const logger = createLogger('ErrorHandler')
 
 export function cn(...args: ClassValue[]) {
   return twMerge(clsx(args))
@@ -87,15 +90,14 @@ export const formatNumber = (
 const USER_REJECT_TRANSACTION_ERROR_MESSAGE = 'User rejected the request.'
 /**
  * Log the error and show error toast with appropriate message.
+ * Logging is handled by the structured logger (silent in prod, verbose in dev).
  *
  * @param error - The error to handle
  * @param customErrorMessage - Custom error message
- * @param isDevMode - Optional flag to control error message to show toast (default: true)
  */
 export const handleError = (
   error: unknown,
   customErrorMessage: string,
-  isDevMode: boolean = true,
 ) => {
   let errorMessage = customErrorMessage
 
@@ -112,18 +114,11 @@ export const handleError = (
       errorMessage = USER_REJECT_TRANSACTION_ERROR_MESSAGE
     }
 
-    // Non-production: show full error message for debugging
-    errorMessage = isDevMode
-      ? `${customErrorMessage}:\n${message}`
-      : customErrorMessage
+    errorMessage = `${customErrorMessage}:\n${message}`
   }
 
-  // Log details in dev, only simplified message in prod
-  if (isDevMode) {
-    console.error(customErrorMessage, error)
-  } else {
-    console.error(errorMessage)
-  }
+  // Structured log: visible in dev, silent in prod (logger handles level gating)
+  logger.error({ err: error }, customErrorMessage)
 
   toast.error(errorMessage)
 }
@@ -162,9 +157,9 @@ type TAsyncHandlerOptions = {
  *
  * const safeFetchUser = apolloWrapper(fetchUser, {
  *   errorMessage: 'Failed to fetch user',
- *   onSuccess: (data) => console.log('✅ User fetched:', data),
- *   onError: (err) => console.error('❌ Error:', err),
- *   onFinally: () => console.log('🎯 Done'),
+ *   onSuccess: (data) => { logger.info('User fetched') },
+ *   onError: (err) => { logger.error({ err }, 'Fetch failed') },
+ *   onFinally: () => { logger.debug('Done') },
  * });
  *
  * await safeFetchUser('123');
@@ -181,7 +176,7 @@ export function apolloWrapper<TArgs extends unknown[], TResult>(
       return result
     } catch (err) {
       options?.onError?.(err)
-      handleError(err, options?.errorMessage || '')
+      handleError(err, options?.errorMessage || 'An unexpected error occurred')
     } finally {
       options?.onFinally?.()
     }

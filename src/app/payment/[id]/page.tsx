@@ -11,8 +11,11 @@ import {
   PaymentUserHistoryDocument,
   TUserPaymentResponse,
 } from '@/lib/graphql/generated/graphql'
+import { createLogger } from '@/lib/logger'
 import { connectPaymentSocket } from '@/lib/socket-client'
 import { apolloWrapper, cn } from '@/utils'
+
+const logger = createLogger('PaymentDetail')
 import {
   ArrowSquareOutIcon,
   CaretRightIcon,
@@ -133,7 +136,7 @@ const PaymentDetailPage = () => {
       )
 
       if (!connected) {
-        console.error('Payment page: failed to connect to socket')
+        logger.error('Failed to connect to payment socket')
       }
     }
 
@@ -143,6 +146,7 @@ const PaymentDetailPage = () => {
 
   return (
     <main className='bg-paper relative size-full overflow-x-hidden'>
+      {/* FIXME: [responsive] w-full max-w-[1200px] — w-[1200px] overflows on mobile */}
       <SkeletonLoader
         loading={loading}
         className='bg-dark-600/10 mx-auto size-full min-h-[calc(100dvh-57px)] w-[1200px]'
@@ -162,6 +166,7 @@ const PaymentDetailPage = () => {
           <>
             {paymentInfo.paymentMethod === EPaymentMethod.Cod ? (
               <div className='border-dark-600/30 shadow-container relative mx-auto flex size-full max-w-[1200px] items-start justify-center gap-10 border-x bg-white px-2 py-20 md:px-6 md:py-30 lg:px-10'>
+                {/* FIXME: [responsive] COD progress bar w-1/5 + content w-3/5 not responsive - use hidden md:flex for progress, w-full on mobile */}
                 {/* progress steps */}
                 <div className='flex h-full w-1/5 flex-col items-start'>
                   {step.map((item, index) => (

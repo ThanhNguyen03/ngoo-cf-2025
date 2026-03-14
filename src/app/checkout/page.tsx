@@ -54,6 +54,7 @@ const CheckoutPage = () => {
           />
         )}
 
+        {/* FIXME: [responsive] add flex-col md:flex-row to stack checkout columns on mobile */}
         <div className='size-full px-2 py-10 md:gap-4 md:px-6 md:py-20 lg:px-10 lg:py-30'>
           <div className='mx-auto flex size-full max-w-[1200px] gap-4'>
             <CheckoutDetails />

@@ -1,5 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { createLogger } from '@/lib/logger'
 import { useCallback, useRef, useState } from 'react'
+
+const logger = createLogger('Form')
 
 type TFieldValues = Record<string, any>
 
@@ -231,7 +234,7 @@ export const useForm = <T extends TFieldValues = TFieldValues>(
         try {
           await onValid(formState.values as T)
         } catch (error) {
-          console.error('Submit error:', error)
+          logger.error({ err: error }, 'Form submit failed')
         } finally {
           setFormState((prev) => ({ ...prev, isSubmitting: false }))
         }

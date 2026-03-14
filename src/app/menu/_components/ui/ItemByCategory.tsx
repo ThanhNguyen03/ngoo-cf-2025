@@ -175,6 +175,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
         <h4 className='text-28 font-small-caps text-secondary-500 font-bold'>
           {selectedCategory.name}
         </h4>
+        {/* FIXME: [responsive] add lg: breakpoint for two-column — max-w-[560px] jumps straight to xl: without a lg: step */}
         <div className='flex w-full max-w-[560px] flex-col items-start gap-4 xl:max-w-none xl:flex-row xl:flex-wrap'>
           {/* Initial load skeleton — shows full-height placeholders */}
           {loading && !itemData.fetched ? (

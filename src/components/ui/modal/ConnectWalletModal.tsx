@@ -96,6 +96,7 @@ export const ConnectWalletModal: FC<TModalProps> = ({ isOpen, onClose }) => {
   }, [error, disconnect, reset])
 
   return (
+    // FIXME: [responsive] add max-w-[calc(100vw-32px)] to className — w-[460px] overflows on viewports narrower than 460px
     <Modal
       title='Connect Wallet'
       isOpen={isOpen}

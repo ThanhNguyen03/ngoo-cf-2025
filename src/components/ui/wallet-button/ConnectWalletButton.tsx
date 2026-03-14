@@ -38,6 +38,7 @@ export const ConnectWalletButton = ({
   if (isVerified) {
     return (
       <div className={cn('relative flex h-full w-fit', className)}>
+        {/* FIXME: [responsive] add mobile wallet button (icon-only or in mobile nav) — hidden md:flex makes wallet invisible on mobile */}
         <button
           className='rounded-2 text-14! from-secondary-300 hidden cursor-pointer items-center justify-center gap-1 bg-linear-to-br to-red-500 px-2 py-1 leading-[160%] font-semibold text-white shadow md:flex'
           onClick={() => disconnect()}
@@ -53,6 +54,7 @@ export const ConnectWalletButton = ({
   if (isConnectedButUnverified) {
     return (
       <div className={cn('relative flex h-full w-fit', className)}>
+        {/* FIXME: [responsive] add mobile wallet button (icon-only or in mobile nav) — hidden md:flex makes wallet invisible on mobile */}
         <button
           className='rounded-2 text-14! hidden cursor-pointer items-center justify-center gap-1 border border-yellow-500 bg-yellow-50 px-2 py-1 leading-[160%] font-semibold text-yellow-700 shadow md:flex'
           onClick={connectWallet}
@@ -67,6 +69,7 @@ export const ConnectWalletButton = ({
 
   return (
     <div className={cn('relative flex h-full w-fit', className)}>
+      {/* FIXME: [responsive] add mobile wallet button (icon-only or in mobile nav) — hidden md:flex makes wallet invisible on mobile */}
       <button
         className='rounded-2 text-14! from-secondary-300 hidden cursor-pointer items-center justify-center gap-1 bg-linear-to-br to-red-500 px-2 py-1 leading-[160%] font-semibold text-white shadow md:flex'
         onClick={() => setOpenConnectWalletModal(true)}

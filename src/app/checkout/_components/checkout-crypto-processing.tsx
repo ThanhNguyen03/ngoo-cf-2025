@@ -99,6 +99,7 @@ export const CheckoutCryptoProcessing: FC<TCheckoutCryptoProcessingProps> = ({
   }
 
   return (
+    // FIXME: [responsive] ensure parent px-4 doesn't cause overflow on xs — max-w-[460px] can still clip on very small viewports
     <div className='center fixed top-0 left-0 z-[999] h-screen w-screen flex-col gap-6 bg-black/60 px-4 backdrop-blur-sm'>
       <div className='font-shantell from-primary-300 to-beige-50 rounded-3 flex w-full max-w-[460px] flex-col gap-6 bg-gradient-to-b bg-white p-6 shadow-xl'>
         {/* Header */}
