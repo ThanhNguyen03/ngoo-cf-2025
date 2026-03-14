@@ -6,6 +6,8 @@ NgOo Coffee is a full-stack e-commerce frontend for a coffee shop, built with Ne
 
 - **Authentication** — Email/password + Google OAuth via NextAuth 4 (JWT strategy, 2-min refresh)
 - **Menu & Cart** — Cursor-based infinite scroll, Zustand cart with localStorage persistence
+- **Search** — Debounced full-text search with hot/trending terms (Redis sorted set) and localStorage recent searches
+- **Recommendations** — Personalized "For you" tab per user (weighted VIEW/ADD_TO_CART/PURCHASE scoring, Redis 5-min cache); anonymous users see hot-search + best-seller fallback
 - **Payments** — PayPal (popup flow + Socket.IO status), Cash on Delivery (real-time order progress), Crypto (on-chain via BNB Testnet + NgooPayment contract)
 - **Web3** — MetaMask/WalletConnect via Wagmi, 3-step nonce → sign → verify wallet ownership flow
 - **Real-time** — Socket.IO for payment status updates across all payment methods

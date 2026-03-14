@@ -6,12 +6,14 @@ import { EItemModalDetailStatus, ItemDetailModal } from '@/components/ui/modal'
 import { DEFAULT_PAGINATION } from '@/constants'
 import { client } from '@/lib/apollo-client'
 import {
+  EBehaviorEvent,
   EItemStatus,
   ListItemCursorDocument,
-  ListItemByStatusDocument,
+  RecommendationsDocument,
   TCategory,
   TItemResponse,
 } from '@/lib/graphql/generated/graphql'
+import { useTrackBehavior } from '@/hooks'
 import useCartStore from '@/store/cart-store'
 import { apolloWrapper, cn } from '@/utils'
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr'
@@ -47,6 +49,7 @@ type TItemByCategoryProps = {
 const ItemByCategory: FC<TItemByCategoryProps> = memo(
   ({ selectedCategory, inViewport, itemData, handleUpdateData }) => {
     const bottomRef = useRef<HTMLDivElement | null>(null)
+    const { track } = useTrackBehavior()
 
     const [loading, setLoading] = useState<boolean>(false)
     const [modalStatus, setModalStatus] = useState<EItemModalDetailStatus>(
@@ -67,21 +70,20 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
           setLoading(true)
           const { list } = itemData
 
-          // "For you" category uses status-based query (no cursor support needed)
+          // "For you" category uses the recommendation engine (personalized for auth users,
+          // hot-search/best-seller fallback for anonymous users). No cursor pagination.
           if (selectedCategory.name === INIT_CATEGORY.name) {
             const { data, error } = await client.query({
-              query: ListItemByStatusDocument,
-              variables: {
-                status: [EItemStatus.Seller],
-              },
+              query: RecommendationsDocument,
+              variables: { limit: 8 },
+              fetchPolicy: 'no-cache', // Always fetch fresh — cache is managed server-side
             })
 
             if (error) throw error
 
             if (data) {
               handleUpdateData(selectedCategory.categoryId, {
-                list: data.listItemByStatus.records,
-                // Status-based query returns all records — no pagination needed
+                list: data.recommendations.records,
                 cursor: null,
                 hasMore: false,
                 fetched: true,
@@ -163,6 +165,8 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
     const openCreate = (item: TItemResponse) => {
       setSelectedItem(item)
       setModalStatus(EItemModalDetailStatus.CREATE)
+      // Track VIEW event for the recommendation engine (deduped client+server-side)
+      track(item.itemId, EBehaviorEvent.View)
     }
 
     const openUpdate = (item: TItemResponse) => {

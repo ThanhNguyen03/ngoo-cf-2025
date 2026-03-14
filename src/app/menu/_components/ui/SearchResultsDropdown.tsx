@@ -2,10 +2,12 @@
 
 import { EItemModalDetailStatus, ItemDetailModal } from '@/components/ui/modal'
 import {
+  EBehaviorEvent,
   HotSearchTermsQuery,
   SearchItemsQuery,
   TItemResponse,
 } from '@/lib/graphql/generated/graphql'
+import { useTrackBehavior } from '@/hooks'
 import { cn } from '@/utils'
 import {
   ClockIcon,
@@ -38,6 +40,7 @@ export const SearchResultsDropdown: FC<TSearchResultsDropdownProps> = ({
 }) => {
   const [selectedItem, setSelectedItem] = useState<TItemResponse>()
   const [modalOpen, setModalOpen] = useState(false)
+  const { track } = useTrackBehavior()
 
   if (!isOpen) return null
 
@@ -165,6 +168,7 @@ export const SearchResultsDropdown: FC<TSearchResultsDropdownProps> = ({
                     e.preventDefault()
                     setSelectedItem(item as TItemResponse)
                     setModalOpen(true)
+                    track((item as TItemResponse).itemId, EBehaviorEvent.View)
                   }}
                   className='hover:bg-dark-600/5 flex w-full cursor-pointer items-center gap-3 px-4 py-2.5 text-left transition-colors'
                 >

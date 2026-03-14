@@ -2,11 +2,13 @@
 
 import { AmountCounter, Button, Checkbox } from '@/components/ui'
 import {
+  EBehaviorEvent,
   EItemStatus,
   ItemOptionInput,
   TItemOption,
   TItemResponse,
 } from '@/lib/graphql/generated/graphql'
+import { useTrackBehavior } from '@/hooks'
 import useCartStore, { calculateItemPrice } from '@/store/cart-store'
 import { TCartItem, TModalProps } from '@/types'
 import { cn } from '@/utils'
@@ -142,6 +144,7 @@ export const ItemDetailModal: FC<TItemDetailModalProps> = ({
   status,
 }) => {
   const { addToCart, removeFromCart, updateCartItem } = useCartStore()
+  const { track } = useTrackBehavior()
 
   const [itemAmount, setItemAmount] = useState<number>(
     status === EItemModalDetailStatus.UPDATE ? cartItem?.amount || 1 : 1,
@@ -212,6 +215,7 @@ export const ItemDetailModal: FC<TItemDetailModalProps> = ({
 
     // CREATE
     addToCart(data, selectedOptions, itemAmount)
+    track(data.itemId, EBehaviorEvent.AddToCart)
     onClose()
   }
 

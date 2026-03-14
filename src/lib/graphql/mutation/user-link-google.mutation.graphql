@@ -1,0 +1,11 @@
+mutation UserLinkGoogle($token: String!) {
+  userLinkGoogle(token: $token) {
+    uuid
+    email
+    name
+    walletAddress
+    authMethods
+    address
+    phoneNumber
+  }
+}
