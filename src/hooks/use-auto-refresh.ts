@@ -1,10 +1,12 @@
 import { REFRESH_GAP } from '@/constants'
 import useAuthStore from '@/store/auth-store'
 import { handleError } from '@/utils'
+import { useApolloClient } from '@apollo/client/react'
 import { useSession } from 'next-auth/react'
 import { useCallback, useEffect, useRef } from 'react'
 
 export const useAutoRefresh = () => {
+  const apolloClient = useApolloClient()
   const { data: session, update, status } = useSession()
   const logout = useAuthStore((state) => state.logout)
   const getUserInfo = useAuthStore((state) => state.getUserInfo)
@@ -95,7 +97,7 @@ export const useAutoRefresh = () => {
     }
 
     if (status === 'authenticated') {
-      getUserInfo()
+      getUserInfo(false, apolloClient)
     }
     // getUserInfo is a stable Zustand action — safe to omit from deps
     // eslint-disable-next-line react-hooks/exhaustive-deps

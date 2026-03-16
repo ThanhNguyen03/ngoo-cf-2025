@@ -1,13 +1,12 @@
 'use client'
 
 import { SkeletonLoader } from '@/components/ui'
-import { client } from '@/lib/apollo-client'
 import {
   ListCategoryDocument,
   TCategory,
 } from '@/lib/graphql/generated/graphql'
-import { apolloWrapper } from '@/utils'
-import { useEffect, useRef, useState } from 'react'
+import { useQuery } from '@apollo/client/react'
+import { useRef, useState } from 'react'
 import { MenuDetail } from './ui/MenuDetail'
 import { MenuSearch } from './ui/MenuSearch'
 
@@ -18,35 +17,14 @@ export const INIT_CATEGORY: TCategory = {
 
 export const Menu = () => {
   const sectionRef = useRef(new Map<string, HTMLDivElement | null>())
-  const [listCategory, setListCategory] = useState<TCategory[]>()
   const [selectedCategory, setSelectedCategory] =
     useState<TCategory>(INIT_CATEGORY)
-  // Dedicated loading flag prevents the skeleton from flashing if listCategory
-  // is later updated (e.g., refetch) while categories are already rendered.
-  const [loadingCategories, setLoadingCategories] = useState<boolean>(true)
 
-  useEffect(() => {
-    const getListCategory = apolloWrapper(
-      async () => {
-        const { data, error } = await client.query({
-          query: ListCategoryDocument,
-        })
-        if (error) {
-          throw error
-        }
-
-        if (data) {
-          setListCategory([INIT_CATEGORY, ...data.listCategory])
-        }
-      },
-      {
-        errorMessage: 'Failed to fetch list category',
-        onFinally: () => setLoadingCategories(false),
-      },
-    )
-
-    getListCategory()
-  }, [])
+  const { data: categoryData, loading: loadingCategories } =
+    useQuery(ListCategoryDocument)
+  const listCategory = categoryData
+    ? [INIT_CATEGORY, ...categoryData.listCategory]
+    : undefined
 
   return (
     <section className='from-paper/10 to-paper/2 relative bg-linear-to-b py-10 md:py-20 lg:py-30'>

@@ -4,6 +4,7 @@ import { Footer } from '@/components/layout/footer'
 import { SkeletonLoader } from '@/components/ui'
 import useAuthStore from '@/store/auth-store'
 import { cn } from '@/utils'
+import { useApolloClient } from '@apollo/client/react'
 import {
   ClockUserIcon,
   SignOutIcon,
@@ -36,6 +37,7 @@ const BILLING_TABS = [
 ]
 
 const ProfilePage = () => {
+  const apolloClient = useApolloClient()
   const router = useRouter()
   const userInfo = useAuthStore((state) => state.userInfo!)
   const getUserInfo = useAuthStore((state) => state.getUserInfo)
@@ -108,7 +110,7 @@ const ProfilePage = () => {
             <SkeletonLoader loading={loading} className='min-h-[350px]'>
               <InfoForm
                 userInfo={userInfo}
-                onUpdateSuccess={() => getUserInfo(true)}
+                onUpdateSuccess={() => getUserInfo(true, apolloClient)}
               />
             </SkeletonLoader>
           ) : (

@@ -1,12 +1,12 @@
 import { SwitchButton, toast } from '@/components/ui'
 import { TextInput } from '@/components/ui/TextInput'
 import { useForm } from '@/hooks/use-form'
-import { client } from '@/lib/apollo-client'
 import {
   TUserInfoResponse,
   UserUpdateInfoDocument,
 } from '@/lib/graphql/generated/graphql'
 import { apolloWrapper } from '@/utils'
+import { useApolloClient } from '@apollo/client/react'
 import { type FC } from 'react'
 
 type TInfoFormProps = {
@@ -14,6 +14,7 @@ type TInfoFormProps = {
   onUpdateSuccess?: () => Promise<void>
 }
 export const InfoForm: FC<TInfoFormProps> = ({ userInfo, onUpdateSuccess }) => {
+  const client = useApolloClient()
   const {
     register,
     formState: { errors, values },

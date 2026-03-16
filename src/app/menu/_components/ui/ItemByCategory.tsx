@@ -4,7 +4,6 @@ import { emptyBoxIcon } from '@/assets/icons'
 import { Button, SkeletonLoader } from '@/components/ui'
 import { EItemModalDetailStatus, ItemDetailModal } from '@/components/ui/modal'
 import { DEFAULT_PAGINATION } from '@/constants'
-import { client } from '@/lib/apollo-client'
 import {
   EBehaviorEvent,
   EItemStatus,
@@ -16,6 +15,7 @@ import {
 import { useTrackBehavior } from '@/hooks'
 import useCartStore from '@/store/cart-store'
 import { apolloWrapper, cn } from '@/utils'
+import { useApolloClient } from '@apollo/client/react'
 import { PlusIcon } from '@phosphor-icons/react/dist/ssr'
 import Image from 'next/image'
 import { FC, memo, useCallback, useEffect, useRef, useState } from 'react'
@@ -48,6 +48,7 @@ type TItemByCategoryProps = {
 // only re-renders when its own itemData or the active category changes.
 const ItemByCategory: FC<TItemByCategoryProps> = memo(
   ({ selectedCategory, inViewport, itemData, handleUpdateData }) => {
+    const client = useApolloClient()
     const bottomRef = useRef<HTMLDivElement | null>(null)
     const { track } = useTrackBehavior()
 

@@ -1,6 +1,6 @@
-import { client } from '@/lib/apollo-client'
 import { createLogger } from '@/lib/logger'
 import { handleError } from '@/utils'
+import type { ApolloClient } from '@apollo/client'
 import { signIn, signOut } from 'next-auth/react'
 import { create } from 'zustand'
 import {
@@ -18,7 +18,7 @@ type TAuthState = {
 }
 
 type TAuthAction = {
-  getUserInfo: (refetch?: boolean) => Promise<void>
+  getUserInfo: (refetch?: boolean, apolloClient?: ApolloClient) => Promise<void>
   login: (data: MutationUserLoginArgs, isRegister?: boolean) => Promise<void>
   logout: () => Promise<void>
 }
@@ -28,14 +28,15 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
   loading: false,
   error: null,
 
-  getUserInfo: async (refetch) => {
+  getUserInfo: async (refetch, apolloClient) => {
+    if (!apolloClient) return
     if (get().userInfo && !refetch) {
       return
     }
 
     try {
       set({ loading: true })
-      const { data, error } = await client.query({
+      const { data, error } = await apolloClient.query({
         query: UserInfoDocument,
         fetchPolicy: 'network-only',
       })

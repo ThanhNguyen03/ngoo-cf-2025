@@ -5,7 +5,7 @@ import { ErrorLike } from '@apollo/client'
 import { NextAuthOptions, User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
-import { client } from './apollo-client'
+import { serverClient } from './apollo-server-client'
 import {
   ERole,
   RefreshTokenDocument,
@@ -47,14 +47,14 @@ const authOptions: NextAuthOptions = {
           let result: { data?: TUserAuth; error?: ErrorLike }
           // register flow
           if (credentials.isRegister === 'true') {
-            const { data, error } = await client.mutate({
+            const { data, error } = await serverClient.mutate({
               mutation: UserRegisterDocument,
               variables,
             })
             result = { data: data?.userRegister, error }
           } else {
             // login flow
-            const { data, error } = await client.mutate({
+            const { data, error } = await serverClient.mutate({
               mutation: UserLoginDocument,
               variables,
             })
@@ -86,7 +86,7 @@ const authOptions: NextAuthOptions = {
       // handle login by google
       if (account?.provider === 'google' && account.id_token) {
         try {
-          const { data, error } = await client.mutate({
+          const { data, error } = await serverClient.mutate({
             mutation: UserLoginDocument,
             variables: { token: account.id_token },
           })
@@ -133,7 +133,7 @@ const authOptions: NextAuthOptions = {
           if (!token.refreshToken || !token.accessToken) {
             throw new Error('Failed to refresh token')
           }
-          const { data, error } = await client.mutate({
+          const { data, error } = await serverClient.mutate({
             mutation: RefreshTokenDocument,
             variables: {
               refreshToken: token.refreshToken,
@@ -181,7 +181,7 @@ const authOptions: NextAuthOptions = {
     async signOut({ token }) {
       if (token.refreshToken && token.accessToken) {
         try {
-          const { error } = await client.mutate({
+          const { error } = await serverClient.mutate({
             mutation: UserLogoutDocument,
             variables: {
               logoutEverywhere: false,
