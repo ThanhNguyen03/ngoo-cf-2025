@@ -84,14 +84,6 @@ export const InfoForm: FC<TInfoFormProps> = ({ userInfo, onUpdateSuccess }) => {
             inputClassName='opacity-70'
           />
         )}
-        {userInfo.walletAddress && (
-          <TextInput
-            disabled
-            label='EVM Wallet'
-            value={userInfo.walletAddress}
-            inputClassName='opacity-70'
-          />
-        )}
         <div className='center w-full gap-4'>
           <TextInput
             label='Name'

@@ -10,6 +10,7 @@ import {
   ERole,
   RefreshTokenDocument,
   TUserAuth,
+  UserLinkGoogleDocument,
   UserLoginDocument,
   UserLogoutDocument,
   UserRegisterDocument,
@@ -85,6 +86,28 @@ const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       // handle login by google
       if (account?.provider === 'google' && account.id_token) {
+        // If user already has a valid session → this is a Link Google flow
+        if (
+          token.accessToken &&
+          token.accessTokenExpires &&
+          Date.now() < token.accessTokenExpires
+        ) {
+          try {
+            await serverClient.mutate({
+              mutation: UserLinkGoogleDocument,
+              variables: { token: account.id_token },
+              context: {
+                headers: { Authorization: `Bearer ${token.accessToken}` },
+              },
+            })
+            // Keep existing session intact — don't replace tokens
+            return token
+          } catch (err) {
+            logger.error({ err }, 'Google link failed — falling through to login')
+            // Fall through to normal login flow below
+          }
+        }
+
         try {
           const { data, error } = await serverClient.mutate({
             mutation: UserLoginDocument,

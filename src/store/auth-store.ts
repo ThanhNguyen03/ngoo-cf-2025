@@ -7,6 +7,7 @@ import {
   MutationUserLoginArgs,
   TUserInfoResponse,
   UserInfoDocument,
+  UserLogoutDocument,
 } from './../lib/graphql/generated/graphql'
 
 const logger = createLogger('AuthStore')
@@ -21,6 +22,7 @@ type TAuthAction = {
   getUserInfo: (refetch?: boolean, apolloClient?: ApolloClient) => Promise<void>
   login: (data: MutationUserLoginArgs, isRegister?: boolean) => Promise<void>
   logout: () => Promise<void>
+  logoutAll: (apolloClient: ApolloClient) => Promise<void>
 }
 
 const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
@@ -86,6 +88,18 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
     logger.info('User logged out')
     await signOut()
     localStorage.removeItem('cart-storage')
+  },
+
+  logoutAll: async (apolloClient) => {
+    try {
+      await apolloClient.mutate({
+        mutation: UserLogoutDocument,
+        variables: { logoutEverywhere: true },
+      })
+    } catch (err) {
+      logger.warn({ err }, 'logoutAll mutation failed — proceeding with local logout')
+    }
+    await get().logout()
   },
 }))
 

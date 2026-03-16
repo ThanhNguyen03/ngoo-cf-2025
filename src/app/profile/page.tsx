@@ -2,6 +2,7 @@
 
 import { Footer } from '@/components/layout/footer'
 import { SkeletonLoader } from '@/components/ui'
+import { ConfirmModal } from '@/components/ui/modal'
 import useAuthStore from '@/store/auth-store'
 import { cn } from '@/utils'
 import { useApolloClient } from '@apollo/client/react'
@@ -12,8 +13,10 @@ import {
 } from '@phosphor-icons/react/dist/ssr'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import { AuthMethodsSection } from './_components/auth-methods-section'
 import { HistoryTable } from './_components/history-table'
 import { InfoForm } from './_components/info-form'
+import { WalletSection } from './_components/wallet-section'
 
 const BILLING_TABS = [
   {
@@ -41,10 +44,13 @@ const ProfilePage = () => {
   const router = useRouter()
   const userInfo = useAuthStore((state) => state.userInfo!)
   const getUserInfo = useAuthStore((state) => state.getUserInfo)
+  const logout = useAuthStore((state) => state.logout)
+  const logoutAll = useAuthStore((state) => state.logoutAll)
   const loading = useAuthStore((state) => state.loading)
 
   const tabId = useSearchParams().get('tab') || BILLING_TABS[0].key
   const [activeKey, setActiveKey] = useState<string>(tabId)
+  const [showLogoutAllModal, setShowLogoutAllModal] = useState(false)
 
   useEffect(() => {
     if (tabId && tabId !== activeKey) {
@@ -59,6 +65,8 @@ const ProfilePage = () => {
     setActiveKey(key)
     router.replace(`/profile/?tab=${key}`)
   }
+
+  const handleRefreshUserInfo = () => getUserInfo(true, apolloClient)
 
   return (
     <>
@@ -92,9 +100,18 @@ const ProfilePage = () => {
             </div>
 
             <div className='mt-auto flex h-fit flex-col gap-3'>
-              <button className='text-secondary-500 center text-16 w-fit cursor-pointer gap-3 px-4 font-bold'>
+              <button
+                className='text-secondary-500 center text-16 w-fit cursor-pointer gap-3 px-4 font-bold'
+                onClick={() => logout()}
+              >
                 <SignOutIcon size={16} weight='bold' />
                 Sign out
+              </button>
+              <button
+                className='text-dark-600/50 text-13 w-fit cursor-pointer px-4 font-medium underline-offset-2 hover:underline'
+                onClick={() => setShowLogoutAllModal(true)}
+              >
+                Sign out from all devices
               </button>
               {/* divider */}
               <div className='rounded-2 bg-dark-600/10 h-px w-full' />
@@ -108,10 +125,20 @@ const ProfilePage = () => {
           {/* Children */}
           {activeKey === 'profile' ? (
             <SkeletonLoader loading={loading} className='min-h-[350px]'>
-              <InfoForm
-                userInfo={userInfo}
-                onUpdateSuccess={() => getUserInfo(true, apolloClient)}
-              />
+              <div className='flex w-full flex-col gap-6'>
+                <InfoForm
+                  userInfo={userInfo}
+                  onUpdateSuccess={handleRefreshUserInfo}
+                />
+                <AuthMethodsSection
+                  authMethods={userInfo.authMethods}
+                  onLinkSuccess={handleRefreshUserInfo}
+                />
+                <WalletSection
+                  walletAddress={userInfo.walletAddress}
+                  onConnectSuccess={handleRefreshUserInfo}
+                />
+              </div>
             </SkeletonLoader>
           ) : (
             <HistoryTable />
@@ -119,6 +146,13 @@ const ProfilePage = () => {
         </section>
       </main>
       <Footer />
+
+      <ConfirmModal
+        isOpen={showLogoutAllModal}
+        onClose={() => setShowLogoutAllModal(false)}
+        message='You will be signed out from all devices.'
+        onConfirm={() => logoutAll(apolloClient)}
+      />
     </>
   )
 }
