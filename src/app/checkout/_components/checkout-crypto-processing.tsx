@@ -18,15 +18,15 @@ type TCheckoutCryptoProcessingProps = {
   cryptoProof: TCryptoPaymentProof
 }
 
-// BNB Testnet block explorer URL
-const BSCSCAN_TESTNET_TX = 'https://testnet.bscscan.com/tx'
+// Sepolia Testnet block explorer URL
+const ETHERSCAN_SEPOLIA_TX = 'https://sepolia.etherscan.io/tx'
 
 // Handles the on-chain payment step for crypto orders.
 // Shown as a full-screen overlay after createOrder returns a cryptoPaymentProof.
 //
 // Flow:
 // 1. Auto-triggers sendPayment on mount (user signs the tx in their wallet)
-// 2. Shows tx hash link to BscScan once submitted
+// 2. Shows tx hash link to Etherscan once submitted
 // 3. Listens on Socket.IO for BE confirmation of the on-chain payment
 // 4. On success: clears cart + cart backup, redirects to /payment/{paymentId}
 // 5. On error: shows retry/cancel options; cart backup in sessionStorage allows retry
@@ -143,12 +143,12 @@ export const CheckoutCryptoProcessing: FC<TCheckoutCryptoProcessingProps> = ({
                 Transaction submitted — waiting for confirmation
               </p>
               <a
-                href={`${BSCSCAN_TESTNET_TX}/${txHash}`}
+                href={`${ETHERSCAN_SEPOLIA_TX}/${txHash}`}
                 target='_blank'
                 rel='noopener noreferrer'
                 className='text-14 flex items-center gap-1 font-medium text-orange-500 underline'
               >
-                View on BscScan <ArrowSquareOutIcon size={14} />
+                View on Etherscan <ArrowSquareOutIcon size={14} />
               </a>
             </>
           )}
@@ -168,12 +168,12 @@ export const CheckoutCryptoProcessing: FC<TCheckoutCryptoProcessingProps> = ({
               </p>
               {txHash && (
                 <a
-                  href={`${BSCSCAN_TESTNET_TX}/${txHash}`}
+                  href={`${ETHERSCAN_SEPOLIA_TX}/${txHash}`}
                   target='_blank'
                   rel='noopener noreferrer'
                   className='text-14 flex items-center gap-1 font-medium text-green-500 underline'
                 >
-                  View on BscScan <ArrowSquareOutIcon size={14} />
+                  View on Etherscan <ArrowSquareOutIcon size={14} />
                 </a>
               )}
             </>
@@ -191,7 +191,7 @@ export const CheckoutCryptoProcessing: FC<TCheckoutCryptoProcessingProps> = ({
         <div className='rounded-2 border-dark-600/10 flex items-center justify-between border bg-white/50 px-4 py-3'>
           <span className='text-14 text-dark-600/70 font-medium'>Amount</span>
           <span className='text-16 font-bold text-orange-500'>
-            {cryptoProof.amountDisplay} BNB
+            {cryptoProof.amountDisplay} ETH
           </span>
         </div>
 

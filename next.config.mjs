@@ -45,7 +45,7 @@ const nextConfig = {
               "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
               "img-src 'self' data: blob: https://storage.googleapis.com",
               "font-src 'self' data: https://fonts.gstatic.com",
-              `connect-src 'self' ${backendOrigin} https://*.paypal.com https://data-seed-prebsc-1-s1.binance.org wss: ws:`,
+              `connect-src 'self' ${backendOrigin} https://*.paypal.com https://rpc.sepolia.org https://ethereum-sepolia-rpc.publicnode.com wss: ws:`,
               "frame-src https://*.paypal.com https://sandbox.paypal.com",
               "worker-src 'self' blob:",
             ].join('; '),

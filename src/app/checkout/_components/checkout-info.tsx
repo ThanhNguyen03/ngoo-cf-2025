@@ -374,7 +374,7 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
                               'text-orange-500 hover:text-orange-500',
                           )}
                         >
-                          Crypto (BNB)
+                          Crypto (ETH)
                         </p>
                       </div>
                     )}
