@@ -1,19 +1,21 @@
 import { ApolloLink, HttpLink } from '@apollo/client'
 import { ApolloClient, InMemoryCache } from '@apollo/client-integration-nextjs'
+import { CombinedGraphQLErrors } from '@apollo/client/errors'
 import { SetContextLink } from '@apollo/client/link/context'
 import { ErrorLink } from '@apollo/client/link/error'
-import { CombinedGraphQLErrors } from '@apollo/client/errors'
-import { signOut, getSession } from 'next-auth/react'
+import { getSession, signOut } from 'next-auth/react'
 import { createLogger } from './logger'
 
 const logger = createLogger('ApolloClient')
 
-const httpLink = new HttpLink({
-  uri: `${process.env.NEXT_PUBLIC_NGOO_BACKEND_API}/graphql`,
-  // force-cache removed: conflicts with defaultOptions fetchPolicy 'no-cache'
-})
+// --- Shared building blocks (used by both the standalone client and the provider) ---
 
-const authLink = new SetContextLink(async ({ headers }) => {
+export const createHttpLink = () =>
+  new HttpLink({
+    uri: `${process.env.NEXT_PUBLIC_NGOO_BACKEND_API}/graphql`,
+  })
+
+export const authLink = new SetContextLink(async ({ headers }) => {
   const session = await getSession()
 
   return {
@@ -25,7 +27,7 @@ const authLink = new SetContextLink(async ({ headers }) => {
 })
 
 // Auto sign-out on UNAUTHENTICATED GraphQL errors or network-level auth failures
-const errorLink = new ErrorLink(({ error }) => {
+export const errorLink = new ErrorLink(({ error }) => {
   let isUnauthenticated = false
 
   if (CombinedGraphQLErrors.is(error)) {
@@ -46,11 +48,13 @@ const errorLink = new ErrorLink(({ error }) => {
   }
 })
 
+export const createLinkChain = () =>
+  ApolloLink.from([authLink, errorLink, createHttpLink()])
+
+// --- Standalone client (for direct client.query / client.mutate calls) ---
 export const client = new ApolloClient({
   cache: new InMemoryCache(),
-  // Chain: auth headers → error handling → HTTP request
-  link: ApolloLink.from([authLink, errorLink, httpLink]),
-  // Set default options so all queries surface errors rather than swallowing them
+  link: createLinkChain(),
   defaultOptions: {
     watchQuery: {
       fetchPolicy: 'no-cache',
