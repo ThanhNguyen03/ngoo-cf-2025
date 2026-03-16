@@ -2,7 +2,6 @@ import { Button, Checkbox, Tooltip } from '@/components/ui'
 import { SelectDropdown } from '@/components/ui/SelectDropdown'
 import { TextInput } from '@/components/ui/TextInput'
 import { useForm } from '@/hooks/use-form'
-import { client } from '@/lib/apollo-client'
 import {
   CreateOrderDocument,
   CreateOrderInput,
@@ -13,6 +12,7 @@ import {
 import useAuthStore from '@/store/auth-store'
 import useCartStore, { convertCartToOrderItems } from '@/store/cart-store'
 import { apolloWrapper, cn } from '@/utils'
+import { useApolloClient } from '@apollo/client/react'
 import {
   ArrowRightIcon,
   CheckCircleIcon,
@@ -38,6 +38,7 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
   startProcessTimeout,
   getCheckoutData,
 }) => {
+  const client = useApolloClient()
   const listCartItem = useCartStore((state) => state.listCartItem)
   const getTotalCartPrice = useCartStore((state) => state.getTotalCartPrice)
   const clearCart = useCartStore((state) => state.clearCart)

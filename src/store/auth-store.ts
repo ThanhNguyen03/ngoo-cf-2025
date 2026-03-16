@@ -1,12 +1,13 @@
-import { client } from '@/lib/apollo-client'
 import { createLogger } from '@/lib/logger'
 import { handleError } from '@/utils'
+import type { ApolloClient } from '@apollo/client'
 import { signIn, signOut } from 'next-auth/react'
 import { create } from 'zustand'
 import {
   MutationUserLoginArgs,
   TUserInfoResponse,
   UserInfoDocument,
+  UserLogoutDocument,
 } from './../lib/graphql/generated/graphql'
 
 const logger = createLogger('AuthStore')
@@ -18,9 +19,10 @@ type TAuthState = {
 }
 
 type TAuthAction = {
-  getUserInfo: (refetch?: boolean) => Promise<void>
+  getUserInfo: (refetch?: boolean, apolloClient?: ApolloClient) => Promise<void>
   login: (data: MutationUserLoginArgs, isRegister?: boolean) => Promise<void>
   logout: () => Promise<void>
+  logoutAll: (apolloClient: ApolloClient) => Promise<void>
 }
 
 const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
@@ -28,14 +30,15 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
   loading: false,
   error: null,
 
-  getUserInfo: async (refetch) => {
+  getUserInfo: async (refetch, apolloClient) => {
+    if (!apolloClient) return
     if (get().userInfo && !refetch) {
       return
     }
 
     try {
       set({ loading: true })
-      const { data, error } = await client.query({
+      const { data, error } = await apolloClient.query({
         query: UserInfoDocument,
         fetchPolicy: 'network-only',
       })
@@ -85,6 +88,18 @@ const useAuthStore = create<TAuthState & TAuthAction>()((set, get) => ({
     logger.info('User logged out')
     await signOut()
     localStorage.removeItem('cart-storage')
+  },
+
+  logoutAll: async (apolloClient) => {
+    try {
+      await apolloClient.mutate({
+        mutation: UserLogoutDocument,
+        variables: { logoutEverywhere: true },
+      })
+    } catch (err) {
+      logger.warn({ err }, 'logoutAll mutation failed — proceeding with local logout')
+    }
+    await get().logout()
   },
 }))
 

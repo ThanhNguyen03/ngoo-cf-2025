@@ -10,26 +10,30 @@ import {
   Services,
 } from '@/components/section'
 import { InfiniteCarousel } from '@/components/ui/InfiniteCarousel'
-import { client } from '@/lib/apollo-client'
 import {
   EItemStatus,
   ListItemByStatusDocument,
-  TItemResponse,
 } from '@/lib/graphql/generated/graphql'
 import { TCollectionData } from '@/types'
-import { apolloWrapper } from '@/utils'
+import { useQuery } from '@apollo/client/react'
 import { SealPercentIcon } from '@phosphor-icons/react/dist/ssr'
 import { useInView } from 'framer-motion'
 import Image from 'next/image'
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 export default function Home() {
   const collectionContainerRef = useRef<HTMLDivElement>(null)
   const sellerContainerRef = useRef<HTMLDivElement>(null)
 
-  const [loading, setLoading] = useState<boolean>(true)
   const [selectedProduct, setSelectedProduct] = useState<TCollectionData>()
-  const [bestSellerItem, setBestSellerItem] = useState<TItemResponse[]>([])
+
+  const { data: bestSellerData, loading } = useQuery(
+    ListItemByStatusDocument,
+    {
+      variables: { status: [EItemStatus.Seller] },
+    },
+  )
+  const bestSellerItem = bestSellerData?.listItemByStatus.records ?? []
 
   const inSellerView = useInView(sellerContainerRef, {
     margin: '-10%',
@@ -37,31 +41,6 @@ export default function Home() {
   const inCollectionView = useInView(collectionContainerRef, {
     margin: '-30%',
   })
-
-  useEffect(() => {
-    const getBestSeller = apolloWrapper(
-      async () => {
-        setLoading(true)
-        const { data, error } = await client.query({
-          query: ListItemByStatusDocument,
-          variables: {
-            status: [EItemStatus.Seller],
-          },
-        })
-
-        if (error) {
-          throw error
-        }
-
-        if (data) {
-          setBestSellerItem(data.listItemByStatus.records)
-        }
-      },
-      { onFinally: () => setLoading(false) },
-    )
-
-    getBestSeller()
-  }, [])
 
   return (
     <>

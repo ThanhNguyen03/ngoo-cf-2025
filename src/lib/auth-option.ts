@@ -5,11 +5,12 @@ import { ErrorLike } from '@apollo/client'
 import { NextAuthOptions, User } from 'next-auth'
 import Credentials from 'next-auth/providers/credentials'
 import GoogleProvider from 'next-auth/providers/google'
-import { client } from './apollo-client'
+import { serverClient } from './apollo-server-client'
 import {
   ERole,
   RefreshTokenDocument,
   TUserAuth,
+  UserLinkGoogleDocument,
   UserLoginDocument,
   UserLogoutDocument,
   UserRegisterDocument,
@@ -47,14 +48,14 @@ const authOptions: NextAuthOptions = {
           let result: { data?: TUserAuth; error?: ErrorLike }
           // register flow
           if (credentials.isRegister === 'true') {
-            const { data, error } = await client.mutate({
+            const { data, error } = await serverClient.mutate({
               mutation: UserRegisterDocument,
               variables,
             })
             result = { data: data?.userRegister, error }
           } else {
             // login flow
-            const { data, error } = await client.mutate({
+            const { data, error } = await serverClient.mutate({
               mutation: UserLoginDocument,
               variables,
             })
@@ -85,8 +86,30 @@ const authOptions: NextAuthOptions = {
     async jwt({ token, user, account }) {
       // handle login by google
       if (account?.provider === 'google' && account.id_token) {
+        // If user already has a valid session → this is a Link Google flow
+        if (
+          token.accessToken &&
+          token.accessTokenExpires &&
+          Date.now() < token.accessTokenExpires
+        ) {
+          try {
+            await serverClient.mutate({
+              mutation: UserLinkGoogleDocument,
+              variables: { token: account.id_token },
+              context: {
+                headers: { Authorization: `Bearer ${token.accessToken}` },
+              },
+            })
+            // Keep existing session intact — don't replace tokens
+            return token
+          } catch (err) {
+            logger.error({ err }, 'Google link failed — falling through to login')
+            // Fall through to normal login flow below
+          }
+        }
+
         try {
-          const { data, error } = await client.mutate({
+          const { data, error } = await serverClient.mutate({
             mutation: UserLoginDocument,
             variables: { token: account.id_token },
           })
@@ -133,7 +156,7 @@ const authOptions: NextAuthOptions = {
           if (!token.refreshToken || !token.accessToken) {
             throw new Error('Failed to refresh token')
           }
-          const { data, error } = await client.mutate({
+          const { data, error } = await serverClient.mutate({
             mutation: RefreshTokenDocument,
             variables: {
               refreshToken: token.refreshToken,
@@ -181,7 +204,7 @@ const authOptions: NextAuthOptions = {
     async signOut({ token }) {
       if (token.refreshToken && token.accessToken) {
         try {
-          const { error } = await client.mutate({
+          const { error } = await serverClient.mutate({
             mutation: UserLogoutDocument,
             variables: {
               logoutEverywhere: false,

@@ -2,7 +2,6 @@
 
 import { checkoutLoading } from '@/assets/images'
 import { SkeletonLoader } from '@/components/ui'
-import { client } from '@/lib/apollo-client'
 import {
   EOrderStatus,
   EPaymentMethod,
@@ -14,6 +13,7 @@ import {
 import { createLogger } from '@/lib/logger'
 import { connectPaymentSocket } from '@/lib/socket-client'
 import { apolloWrapper, cn } from '@/utils'
+import { useApolloClient } from '@apollo/client/react'
 
 const logger = createLogger('PaymentDetail')
 import {
@@ -47,6 +47,7 @@ const ORDER_STATUS_TO_STEP: Record<EOrderStatus, number> = {
 
 
 const PaymentDetailPage = () => {
+  const client = useApolloClient()
   const { id } = useParams()
 
   const [loading, setLoading] = useState<boolean>(true)
@@ -115,7 +116,7 @@ const PaymentDetailPage = () => {
     })
 
     fetchOrderStatus()
-  }, [paymentInfo?.orderId, paymentInfo?.paymentMethod])
+  }, [paymentInfo?.orderId, paymentInfo?.paymentMethod, client])
 
   // Subscribe to real-time payment status updates via Socket.IO.
   // On status change, refetch payment info to get the latest data.

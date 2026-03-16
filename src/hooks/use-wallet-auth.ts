@@ -1,6 +1,5 @@
 'use client'
 
-import { client } from '@/lib/apollo-client'
 import {
   CryptoWalletWithNonceDocument,
   UserConnectCryptoWalletDocument,
@@ -8,6 +7,7 @@ import {
 import { createLogger } from '@/lib/logger'
 import useAuthStore from '@/store/auth-store'
 import { handleError } from '@/utils'
+import { useApolloClient } from '@apollo/client/react'
 import { useCallback, useState } from 'react'
 import { useAccount, useSignMessage } from 'wagmi'
 
@@ -29,6 +29,7 @@ type TWalletAuthReturn = TWalletAuthState & {
 // 2. Ask the user to sign it with their wallet (proves key ownership)
 // 3. Send the signature to the BE for verification → updates walletAddress on user profile
 export const useWalletAuth = (): TWalletAuthReturn => {
+  const client = useApolloClient()
   const { address } = useAccount()
   const { signMessageAsync } = useSignMessage()
   const getUserInfo = useAuthStore((s) => s.getUserInfo)
@@ -77,7 +78,7 @@ export const useWalletAuth = (): TWalletAuthReturn => {
       logger.info({ address }, 'Wallet verified successfully')
 
       // Refresh auth store with updated walletAddress from BE
-      await getUserInfo(true)
+      await getUserInfo(true, client)
 
       setState({ isConnecting: false, isSuccess: true, error: null })
     } catch (err) {
@@ -86,7 +87,7 @@ export const useWalletAuth = (): TWalletAuthReturn => {
       handleError(err, 'useWalletAuth: connectWallet failed')
       setState({ isConnecting: false, isSuccess: false, error: message })
     }
-  }, [address, signMessageAsync, getUserInfo])
+  }, [address, signMessageAsync, getUserInfo, client])
 
   const reset = useCallback(() => {
     setState({ isConnecting: false, isSuccess: false, error: null })

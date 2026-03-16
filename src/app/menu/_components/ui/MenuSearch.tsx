@@ -54,7 +54,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
   const debouncedSearch = useDebounce(searchTerm, 300)
 
   const [searchItems, { data: searchData, loading: searchLoading }] =
-    useLazyQuery(SearchItemsDocument)
+    useLazyQuery(SearchItemsDocument, { fetchPolicy: 'no-cache' })
   const [fetchHotTerms, { data: hotTermsData }] = useLazyQuery(
     HotSearchTermsDocument,
   )

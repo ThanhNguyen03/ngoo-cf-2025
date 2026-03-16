@@ -13,16 +13,6 @@ const makeClient = () => {
   return new ApolloClient({
     cache: new InMemoryCache(),
     link: createLinkChain(),
-    defaultOptions: {
-      watchQuery: {
-        fetchPolicy: 'no-cache',
-        errorPolicy: 'all',
-      },
-      query: {
-        fetchPolicy: 'no-cache',
-        errorPolicy: 'all',
-      },
-    },
   })
 }
 

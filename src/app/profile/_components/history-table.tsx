@@ -185,6 +185,7 @@ export const HistoryTable = () => {
       limit: pagination.limit,
       offset: pagination.offset,
     },
+    fetchPolicy: 'network-only',
   })
 
   useEffect(() => {

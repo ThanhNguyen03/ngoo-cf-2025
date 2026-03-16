@@ -1,5 +1,4 @@
 import { ApolloLink, HttpLink } from '@apollo/client'
-import { ApolloClient, InMemoryCache } from '@apollo/client-integration-nextjs'
 import { CombinedGraphQLErrors } from '@apollo/client/errors'
 import { SetContextLink } from '@apollo/client/link/context'
 import { ErrorLink } from '@apollo/client/link/error'
@@ -8,7 +7,7 @@ import { createLogger } from './logger'
 
 const logger = createLogger('ApolloClient')
 
-// --- Shared building blocks (used by both the standalone client and the provider) ---
+// --- Shared building blocks (used by the ApolloProvider in apollo-provider.tsx) ---
 
 export const createHttpLink = () =>
   new HttpLink({
@@ -51,18 +50,3 @@ export const errorLink = new ErrorLink(({ error }) => {
 export const createLinkChain = () =>
   ApolloLink.from([authLink, errorLink, createHttpLink()])
 
-// --- Standalone client (for direct client.query / client.mutate calls) ---
-export const client = new ApolloClient({
-  cache: new InMemoryCache(),
-  link: createLinkChain(),
-  defaultOptions: {
-    watchQuery: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'all',
-    },
-    query: {
-      fetchPolicy: 'no-cache',
-      errorPolicy: 'all',
-    },
-  },
-})
