@@ -313,10 +313,10 @@ const PaymentDetailPage = () => {
                       Blockchain
                     </p>
                     <p className='text-16 font-bold text-orange-500'>
-                      BNB Testnet
+                      Sepolia Testnet
                     </p>
                   </div>
-                  {/* View on BscScan — enabled once BE exposes txHash on user payment response */}
+                  {/* View on Etherscan — enabled once BE exposes txHash on user payment response */}
                   <ArrowSquareOutIcon size={14} className='text-dark-600/30' />
                 </div>
               </div>

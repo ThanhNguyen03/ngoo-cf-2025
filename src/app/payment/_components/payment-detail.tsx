@@ -59,7 +59,7 @@ export const PaymentDetail: FC<TPaymentDetailProps> = ({ data }) => {
 
   const methodLabel =
     data.paymentMethod === EPaymentMethod.Crypto
-      ? 'Crypto (BNB)'
+      ? 'Crypto (ETH)'
       : data.paymentMethod
 
   return (
