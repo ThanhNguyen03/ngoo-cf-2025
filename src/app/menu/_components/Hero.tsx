@@ -20,7 +20,14 @@ import { cn } from '@/utils'
 import { useQuery } from '@apollo/client/react'
 import Image from 'next/image'
 import { useEffect, useMemo, useState } from 'react'
+import { useGLTF } from '@react-three/drei'
 import { Bottle3D } from './ui/Bottle3D'
+
+// Preload all 4 models at module level so the cache is warm before the user switches products
+useGLTF.preload('/models/cherry.glb')
+useGLTF.preload('/models/kiwi.glb')
+useGLTF.preload('/models/orange.glb')
+useGLTF.preload('/models/strawberry.glb')
 
 const ANIMATION_DURATION = 700 // ms
 

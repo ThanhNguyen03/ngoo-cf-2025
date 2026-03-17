@@ -35,6 +35,10 @@ export const AccountPopover: FC<TAccountPopoverProps> = ({
   const { disconnect } = useDisconnect()
   const logout = useAuthStore((state) => state.logout)
 
+  // True only when the wallet is both wagmi-connected AND BE-verified (signature approved).
+  // Use this (not raw isConnected) for any UI that implies "wallet linked".
+  const walletIsVerified = isConnected && !!userInfo.walletAddress
+
   const [tooltipContent, setTooltipContent] = useState<'Copy' | 'Copied!'>(
     'Copy',
   )
@@ -72,7 +76,7 @@ export const AccountPopover: FC<TAccountPopoverProps> = ({
               className='size-11'
             />
 
-            {isConnected && (
+            {walletIsVerified && (
               <div className='rounded-1.5 absolute -right-1 -bottom-1 flex size-5 items-center justify-center border border-black/10 bg-white'>
                 <Image
                   alt='connector-icon'
@@ -88,7 +92,7 @@ export const AccountPopover: FC<TAccountPopoverProps> = ({
             <div
               className={cn(
                 'flex flex-col items-end text-black/80',
-                isConnected && 'pr-6',
+                walletIsVerified && 'pr-6',
               )}
             >
               <p className='text-16 text-primary-600 text-right font-bold -tracking-[0.32px] wrap-anywhere'>
@@ -124,7 +128,7 @@ export const AccountPopover: FC<TAccountPopoverProps> = ({
         )}
 
         <div className='my-4 w-full px-2 md:px-3'>
-          {isConnected ? (
+          {walletIsVerified ? (
             <SwitchChainButton />
           ) : (
             <div className='flex w-full items-end justify-end'>

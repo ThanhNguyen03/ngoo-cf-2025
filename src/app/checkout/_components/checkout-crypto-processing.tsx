@@ -50,9 +50,12 @@ export const CheckoutCryptoProcessing: FC<TCheckoutCryptoProcessingProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
-  // After the tx is confirmed on-chain, subscribe to Socket.IO for BE confirmation
+  // Subscribe to Socket.IO immediately on mount — do NOT wait for isSuccess.
+  // The BE monitor emits paymentStatus as soon as on-chain confirmations are
+  // reached, which races with wagmi detecting isSuccess. Registering the
+  // listener on mount (before the tx is even signed) eliminates this race.
   useEffect(() => {
-    if (!isSuccess || !orderId) return
+    if (!orderId) return
 
     const setupSocket = async () => {
       const connected = await connectPaymentSocket(orderId, (socketData) => {
@@ -81,7 +84,7 @@ export const CheckoutCryptoProcessing: FC<TCheckoutCryptoProcessingProps> = ({
 
     setupSocket()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccess, orderId])
+  }, [orderId])
 
   const handleCancel = () => {
     // Cancelling only dismisses the overlay — the on-chain tx is already submitted.

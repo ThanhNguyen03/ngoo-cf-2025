@@ -39,23 +39,6 @@ const DraggableBottle = forwardRef<THREE.Group, TDraggableBottleProps>(
       }
     }, [ref])
 
-    // Dispose WebGL resources when this bottle instance unmounts to prevent
-    // memory leaks when the user switches between products on the menu page.
-    useEffect(() => {
-      return () => {
-        cloned.traverse((child) => {
-          if (child instanceof THREE.Mesh) {
-            child.geometry?.dispose()
-            if (Array.isArray(child.material)) {
-              child.material.forEach((m) => m.dispose())
-            } else {
-              child.material?.dispose()
-            }
-          }
-        })
-      }
-    }, [cloned])
-
     useEffect(() => {
       if (isRotate && groupRef.current) {
         animating.current = true
