@@ -4,6 +4,7 @@ import { emptyBoxIcon } from '@/assets/icons'
 import { Button, SkeletonLoader } from '@/components/ui'
 import { EItemModalDetailStatus, ItemDetailModal } from '@/components/ui/modal'
 import { DEFAULT_PAGINATION } from '@/constants'
+import { useTrackBehavior } from '@/hooks'
 import {
   EBehaviorEvent,
   EItemStatus,
@@ -12,7 +13,6 @@ import {
   TCategory,
   TItemResponse,
 } from '@/lib/graphql/generated/graphql'
-import { useTrackBehavior } from '@/hooks'
 import useCartStore from '@/store/cart-store'
 import { apolloWrapper, cn } from '@/utils'
 import { useApolloClient } from '@apollo/client/react'
@@ -80,7 +80,9 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
               fetchPolicy: 'no-cache', // Always fetch fresh — cache is managed server-side
             })
 
-            if (error) throw error
+            if (error) {
+              throw error
+            }
 
             if (data) {
               handleUpdateData(selectedCategory.categoryId, {

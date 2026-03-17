@@ -19,6 +19,8 @@ export const AuthenButton = () => {
 
   // Guard against StrictMode double-fire or rapid searchParams changes
   const loginHandledRef = useRef(false)
+  // Stores the URL the user was trying to visit before being redirected to login
+  const returnToRef = useRef<string | null>(null)
 
   // Auto-open the login modal when the middleware redirects here with ?login=true.
   // This gives users clear feedback instead of silently landing on the home page.
@@ -29,14 +31,21 @@ export const AuthenButton = () => {
       !loginHandledRef.current
     ) {
       loginHandledRef.current = true
+      returnToRef.current = searchParams.get('returnTo')
       setOpenLoginModal(true)
-      // Clean up the query param from the URL without a page reload
-      const params = new URLSearchParams(searchParams.toString())
-      params.delete('login')
-      const newUrl = params.size > 0 ? `/?${params}` : '/'
-      router.replace(newUrl)
+      // Clean up the query params from the URL without a page reload
+      router.replace('/')
     }
   }, [searchParams, status, router])
+
+  // After login completes, redirect back to the originally intended page
+  useEffect(() => {
+    if (status === 'authenticated' && returnToRef.current) {
+      const path = returnToRef.current
+      returnToRef.current = null
+      router.push(path)
+    }
+  }, [status, router])
 
   const triggerButtonRef = useRef<HTMLButtonElement>(null)
   const popoverRef = useRef<HTMLDivElement>(null)
@@ -85,6 +94,7 @@ export const AuthenButton = () => {
           <LoginModal
             isOpen={openLoginModal}
             onClose={() => setOpenLoginModal(false)}
+            returnTo={returnToRef.current ?? undefined}
           />
         </>
       )}

@@ -11,7 +11,7 @@ import {
   SignOutIcon,
   UserIcon,
 } from '@phosphor-icons/react/dist/ssr'
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { AuthMethodsSection } from './_components/auth-methods-section'
 import { HistoryTable } from './_components/history-table'
@@ -41,7 +41,6 @@ const BILLING_TABS = [
 
 const ProfilePage = () => {
   const apolloClient = useApolloClient()
-  const router = useRouter()
   const userInfo = useAuthStore((state) => state.userInfo!)
   const getUserInfo = useAuthStore((state) => state.getUserInfo)
   const logout = useAuthStore((state) => state.logout)
@@ -52,18 +51,10 @@ const ProfilePage = () => {
   const [activeKey, setActiveKey] = useState<string>(tabId)
   const [showLogoutAllModal, setShowLogoutAllModal] = useState(false)
 
-  useEffect(() => {
-    if (tabId && tabId !== activeKey) {
-      setActiveKey(tabId)
-    }
-  }, [tabId, activeKey])
-
   const handleChangeTab = (key: string) => {
-    if (key === activeKey) {
-      return
-    }
+    if (key === activeKey) return
     setActiveKey(key)
-    router.replace(`/profile/?tab=${key}`)
+    window.history.replaceState(null, '', `/profile?tab=${key}`)
   }
 
   const handleRefreshUserInfo = () => getUserInfo(true, apolloClient)

@@ -43,7 +43,7 @@ export const CheckoutProcess: FC<TCheckoutProcessProps> = ({
     }
     try {
       const parsed = new URL(url)
-      if (!parsed.hostname.endsWith('paypal.com')) {
+      if (parsed.hostname !== 'paypal.com' && !parsed.hostname.endsWith('.paypal.com')) {
         throw new Error('Invalid payment redirect URL')
       }
       paypalWindowRef.current = window.open(

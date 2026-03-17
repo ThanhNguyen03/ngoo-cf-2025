@@ -18,7 +18,7 @@ export const getSocketClient = async (): Promise<Socket> => {
     throw new Error('No accessToken')
   }
 
-  socket = io(process.env.NGOO_BACKEND_API!, {
+  socket = io(process.env.NEXT_PUBLIC_NGOO_BACKEND_API!, {
     transports: ['websocket'],
     auth: {
       token: session.accessToken,

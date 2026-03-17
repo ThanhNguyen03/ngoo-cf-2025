@@ -72,10 +72,14 @@ export const BestSeller = React.memo(forwardRef<HTMLElement, TBestSellerProps>(
               Best Seller
             </h2>
             {isLoading ? (
-              <SkeletonLoader
-                loading={isLoading}
-                className='min-h-100 w-full max-w-100'
-              />
+              // Mirrors Slider layout: pb-10 for dot-button space, cards at ItemCard dimensions
+              <div className='w-full overflow-hidden pb-10'>
+                <div className='flex items-center justify-center gap-6'>
+                  <SkeletonLoader loading className='h-80 w-60 flex-shrink-0 rounded-2' />
+                  <SkeletonLoader loading className='hidden h-80 w-60 flex-shrink-0 rounded-2 md:block' />
+                  <SkeletonLoader loading className='hidden h-80 w-60 flex-shrink-0 rounded-2 lg:block' />
+                </div>
+              </div>
             ) : (
               <Slider
                 numsItemsPerSlice={3}

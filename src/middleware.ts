@@ -16,6 +16,7 @@ export default withAuth(
       // giving the user clear feedback instead of a silent /not-found rewrite.
       const loginUrl = new URL('/', req.url)
       loginUrl.searchParams.set('login', 'true')
+      loginUrl.searchParams.set('returnTo', pathname)
       return NextResponse.redirect(loginUrl)
     }
 

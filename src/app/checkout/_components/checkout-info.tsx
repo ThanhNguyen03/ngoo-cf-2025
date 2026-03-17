@@ -16,7 +16,7 @@ import { useApolloClient } from '@apollo/client/react'
 import {
   ArrowRightIcon,
   CheckCircleIcon,
-  CurrencyBtcIcon,
+  CurrencyEthIcon,
   MoneyWavyIcon,
   PaypalLogoIcon,
   XCircleIcon,
@@ -360,19 +360,19 @@ export const CheckoutInfo: FC<TCheckoutInfoProps> = ({
                           isCryptoDisabled && 'opacity-50',
                         )}
                       >
-                        <CurrencyBtcIcon
-                          weight='fill'
+                        <CurrencyEthIcon
+                          weight='duotone'
                           size={24}
                           className={cn(
                             paymentMethod === method
-                              ? 'text-orange-500'
+                              ? 'text-[#8A2BE2]'
                               : 'text-dark-600/50',
                           )}
                         />
                         <p
                           className={cn(
                             paymentMethod === method &&
-                              'text-orange-500 hover:text-orange-500',
+                              'text-[#8A2BE2] hover:text-[#8A2BE2]',
                           )}
                         >
                           Crypto (ETH)

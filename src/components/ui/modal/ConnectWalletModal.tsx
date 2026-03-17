@@ -58,6 +58,16 @@ export const ConnectWalletModal: FC<TModalProps> = ({ isOpen, onClose }) => {
   const { connectWallet, isConnecting, isSuccess, error, reset } =
     useWalletAuth()
 
+  // If the user closes the modal while the signature is pending, disconnect the
+  // wagmi wallet so the app doesn't stay in an "isConnected but unverified" limbo.
+  const handleClose = () => {
+    if (isConnecting || (isConnected && !userInfo?.walletAddress)) {
+      disconnect()
+      reset()
+    }
+    onClose()
+  }
+
   const metamaskWalletConnector =
     connectors.length > 0
       ? connectors.find((wallet) => wallet.id.includes('metamask'))
@@ -113,7 +123,7 @@ export const ConnectWalletModal: FC<TModalProps> = ({ isOpen, onClose }) => {
             >
               <XIcon
                 className='text-dark-600 cursor-pointer'
-                onClick={onClose}
+                onClick={handleClose}
                 size={16}
               />
             </SwitchButton>

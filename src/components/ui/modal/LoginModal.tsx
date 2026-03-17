@@ -59,7 +59,7 @@ export const validateLoginInput = (
 
 const DEBOUNCE_DELAY = 500
 
-export const LoginModal: FC<TModalProps> = ({ isOpen, onClose }) => {
+export const LoginModal: FC<TModalProps & { returnTo?: string }> = ({ isOpen, onClose, returnTo }) => {
   const login = useAuthStore((state) => state.login)
 
   const [isLogin, setIsLogin] = useState<boolean>(true)
@@ -251,7 +251,7 @@ export const LoginModal: FC<TModalProps> = ({ isOpen, onClose }) => {
               <p className='text-dark-600/70 text-14 text-center'>Or</p>
               <button
                 type='button'
-                onClick={() => signIn('google', { callbackUrl: '/' })}
+                onClick={() => signIn('google', { callbackUrl: returnTo ?? '/' })}
                 className='border-dark-600/10 font-shantell rounded-3 text-dark-600 flex w-full cursor-pointer items-center justify-center gap-2 border bg-white px-4 py-2 font-semibold focus:ring-0 focus:ring-offset-0 focus:outline-none md:px-6'
               >
                 <Image
