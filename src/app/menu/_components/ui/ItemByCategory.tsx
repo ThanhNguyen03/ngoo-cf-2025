@@ -29,6 +29,7 @@ export type TItemByCategoryData = {
   cursor: string | null
   hasMore: boolean
   fetched?: boolean
+  buyAgainItemIds?: string[]
 }
 
 export type TItemByCategoryCache = Record<string, TItemByCategoryData>
@@ -87,6 +88,7 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
             if (data) {
               handleUpdateData(selectedCategory.categoryId, {
                 list: data.recommendations.records,
+                buyAgainItemIds: data.recommendations.buyAgainItemIds,
                 cursor: null,
                 hasMore: false,
                 fetched: true,
@@ -200,6 +202,8 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
                     (c) => c.itemId === item.itemId,
                   )
 
+                  const isBuyAgain = itemData.buyAgainItemIds?.includes(item.itemId) ?? false
+
                   return (
                     <div
                       key={item.name}
@@ -222,9 +226,16 @@ const ItemByCategory: FC<TItemByCategoryProps> = memo(
                       />
                       <div className='flex h-50 w-full flex-col items-end justify-between p-4'>
                         <div className='flex flex-col items-start gap-1 text-left'>
-                          <h5 className='text-18 mb-2 font-semibold'>
-                            {item.name}
-                          </h5>
+                          <div className='mb-2 flex items-center gap-2'>
+                            <h5 className='text-18 font-semibold'>
+                              {item.name}
+                            </h5>
+                            {isBuyAgain && (
+                              <span className='text-11! bg-primary-500/10 text-primary-500 shrink-0 rounded-full px-2 py-0.5 font-medium'>
+                                Buy again
+                              </span>
+                            )}
+                          </div>
                           <p className='text-14 text-dark-600/70 line-clamp-2'>
                             {item.description}
                           </p>

@@ -54,9 +54,11 @@ export const SearchResultsDropdown: FC<TSearchResultsDropdownProps> = ({
     <>
       <div
         className={cn(
-          'absolute top-full left-0 z-50 mt-1 w-full min-w-[260px] overflow-hidden rounded-2xl border border-dark-600/10 bg-white shadow-lg',
+          'absolute top-full right-0 z-[60] mt-0 w-full min-w-[260px] overflow-hidden rounded-t-none rounded-b-2xl border border-t-0 border-primary-500 bg-white shadow-lg sm:right-auto sm:left-0',
         )}
       >
+        {/* Subtle accent divider that visually connects input to dropdown */}
+        <div className='h-px w-full bg-primary-500/20' />
         {/* Empty search state: hot + recent */}
         {!searchTerm.trim() && (
           <div className='flex flex-col gap-0'>
