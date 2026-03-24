@@ -166,6 +166,7 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
     <div
       className={cn(
         'sticky top-12 flex w-full flex-col items-start gap-2 bg-white px-2 py-4 md:top-20 md:w-[25%] md:gap-4 md:p-0',
+        showDropdown && 'z-[55]',
         className,
       )}
     >
@@ -218,7 +219,13 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
         </SelectDropdown>
 
         {/* search bar + dropdown container */}
-        <div ref={searchContainerRef} className='relative ml-auto flex w-full max-w-fit flex-col'>
+        <div
+          ref={searchContainerRef}
+          className={cn(
+            'relative ml-auto flex w-full flex-col',
+            !(openSearchBar || searchTerm) && 'max-w-fit',
+          )}
+        >
           <label
             onClick={handleSearchFocus}
             className={cn(
@@ -226,6 +233,8 @@ export const MenuSearch: FC<TMenuSearchProps> = ({
               'hover:border-primary-500 focus-within:border-primary-500',
               (openSearchBar || searchTerm) &&
                 'border-primary-500 max-w-full px-3 duration-700',
+              showDropdown && (openSearchBar || searchTerm) &&
+                'rounded-b-none border-b-0',
               disabled &&
                 'border-dark-600/10 bg-dark-600/10 text-dark-600/70 placeholder:text-dark-600/50 cursor-not-allowed opacity-100 focus:border-neutral-900/20 focus:ring-0',
             )}

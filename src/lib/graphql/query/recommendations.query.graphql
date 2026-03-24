@@ -1,6 +1,7 @@
 query Recommendations($limit: Int) {
   recommendations(limit: $limit) {
     source
+    buyAgainItemIds
     records {
       itemId
       name
