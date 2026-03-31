@@ -9,6 +9,7 @@ import {
   NewCollection,
   Services,
 } from '@/components/section'
+import { FenceHead } from '@/components/icons'
 import { InfiniteCarousel } from '@/components/ui/InfiniteCarousel'
 import {
   EItemStatus,
@@ -47,7 +48,27 @@ export default function Home() {
       <main className='relative flex size-full flex-col overflow-hidden'>
         <Hero />
         <div className='from-beige-100 relative bg-linear-to-b via-white via-70% to-white transition-colors duration-500'>
-          <div className='from-dark-600 to-beige-300 h-10 bg-linear-to-r from-50% to-50%' />
+          {/* NOTE: FenceHead replaces the hard 50/50 geometric split bar that was here.
+              The split bar (from-dark-600 to-beige-300) created the sharpest visual seam
+              on the page — two flat colors meeting at a straight horizontal line.
+              FenceHead is FenceCloud's counterpart: it fills the upper portion of its
+              viewbox, painting a wavy dark-600 edge that organically dissolves into the
+              beige gradient below. This mirrors the FenceCloud wave already at BestSeller's
+              bottom, establishing a consistent "wave = section boundary" grammar.
+
+              z-0: renders behind InfiniteCarousel (z-10) — carousel sits on top of the wave.
+              overflow-hidden on the wrapper clips the wide SVG (min-w-[1440px]) to the
+              container width, preventing horizontal scroll on narrow viewports.
+              Mobile-first heights: h-10 (40px) on mobile, md:h-20 (80px) on tablet+.
+              Mobile is shorter because the hero is shorter and less vertical space is needed
+              to bridge the gap visually. */}
+          <div className='pointer-events-none absolute top-0 left-0 z-0 h-fit w-full overflow-hidden'>
+            <FenceHead
+              width={1440}
+              height={192}
+              className='h-10 w-full min-w-[1440px] text-dark-600 select-none md:h-20'
+            />
+          </div>
           <InfiniteCarousel
             className='from-beige-300 to-beige-50 border-secondary-500/10 absolute -top-10 z-10 w-full -rotate-3 border-y bg-linear-to-b'
             length={7}

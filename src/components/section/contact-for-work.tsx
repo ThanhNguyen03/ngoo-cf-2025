@@ -25,6 +25,17 @@ export const ContactForWork = () => {
           className='absolute inset-0 w-full min-w-[1440px] mix-blend-color-dodge select-none'
         />
       </div>
+      {/* NOTE: Gradient fade at section bottom bridges ContactForWork (saturated orange-brown)
+          to Footer (beige-50 → white). Without this, the boundary is a hard tonal jump
+          of ~30% perceived lightness. Target color hsla(30,63%,95%) = beige-100, which is
+          the starting color of the BestSeller gradient — reusing it here creates a
+          consistent warm landing color across the page.
+          h-24 (96px) on mobile is sufficient; no md: override needed since the gradient
+          is decorative and the section's own bottom padding provides the visual breathing room. */}
+      <div
+        className='pointer-events-none absolute bottom-0 left-0 h-24 w-full'
+        style={{ background: 'linear-gradient(to bottom, transparent, hsla(30, 63%, 95%, 1))' }}
+      />
       <div className='relative z-10 px-2 py-6 md:px-6 md:py-10 lg:px-10 lg:py-20'>
         <div className='mx-auto flex w-full max-w-[1200px] flex-col gap-4 md:gap-6 lg:gap-10'>
           <div className='flex flex-col items-start justify-between gap-4 md:flex-row md:gap-6'>

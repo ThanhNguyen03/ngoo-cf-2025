@@ -3,8 +3,13 @@ import Link from 'next/link'
 import { NgOoLogo } from '../ui/NgOoLogo'
 
 export const Footer = () => {
+  // NOTE: bg changed from flat bg-white to a warm gradient from-beige-50 to-white.
+  // beige-50 (hsla 30,60%,98%) is perceptually near-white but warm-tinted, receiving
+  // the ContactForWork fade (P4) gracefully: orange → beige-100 → beige-50 → white.
+  // border-t kept but color softened to primary-200/30 instead of neutral-900/10 —
+  // never rely on gradient alone for visual separation (fails on low-contrast displays).
   return (
-    <footer className='border-t border-neutral-900/10 bg-white px-2 md:p-10 lg:px-10 lg:py-0'>
+    <footer className='border-t border-primary-200/30 bg-linear-to-b from-beige-50 to-white px-2 md:p-10 lg:px-10 lg:py-0'>
       <div className='relative mx-auto flex w-full max-w-[1200px] flex-col items-center justify-center gap-14 pt-10'>
         {/* list */}
         <div className='flex w-full flex-col gap-10 pb-10 md:flex-row md:justify-between'>
