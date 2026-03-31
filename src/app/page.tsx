@@ -78,7 +78,7 @@ export default function Home() {
           </InfiniteCarousel>
           <BestSeller
             ref={sellerContainerRef}
-            isLoading={loading}
+            isLoading={loading || !bestSellerData}
             data={bestSellerItem}
             isInview={inSellerView && !!selectedProduct}
           />
