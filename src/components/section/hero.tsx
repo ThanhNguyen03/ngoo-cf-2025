@@ -62,20 +62,12 @@ export const Hero = () => {
               o&nbsp;<span className='text-beige-300'>Coffee</span>
             </span>
           </h1>
-          {/* NOTE: Previous copy was abstract/poetic — "missing piece that makes everyday complete".
-              Replaced with concrete value prop: what we sell + how we deliver.
-              "Vietnamese coffee" and "specialty drinks delivered" are real search terms.
-              Abstract poetry feels warm but doesn't tell Google or new visitors what the site does. */}
           <p className='text-beige-50 text-18! px-4 text-center md:max-w-none md:text-left'>
             Freshly brewed Vietnamese coffee and specialty drinks,
             <br className='md:hidden' /> delivered straight to your door
           </p>
           <div className='from-beige-100 hidden h-0.25 w-full bg-linear-to-r to-transparent md:inline' />
           <div className='flex w-full max-w-[320px] flex-col items-center justify-center gap-2 px-4 text-lg md:w-fit md:max-w-none md:flex-row md:gap-4'>
-            {/* NOTE: "Order Now" creates purchase pressure on a first visit before the user
-                has browsed. "Explore Menu" is lower-commitment and drives the same
-                conversion funnel (homepage → menu → checkout) with higher click-through.
-                This is the "progressive commitment" UX pattern. */}
             <Button
               className='bg-secondary-500 w-full border border-white/10 md:w-fit'
               icon={<ArrowRightIcon size={16} />}
