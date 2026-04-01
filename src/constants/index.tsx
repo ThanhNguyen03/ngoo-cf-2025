@@ -116,7 +116,7 @@ export const LIST_SOCIAL_BUTTON: TNavigationItem[] = [
   {
     name: 'LinkedIn',
     icon: <LinkedinLogoIcon size={24} fill='#0a62bd' />,
-    href: 'https://www.linkedin.com/in/thanhfng12dev/',
+    href: 'https://www.linkedin.com/in/thanhfng-dev/',
   },
   {
     name: 'Mail',
@@ -142,7 +142,7 @@ export const LIST_FOOTER_NAVIGATION: Array<
     children: [
       { href: 'https://m.me/thanhfnguyen.03', name: 'Facebook' },
       { href: 'https://ig.me/m/thanhf.ng_', name: 'Instagram' },
-      { href: 'https://www.linkedin.com/in/thanhfng12dev/', name: 'LinkedIn' },
+      { href: 'https://www.linkedin.com/in/thanhfng-dev/', name: 'LinkedIn' },
       { href: 'https://t.me/thanhf.ng_', name: 'Telegram' },
     ],
   },
