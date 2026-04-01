@@ -6,7 +6,6 @@ import { useParallaxLayer } from '@/hooks'
 import { TItemResponse } from '@/lib/graphql/generated/graphql'
 import { TCartItem } from '@/types'
 import { cn } from '@/utils'
-import { motion } from 'framer-motion'
 import React, { forwardRef, useCallback, useState } from 'react'
 import { FenceCloud } from '../icons'
 
@@ -69,21 +68,9 @@ export const BestSeller = React.memo(forwardRef<HTMLElement, TBestSellerProps>(
         <ProductPosition />
         <div className='z-30 mb-20 px-2 py-10 md:px-6 md:py-20 lg:px-10 lg:pt-30 lg:pb-50'>
           <div className='center relative mx-auto flex w-full max-w-[1200px] flex-col gap-6'>
-            {/* NOTE: motion.h2 renders as a real <h2> in the DOM — no impact on heading
-                hierarchy or SEO. whileInView uses IntersectionObserver internally, which is
-                native and performant (no polling, no scroll listeners).
-                once: true detaches the observer after first trigger — zero ongoing cost.
-                Easing [0.22, 0.61, 0.36, 1] matches the Slider's cubic-bezier so all
-                motion on this section shares the same feel. */}
-            <motion.h2
-              className='text-44 md:text-55 text-shadow-stroke-2 font-lobster w-fit text-center font-black text-white'
-              initial={{ opacity: 0, y: 28 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-10%' }}
-              transition={{ duration: 0.6, ease: [0.22, 0.61, 0.36, 1] }}
-            >
+            <h2 className='text-44 md:text-55 text-shadow-stroke-2 font-lobster w-fit text-center font-black text-white'>
               Best Seller
-            </motion.h2>
+            </h2>
             {isLoading ? (
               // Mirrors Slider layout: pb-10 for dot-button space, cards at ItemCard dimensions
               <div className='w-full overflow-hidden pb-10'>
