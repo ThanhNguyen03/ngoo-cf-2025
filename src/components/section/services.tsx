@@ -69,12 +69,12 @@ export const Services: FC<TServicesProps> = ({ isHover }) => {
       )}
     >
       <div className='mx-auto flex w-full max-w-[1200px] flex-col gap-4 md:gap-6 lg:gap-10'>
-        <div className='= flex flex-col items-start gap-2'>
+        <div className='flex flex-col items-start gap-2'>
           <h2 className='text-18 text-primary-600 font-small-caps w-fit font-semibold'>
-            Services
+            Payment Methods
           </h2>
           <p className='text-23 text-dark-600/70 font-semibold'>
-            We offer the best services
+            Choose how you pay — your way
           </p>
         </div>
         <div className='flex flex-col justify-between gap-6 md:flex-row md:items-center md:gap-10'>

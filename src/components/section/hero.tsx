@@ -63,8 +63,8 @@ export const Hero = () => {
             </span>
           </h1>
           <p className='text-beige-50 text-18! px-4 text-center md:max-w-none md:text-left'>
-            NgOo Coffee is the missing piece that makes everyday complete,
-            <br className='md:hidden' />a simple yet delicious joy in life
+            Freshly brewed Vietnamese coffee and specialty drinks,
+            <br className='md:hidden' /> delivered straight to your door
           </p>
           <div className='from-beige-100 hidden h-0.25 w-full bg-linear-to-r to-transparent md:inline' />
           <div className='flex w-full max-w-[320px] flex-col items-center justify-center gap-2 px-4 text-lg md:w-fit md:max-w-none md:flex-row md:gap-4'>
@@ -72,7 +72,7 @@ export const Hero = () => {
               className='bg-secondary-500 w-full border border-white/10 md:w-fit'
               icon={<ArrowRightIcon size={16} />}
             >
-              Order Now
+              Explore Menu
             </Button>
             <Button
               className='w-full border border-white/10 bg-neutral-900 text-white md:w-fit'
